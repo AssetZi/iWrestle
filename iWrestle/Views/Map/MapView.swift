@@ -6,21 +6,23 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct MapView: View {
     @State private var showPicker: Bool = false
+    @Binding var selectedLocation: CLLocationCoordinate2D?
     var body: some View {
-        List{
-            Button("Pick a location"){
-                showPicker.toggle()
-            }
-            .locationPicker(isPresented: $showPicker) { coordinates in
-                
+        Button("Pick a location"){
+            showPicker.toggle()
+        }
+        .locationPicker(isPresented: $showPicker) { coordinates in
+            if let coordinates {
+                print(coordinates)
             }
         }
     }
 }
 
-#Preview {
-    MapView()
-}
+//#Preview {
+//    MapView()
+//}

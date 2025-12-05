@@ -21,6 +21,7 @@ struct AddEventScreen: View {
                 TextField("Event Name", text: $eventName)
                     .autocorrectionDisabled(true)
                 DatePicker("Event Date", selection: $eventDate,displayedComponents: .date)
+                MapView()
                 
             }
             Section(header: Text("Event Contact Information")) {

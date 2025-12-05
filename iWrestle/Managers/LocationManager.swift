@@ -19,6 +19,14 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     var position: MapCameraPosition = .automatic
     var userCoordinates: CLLocationCoordinate2D?
     
+    // search properties
+    var searchText: String = ""
+    
+    var searchResults: [MKMapItem] = []
+    var selectedResult: MKMapItem?  
+    var showSearchResults: Bool = false
+    var isSeaching: Bool = false
+    
     private var manager: CLLocationManager = .init()
     override init() {
         super.init()
@@ -54,5 +62,36 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     /// Additional Helper methods
     func requestUserLocaiton(){
         manager.requestWhenInUseAuthorization()
+    }
+    func searchForPlaces() {
+        guard let currentRegion else { return }
+        Task { @MainActor in
+            isSeaching = true
+            
+            let request = MKLocalSearch.Request()
+            request.region = currentRegion
+            request.naturalLanguageQuery = searchText
+            let search = MKLocalSearch(request: request)
+            guard let response = try? await search.start() else {
+                isSeaching = false
+                return
+            }
+            
+            searchResults = response.mapItems
+            isSeaching = false
+        }
+    }
+    func clearSearch() {
+        searchText = ""
+        searchResults = []
+        
+    }
+    
+    func updateMapPosition(_ mapItem: MKMapItem) {
+        let coordinates = mapItem.location.coordinate
+        let region = MKCoordinateRegion(center: coordinates, latitudinalMeters: 1000, longitudinalMeters: 1000)
+        position = .region(region)
+        selectedResult = mapItem
+        showSearchResults = false
     }
 }
