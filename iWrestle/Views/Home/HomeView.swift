@@ -11,8 +11,8 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             
-            ScrollView{
-                MapView().padding()
+            List{
+                
                 ForEach(0..<10, id: \.self) { _ in
                     EventCell()
                 }

@@ -6,21 +6,35 @@
 //
 
 import SwiftUI
+import MapKit
+
 
 struct MapView: View {
     @State private var showPicker: Bool = false
+    @Binding var selectedLocation: CLLocationCoordinate2D?
+    @State var loadedMapItem: MKMapItem?
     var body: some View {
-        List{
-            Button("Pick a location"){
-                showPicker.toggle()
+        Group{
+            if let mapItem = loadedMapItem {
+                Button(mapItem.address?.fullAddress ?? "Address not available"){
+                    showPicker.toggle()
+                }
+            } else {
+                Button("Pick a location"){
+                    showPicker.toggle()
+                }
             }
-            .locationPicker(isPresented: $showPicker) { coordinates in
-                
+            
+        }
+        .locationPicker(isPresented: $showPicker) { mapItem in
+            if let mapItem {
+                loadedMapItem = mapItem
+//                loadedMapItem?.openInMaps() // use this for events to open in maps 
             }
         }
     }
 }
 
-#Preview {
-    MapView()
-}
+//#Preview {
+//    MapView()
+//}
