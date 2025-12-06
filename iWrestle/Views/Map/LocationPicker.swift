@@ -11,21 +11,21 @@ import CoreLocation
 import MapKit
 
 extension View {
-    func locationPicker(isPresented: Binding<Bool>, coordinates: @escaping (CLLocationCoordinate2D?) -> ()) -> some View {
+    func locationPicker(isPresented: Binding<Bool>, mapItem: @escaping (MKMapItem?) -> ()) -> some View {
         self
             .fullScreenCover(isPresented: isPresented) {
-                LocationPickerView(isPresented: isPresented, coordinates: coordinates)
+                LocationPickerView(isPresented: isPresented, mapItem: mapItem)
             }
     }
 }
 
 fileprivate struct LocationPickerView: View {
     @Binding var isPresented: Bool
-    var coordinates: (CLLocationCoordinate2D?) -> ()
+    var mapItem: (MKMapItem?) -> ()
     @Namespace private var mapSpace
     @FocusState private var isKeyboardActive: Bool
     @State private var manager: LocationManager = .init()
-    @State private var selecedCoordinates: CLLocationCoordinate2D?
+    @State private var selectedMapItem: MKMapItem?
     
     @Environment(\.openURL) private var openURL
     var body: some View {
@@ -107,28 +107,28 @@ fileprivate struct LocationPickerView: View {
     
     @ViewBuilder
     func MapDisplayView() -> some View {
-        Map(position: $manager.position){
-           
+        Map(position: $manager.position, selection: $selectedMapItem){
             UserAnnotation()
+            ForEach(manager.searchResults, id: \.self) { item in
+                let coord = item.location.coordinate
+                Marker(item.name ?? "Place", coordinate: coord)
+                    .tag(item)
+                    .tint(item == selectedMapItem ? .green : .red)
+                    
+            }
         }
         .mapControls {
             MapUserLocationButton(scope: mapSpace)
             MapCompass(scope: mapSpace)
             MapPitchToggle(scope: mapSpace)
         }
-        .overlay {
-            Image(systemName: "mappin.and.ellipse")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 35,height: 35)
-                .foregroundStyle(.red.gradient)
-                .offset(y: 17)
-                .allowsHitTesting(false)
-        }
         .mapScope(mapSpace)
         .onMapCameraChange { ctx in
             manager.currentRegion = ctx.region
-            selecedCoordinates = ctx.region.center
+            Task{
+                await manager.loadPOIs()
+            }
+//            selecedCoordinates = ctx.region.center
         }
     }
     
@@ -168,7 +168,6 @@ fileprivate struct LocationPickerView: View {
                     .submitLabel(.search)
                     .onSubmit {
                         if manager.searchText.isEmpty {
-                            
                             manager.clearSearch()
                         } else {
                             manager.searchForPlaces()
@@ -183,7 +182,6 @@ fileprivate struct LocationPickerView: View {
                 
                 if manager.showSearchResults {
                     Button {
-                        
                         manager.clearSearch()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
@@ -207,8 +205,11 @@ fileprivate struct LocationPickerView: View {
     @ViewBuilder
     func SelectLocationButton() -> some View {
         Button {
+            guard let item = selectedMapItem else { return }
             isPresented = false
-            coordinates(selecedCoordinates)
+            
+            mapItem(item)
+            
             
         } label: {
             Text("Select Location")
@@ -258,6 +259,7 @@ fileprivate struct LocationPickerView: View {
         .onTapGesture {
             isKeyboardActive = false
             // updating map position
+            selectedMapItem = mapItem
             manager.updateMapPosition(mapItem)
         }
     }

@@ -94,4 +94,21 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         selectedResult = mapItem
         showSearchResults = false
     }
+    
+    func loadPOIs() async {
+        
+        guard let currentRegion = currentRegion else { return }
+//        guard let coordinates = userCoordinates else { return }
+        let request = MKLocalPointsOfInterestRequest(coordinateRegion: currentRegion)
+//        let reqestTwo = MKLocalPointsOfInterestRequest(center: coordinates, radius: 800)
+        
+        let search = MKLocalSearch(request: request)
+        if let response = try? await search.start() {
+            await MainActor.run {
+                
+                // clear all other results 
+                searchResults = response.mapItems
+            }
+        }
+    }
 }
