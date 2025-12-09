@@ -11,6 +11,7 @@ import UIKit
 
 struct Event: Identifiable, Hashable {
     var id: CKRecord.ID
+    let userID: CKRecord.ID // using this now bc record.creatorUserRecordID
     var eventType: String // Tournament,Camp,Clinic
     var name: String
     var date: Date
@@ -19,20 +20,6 @@ struct Event: Identifiable, Hashable {
     var ageGroups: [String]
     var photo: UIImage? // Optional if some events have no photo
     
-    init(id: CKRecord.ID = CKRecord.ID(recordName: UUID().uuidString),
-         eventType: String,
-         name: String,
-         date: Date,location: CLLocation,address: String,ageGroups: [String],
-         photo: UIImage? = nil) {
-        self.id = id
-        self.eventType = eventType
-        self.name = name
-        self.date = date
-        self.photo = photo
-        self.address = address
-        self.location = location
-        self.ageGroups = ageGroups
-    }
 }
 
 extension Event {
@@ -48,3 +35,21 @@ extension Event {
     }
 }
 
+
+extension Event {
+    init (record: CKRecord) {
+        self.id = record.recordID
+        self.userID = record.creatorUserRecordID!
+        self.eventType = record[Event.Field.type] as! String
+        self.name = record[Event.Field.name] as! String
+        self.date = record[Event.Field.date] as! Date
+        self.location = record[Event.Field.location] as! CLLocation
+        self.address = record[Event.Field.address] as! String
+        self.ageGroups = record[Event.Field.ageGroups] as! [String]
+//        self.photo = record[Event.Field.photo]?.image // not sure how to best do photo yet
+        
+        
+        
+        
+    }
+}

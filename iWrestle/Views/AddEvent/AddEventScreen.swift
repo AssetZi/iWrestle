@@ -14,6 +14,7 @@ struct AddEventScreen: View {
     @State private var eventContactLastName: String = ""
     @State private var eventContactEmail: String = ""
     @State private var eventContactPhone: String = ""
+    @State private var eventType: EventType = .tournament
     @State private var eventDate: Date = Date()
     @State private var wantsImagesMade: Bool = false
     @State private var selectedLocation: CLLocationCoordinate2D?
@@ -23,6 +24,7 @@ struct AddEventScreen: View {
             Section(header: Text("Event Information")) {
                 TextField("Event Name", text: $eventName)
                     .autocorrectionDisabled(true)
+                EventTypePicker(eventType: $eventType)
                 DatePicker("Event Date", selection: $eventDate,displayedComponents: .date)
                 MapView(selectedLocation: $selectedLocation)
                 AgeGroupPicker(selectedAgeGroups: $selectedAgeGroups)
