@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.colorScheme) var cs
+    @Environment(CloudKitManager.self) var ck
     @State private var showAddSheet: Bool = false
     var body: some View {
         Form {

@@ -10,7 +10,7 @@ import CloudKit
 import UIKit
 
 struct Event: Identifiable, Hashable {
-    var id: CKRecord.ID
+    let record: CKRecord
     let userID: CKRecord.ID // using this now bc record.creatorUserRecordID
     var eventType: String // Tournament,Camp,Clinic
     var name: String
@@ -18,13 +18,16 @@ struct Event: Identifiable, Hashable {
     var location: CLLocation
     var address: String
     var ageGroups: [String]
-    var photo: UIImage? // Optional if some events have no photo
+    var logo: URL
+    var flyer: URL
     
+    var id: CKRecord.ID {record.recordID}
 }
 
 extension Event {
     static let recordType = "Event"          // CloudKit Record Type
     enum Field {
+        static let userID = "userID"
         static let type = "eventType"
         static let name = "name"             // String
         static let date = "date"             // Date
@@ -32,13 +35,15 @@ extension Event {
         static let location = "location"
         static let address = "address"
         static let ageGroups = "ageGroups"
+        static let logo = "logo"
+        static let flyer = "flyer"
     }
 }
 
 
 extension Event {
     init (record: CKRecord) {
-        self.id = record.recordID
+        self.record = record
         self.userID = record.creatorUserRecordID!
         self.eventType = record[Event.Field.type] as! String
         self.name = record[Event.Field.name] as! String
@@ -46,10 +51,8 @@ extension Event {
         self.location = record[Event.Field.location] as! CLLocation
         self.address = record[Event.Field.address] as! String
         self.ageGroups = record[Event.Field.ageGroups] as! [String]
-//        self.photo = record[Event.Field.photo]?.image // not sure how to best do photo yet
-        
-        
-        
-        
+        self.logo = record[Event.Field.logo] as! URL
+        self.flyer = record[Event.Field.flyer] as! URL
     }
+    
 }

@@ -9,6 +9,7 @@ import SwiftUI
 import MapKit
 
 struct AddEventScreen: View {
+    
     @State private var eventName: String = ""
     @State private var eventContactFirstName: String = ""
     @State private var eventContactLastName: String = ""
@@ -19,60 +20,82 @@ struct AddEventScreen: View {
     @State private var wantsImagesMade: Bool = false
     @State private var selectedLocation: CLLocationCoordinate2D?
     @State private var selectedAgeGroups: Set<AgeGroup> = []
+    
+    @State private var eventFileURL: URL?
+    @State private var eventLogo: UIImage?
+    
+    var formIsValid: Bool {
+        eventInfoValid && eventContactValid
+    }
+    var eventInfoValid: Bool {
+        !eventName.isEmpty && selectedLocation != nil && !selectedAgeGroups.isEmpty && eventDate != Date()
+    }
+    var eventContactValid: Bool {
+        !eventContactFirstName.isEmpty && !eventContactLastName.isEmpty && !eventContactEmail.isEmpty
+    }
     var body: some View {
-        Form {
-            Section(header: Text("Event Information")) {
-                TextField("Event Name", text: $eventName)
-                    .autocorrectionDisabled(true)
-                EventTypePicker(eventType: $eventType)
-                DatePicker("Event Date", selection: $eventDate,displayedComponents: .date)
-                MapView(selectedLocation: $selectedLocation)
-                AgeGroupPicker(selectedAgeGroups: $selectedAgeGroups)
-                
-                
-            }
-            Section(header: Text("Event Contact Information")) {
-                TextField("Event Contact First Name", text: $eventContactFirstName)
-                    .autocorrectionDisabled(true)
-                    .accessibilityLabel(Text("First Name"))
-                TextField("Event Contact Last Name", text: $eventContactLastName)
-                    .autocorrectionDisabled(true)
-                TextField("Event Contact Email", text: $eventContactEmail)
-                    .autocorrectionDisabled(true)
-                    .keyboardType(.emailAddress)
-                TextField("Event Contact Phone", text: $eventContactPhone)
-                    .autocorrectionDisabled(true)
-                    .keyboardType(.phonePad)
-            }
-            Section(header: Text("File Uploads")){
-                Label("Upload Flyer", systemImage: "doc.text")
-                Label("Custom event images by iWrestle (+$50)", systemImage: wantsImagesMade ? "checkmark.square" : "square")
-                    .onTapGesture {
-                        withAnimation {
-                            wantsImagesMade.toggle()
-                        }
-                        
-                    }
+        NavigationStack{
+            Form {
+                Section(header: Text("Event Information")) {
+                    TextField("Event Name", text: $eventName)
+                        .autocorrectionDisabled(true)
+                    EventTypePicker(eventType: $eventType)
+                    DatePicker("Event Date", selection: $eventDate,displayedComponents: .date)
+                    MapView(selectedLocation: $selectedLocation)
+                    AgeGroupPicker(selectedAgeGroups: $selectedAgeGroups)
                     
-                Group{
-                    if !wantsImagesMade{
-                        Label("Upload Event Logo", systemImage: "seal")
-                        Label("Upload Event Banner", systemImage: "photo.artframe")
-                    }
-                }.animation(.easeInOut, value: wantsImagesMade)
-            }
-            iWrestleButton(title: "Create Event") {
-                // 1. PAY:
-                
-                // 2 DATA FLOW:
-                if wantsImagesMade{
-                    // send work flow to me
-                } else {
-                    // create on cloud kit
+                    
                 }
+                Section(header: Text("Event Contact Information")) {
+                    TextField("Event Contact First Name", text: $eventContactFirstName)
+                        .autocorrectionDisabled(true)
+                        .accessibilityLabel(Text("First Name"))
+                    TextField("Event Contact Last Name", text: $eventContactLastName)
+                        .autocorrectionDisabled(true)
+                    TextField("Event Contact Email", text: $eventContactEmail)
+                        .autocorrectionDisabled(true)
+                        .keyboardType(.emailAddress)
+                    TextField("Event Contact Phone", text: $eventContactPhone)
+                        .autocorrectionDisabled(true)
+                        .keyboardType(.phonePad)
+                }
+                Section(header: Text("File Uploads")){
+                    iWrestlePDFPicker(title: "Event Flyer", importedURL: $eventFileURL)
+                    
+                    CreateMyLogosToggle()
+                        
+                    Group{
+                        if !wantsImagesMade{
+                            iWrestlePhotoPicker(image: $eventLogo)
+                        }
+                    }.animation(.easeInOut, value: wantsImagesMade)
+                }
+                iWrestleButton(title: "Create Event") {
+                    // 1. PAY:
+                    
+                    // 2 DATA FLOW:
+                    if wantsImagesMade{
+                        // send work flow to me
+                    } else {
+                        // create on cloud kit
+                    }
 
+                }
+                .disabled(!formIsValid)
             }
+            .navigationTitle(Text("Add Event"))
         }
+    }
+    
+    @ViewBuilder
+    func CreateMyLogosToggle() -> some View {
+        Label("Custom logo by iWrestle (+$50)", systemImage: wantsImagesMade ? "checkmark.square" : "square")
+            .onTapGesture {
+                withAnimation {
+                    wantsImagesMade.toggle()
+                }
+                
+            }
     }
 }
 

@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct iWrestleApp: App {
+    @State var ck = CloudKitManager()
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(ck)
         }
     }
 }
