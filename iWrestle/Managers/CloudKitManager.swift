@@ -19,6 +19,8 @@ class CloudKitManager {
 
     var error: String = ""
     var userRef: CKRecord.Reference?
+    
+    
     init () {
         getiCloudStatus()
 //        requestPermission()
@@ -65,6 +67,18 @@ class CloudKitManager {
         } catch {
             print("Error saving record: \(error)")
             return false
+        }
+    }
+    func getUserReference() async -> CKRecord.Reference? {
+        do {
+            let container = CKContainer.default()
+            let userRecordID = try await container.userRecordID()
+            // Create a reference to the user's record with no delete action
+            let reference = CKRecord.Reference(recordID: userRecordID, action: .none)
+            return reference
+        } catch {
+            print("Error getting user reference: \(error.localizedDescription)")
+            return nil
         }
     }
 //    func requestPermission() {

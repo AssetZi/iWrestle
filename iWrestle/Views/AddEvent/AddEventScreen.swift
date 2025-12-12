@@ -9,64 +9,65 @@ import SwiftUI
 import MapKit
 
 struct AddEventScreen: View {
+    @Environment(CloudKitManager.self) var ck
+    @Environment(\.dismiss) var dismiss
+    @Binding var userEvents: [Event]
+    @State private var eventData = EventData()
     
-    @State private var eventName: String = ""
-    @State private var eventContactFirstName: String = ""
-    @State private var eventContactLastName: String = ""
-    @State private var eventContactEmail: String = ""
-    @State private var eventContactPhone: String = ""
-    @State private var eventType: EventType = .tournament
-    @State private var eventDate: Date = Date()
     @State private var wantsImagesMade: Bool = false
-    @State private var selectedLocation: CLLocationCoordinate2D?
-    @State private var selectedAgeGroups: Set<AgeGroup> = []
-    
-    @State private var eventFileURL: URL?
     @State private var eventLogo: UIImage?
     
     var formIsValid: Bool {
-        eventInfoValid && eventContactValid
+        eventInfoValid && eventContactValid && logoValidation
     }
     var eventInfoValid: Bool {
-        !eventName.isEmpty && selectedLocation != nil && !selectedAgeGroups.isEmpty && eventDate != Date()
+        !eventData.name.isEmpty && eventData.location != nil && !eventData.ageGroups.isEmpty && eventData.flyer != nil
     }
     var eventContactValid: Bool {
-        !eventContactFirstName.isEmpty && !eventContactLastName.isEmpty && !eventContactEmail.isEmpty
+        !eventData.eventContactFirstName.isEmpty && !eventData.eventContactLastName.isEmpty && !eventData.eventContactEmail.isEmpty
+    }
+    var logoValidation: Bool {
+        return true
+//        wantsImagesMade && eventLogo == nil
     }
     var body: some View {
         NavigationStack{
             Form {
                 Section(header: Text("Event Information")) {
-                    TextField("Event Name", text: $eventName)
+                    TextField("Event Name", text: $eventData.name)
                         .autocorrectionDisabled(true)
-                    EventTypePicker(eventType: $eventType)
-                    DatePicker("Event Date", selection: $eventDate,displayedComponents: .date)
-                    MapView(selectedLocation: $selectedLocation)
-                    AgeGroupPicker(selectedAgeGroups: $selectedAgeGroups)
+                    EventTypePicker(eventType: $eventData.eventType)
+                    DatePicker("Event Date", selection: $eventData.date,displayedComponents: .date)
+                        
+                    MapView(selectedLocation: $eventData.location, address: $eventData.address)
+                        .buttonStyle(BorderlessButtonStyle())
+                    AgeGroupPicker(selectedAgeGroups: $eventData.ageGroups)
                     
                     
                 }
                 Section(header: Text("Event Contact Information")) {
-                    TextField("Event Contact First Name", text: $eventContactFirstName)
+                    TextField("Event Contact First Name", text: $eventData.eventContactFirstName)
                         .autocorrectionDisabled(true)
                         .accessibilityLabel(Text("First Name"))
-                    TextField("Event Contact Last Name", text: $eventContactLastName)
+                    TextField("Event Contact Last Name", text: $eventData.eventContactLastName)
                         .autocorrectionDisabled(true)
-                    TextField("Event Contact Email", text: $eventContactEmail)
+                    TextField("Event Contact Email", text: $eventData.eventContactEmail)
                         .autocorrectionDisabled(true)
                         .keyboardType(.emailAddress)
-                    TextField("Event Contact Phone", text: $eventContactPhone)
+                    TextField("Event Contact Phone", text: $eventData.eventContactPhone)
                         .autocorrectionDisabled(true)
                         .keyboardType(.phonePad)
                 }
                 Section(header: Text("File Uploads")){
-                    iWrestlePDFPicker(title: "Event Flyer", importedURL: $eventFileURL)
+                    iWrestlePDFPicker(title: "Event Flyer", importedURL: $eventData.flyer)
+                        .buttonStyle(BorderlessButtonStyle())
                     
                     CreateMyLogosToggle()
                         
                     Group{
                         if !wantsImagesMade{
                             iWrestlePhotoPicker(image: $eventLogo)
+                                .buttonStyle(BorderlessButtonStyle())
                         }
                     }.animation(.easeInOut, value: wantsImagesMade)
                 }
@@ -76,14 +77,18 @@ struct AddEventScreen: View {
                     // 2 DATA FLOW:
                     if wantsImagesMade{
                         // send work flow to me
+                        
                     } else {
                         // create on cloud kit
+                        createEvent()
                     }
 
                 }
                 .disabled(!formIsValid)
+                .buttonStyle(BorderlessButtonStyle())
             }
             .navigationTitle(Text("Add Event"))
+            .hideKeyboardOnTap()
         }
     }
     
@@ -97,11 +102,23 @@ struct AddEventScreen: View {
                 
             }
     }
+    
+    private func createEvent() {
+        Task {
+            guard let photo = eventLogo else {return}
+            guard let photoUrl = ck.getPhotoURL(image: photo) else {return}
+            eventData.logo = photoUrl
+            if let event = await ck.createEvent(data: eventData){
+                userEvents.append(event)
+            }
+            dismiss()
+        }
+    }
 }
 
-#Preview {
-    AddEventScreen()
-}
+//#Preview {
+//    AddEventScreen()
+//}
 
 
 

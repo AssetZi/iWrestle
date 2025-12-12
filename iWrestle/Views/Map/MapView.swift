@@ -12,6 +12,7 @@ import MapKit
 struct MapView: View {
     @State private var showPicker: Bool = false
     @Binding var selectedLocation: CLLocationCoordinate2D?
+    @Binding var address: String
     @State var loadedMapItem: MKMapItem?
     var body: some View {
         Group{
@@ -29,7 +30,11 @@ struct MapView: View {
         .locationPicker(isPresented: $showPicker) { mapItem in
             if let mapItem {
                 loadedMapItem = mapItem
-//                loadedMapItem?.openInMaps() // use this for events to open in maps 
+                selectedLocation = mapItem.location.coordinate
+                address = mapItem.address?.fullAddress ?? "Address not available"
+                
+                
+//                loadedMapItem?.openInMaps() // use this for events to open in maps
             }
         }
     }

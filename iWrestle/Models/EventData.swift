@@ -9,12 +9,24 @@ import Foundation
 import CoreLocation
 
 struct EventData{
-    var eventType: String // Tournament,Camp,Clinic
-    var name: String
-    var date: Date
-    var location: CLLocation
-    var address: String
-    var ageGroups: [String]
-    var logo: URL
-    var flyer: URL
+    var eventType: EventType = .tournament
+    var name: String = ""
+    
+    var eventContactFirstName: String = ""
+    var eventContactLastName: String = ""
+    var eventContactEmail: String = ""
+    var eventContactPhone: String = ""
+    
+    var date: Date = Date()
+    var location: CLLocationCoordinate2D?
+    var address: String = ""
+    var ageGroups: Set<AgeGroup> = []
+    var logo: URL?
+    var flyer: URL?
+    
+    var ageGroupStrings: [String] {
+        ageGroups.map { $0.rawValue }
+    }
 }
+
+
