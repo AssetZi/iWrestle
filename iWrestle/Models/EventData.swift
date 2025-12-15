@@ -23,6 +23,7 @@ struct EventData{
     var ageGroups: Set<AgeGroup> = []
     var logo: URL?
     var flyer: URL?
+    var registration: String = ""
     
     var ageGroupStrings: [String] {
         ageGroups.map { $0.rawValue }

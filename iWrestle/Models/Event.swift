@@ -7,7 +7,7 @@
 
 import Foundation
 import CloudKit
-import UIKit
+
 
 struct Event: Identifiable, Hashable {
     let record: CKRecord
@@ -20,6 +20,7 @@ struct Event: Identifiable, Hashable {
     var ageGroups: [String]
     var logo: URL
     var flyer: URL
+    var registration: String?
     
     var eventContactFirstName: String
     var eventContactLastName: String
@@ -46,6 +47,7 @@ extension Event {
         static let eventContactLastName = "eventContactLastName"
         static let eventContactEmail = "eventContactEmail"
         static let eventContactPhone = "eventContactPhone"
+        static let registration = "registration"
     }
 }
 
@@ -60,6 +62,7 @@ extension Event {
         self.record = record
         self.userID = record[Event.Field.userID] as! CKRecord.Reference
         self.eventType = record[Event.Field.type] as! String
+        self.registration = record[Event.Field.registration] as? String
         self.name = record[Event.Field.name] as! String
         self.date = record[Event.Field.date] as! Date
         self.location = record[Event.Field.location] as! CLLocation

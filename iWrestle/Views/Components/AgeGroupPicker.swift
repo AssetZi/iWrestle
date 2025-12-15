@@ -58,3 +58,43 @@ enum AgeGroup: String, CaseIterable, Identifiable {
 
     var id: String { self.rawValue }
 }
+
+
+struct AgeGroupPickerString: View {
+    @Binding var selectedAgeGroups: [String]
+    let ageGroups: [String]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Select Age Groups")
+                .font(.headline)
+            
+            ForEach(ageGroups, id: \.self) { ageGroup in
+                Button(action: {
+                    if let idx = selectedAgeGroups.firstIndex(of: ageGroup) {
+                        selectedAgeGroups.remove(at: idx)
+                    } else {
+                        selectedAgeGroups.append(ageGroup)
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: selectedAgeGroups.contains(ageGroup) ? "checkmark.square.fill" : "square")
+                            .foregroundColor(selectedAgeGroups.contains(ageGroup) ? .primary : .gray)
+                        
+                        Text(ageGroup)
+                            .foregroundColor(.primary)
+                        
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding()
+        
+        
+    }
+}
+
+

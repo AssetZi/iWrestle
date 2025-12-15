@@ -23,6 +23,9 @@ extension CloudKitManager {
         guard let flyerURL = data.flyer else { print("no flyer url"); return nil}
         guard let lat = data.location?.latitude else { print("no latitude"); return nil}
         guard let long = data.location?.longitude else { print("no longitude"); return nil}
+        if !data.registration.isEmpty{
+            newEvent[Event.Field.registration] = data.registration
+        }
         newEvent[Event.Field.type] = data.eventType.rawValue
         newEvent[Event.Field.name] = data.name
         newEvent[Event.Field.date] = data.date
@@ -83,4 +86,41 @@ extension CloudKitManager {
         }
         return events
     }
+    
+    func updateEvent(_ event: Event, newFlyer: URL?, newLogo: URL?) async throws {
+        let db = CKContainer.default().publicCloudDatabase
+        let record = event.record
+        
+        if let registration = event.registration{
+            record[Event.Field.registration] = registration
+        }
+//        newEvent[Event.Field.type] = event.eventType  // this cant change
+        record[Event.Field.name] = event.name
+        record[Event.Field.date] = event.date
+        record[Event.Field.location] = event.location
+        record[Event.Field.address] = event.address
+        record[Event.Field.ageGroups] = event.ageGroups
+        if let logoURL = newLogo{
+            record[Event.Field.logo] = CKAsset(fileURL: logoURL)
+        }
+        if let flyerURL = newFlyer{
+            record[Event.Field.flyer] = CKAsset(fileURL: flyerURL)
+        }
+        
+        record[Event.Field.eventContactFirstName] = event.eventContactFirstName
+        record[Event.Field.eventContactLastName] = event.eventContactLastName
+        record[Event.Field.eventContactEmail] = event.eventContactEmail
+        record[Event.Field.eventContactPhone] = event.eventContactPhone
+        
+        do {
+            let _ = try await db.save(record)
+        } catch {print("Error updating event:\(error)")}
+    }
+    func deleteEvent(_ event: Event) async throws {
+        let db = CKContainer.default().publicCloudDatabase
+        do {
+            try await db.deleteRecord(withID: event.record.recordID)
+        } catch {print("Error deleting event:\(error)")}
+    }
+    
 }

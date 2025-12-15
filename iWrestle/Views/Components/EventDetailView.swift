@@ -9,6 +9,7 @@ import SwiftUI
 import MapKit
 
 struct EventDetailView: View {
+    @Environment(\.openURL) private var openURL
     let event: Event
     var formattedDate: String{
         event.date.formatted(date: .abbreviated, time: .omitted)
@@ -31,13 +32,22 @@ struct EventDetailView: View {
                 } label: {
                     Text("Event Flyer")
                 }
+                if let registration = event.registration{
+                    Text("Registration Link")
+                        .onTapGesture {
+                            if let url = URL(string: registration){
+                                openURL(url)
+                            }
+                        }
+                        .foregroundStyle(.link)
+                }
 
             }
             Section(header: Label("Contact Info", systemImage: "trophy")){
                 Text("\(event.eventContactFirstName) \(event.eventContactLastName)")
-                Label(event.eventContactEmail, systemImage: "envelope" )
+                EmailLabel(email: event.eventContactEmail).foregroundStyle(.link)
                 if !event.eventContactPhone.isEmpty{
-                    Label(event.eventContactEmail, systemImage: "phone" )
+                    PhoneLabel(number: event.eventContactPhone).foregroundStyle(.link)
                 }
             }
             Section(header: Label("Location Info", systemImage: "map")){
@@ -47,6 +57,7 @@ struct EventDetailView: View {
                         let loc = MKMapItem(location: event.location, address: MKAddress(fullAddress: event.address, shortAddress: nil))
                         loc.openInMaps()
                     }
+                    .foregroundStyle(.link)
             }
         }
         .scrollIndicators(.hidden)

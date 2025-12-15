@@ -51,8 +51,13 @@ struct UserEventsView: View {
     }
     func eventList() -> some View {
         Form {
-            ForEach(userEvents) { event in
-                eventRow(event)
+            ForEach($userEvents) { $event in
+                NavigationLink {
+                    UserEventDetailView(ogEvent: $event, event: event)
+                } label: {
+                    EventCell(event: event)
+                }
+
             }
         }
     }
