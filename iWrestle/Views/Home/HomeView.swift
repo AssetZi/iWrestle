@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct HomeView: View {
-//    @State private var events: [Event] = []
     @Environment(CloudKitManager.self) var ck
-    @State private var viewState: ViewState = .loading
+    @Environment(LocationManager.self) var lm
+    @State private var viewState: HomeViewState = .loading
+    @State private var showFilter = false
     var body: some View {
         NavigationStack {
             Group{
@@ -18,42 +20,59 @@ struct HomeView: View {
                 case .loading:
                     iWrestleProgressView()
                 case .loaded(let events):
-                    ScrollView {
-                        ForEach(events) { event in
-                            NavigationLink{
-                                EventDetailView(event: event)
-                            } label:{
-                                EventCell(event: event)
-                            }
-                        }
-                    }
+                    EventsListView(events: events, userLocation: lm.userLocation)
                 case .error(let error):
                     ErrorViewiWrestle(error: error)
-                    
+                
                 }
             }
             .navigationTitle(Text("iWrestle"))
             .task {
+                if case .loading = viewState { loadEvents() }
+            }
+            .refreshable {
                 loadEvents()
+            }
+            .scrollIndicators(.hidden)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    
+                    Button {
+                        showFilter = true
+                    } label: {
+                        Image(systemName: "slider.horizontal.3")
+                    }
+
+                }
+            }
+            .sheet(isPresented: $showFilter) {
+                EventsFilterView(viewState: $viewState)
             }
         }
     }
     
     func loadEvents() {
         Task {
-            let events = try await ck.fetchEvents()
+//            let events = try await ck.fetchEvents()
+            guard let userLocation = lm.userLocation else {viewState = .error(.locationError); return}
+            let events = try await ck.fetchEvents(milesAway: 50, location: userLocation)
             if !events.isEmpty {
                 viewState = .loaded(events)
             } else {viewState = .error(.noData)}
         }
     }
-    enum ViewState {
-        case loading
-        case loaded([Event])
-        case error(iWrestleError)
-    }
+    
+    
+}
+
+enum HomeViewState {
+    case loading
+    case loaded([Event])
+    case error(iWrestleError)
+
 }
 
 //#Preview {
 //    HomeView()
 //}
+

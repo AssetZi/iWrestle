@@ -6,15 +6,20 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct EventCell: View {
     let event: Event
     
-    
+    let userLocation: CLLocation?
     
     let weighInType: String = weightInTypes.randomElement()!
     let style = tournamentFormat.randomElement()!
-    let distance: Int = Int.random(in: 10...300)
+    var distance: Int {
+        guard let userLocation = userLocation else { return 0 }
+        let meters = userLocation.distance(from: event.location)
+        return Int(meters.metersToMiles)
+    }
     var body: some View {
         HStack{
             EventLogoView(url: event.logo)

@@ -12,9 +12,17 @@ struct EventTypePicker: View {
     var body: some View {
         Picker("Event Type", selection: $eventType) {
             ForEach(EventType.allCases, id: \.self) { eventType in
-                Text(eventType.rawValue.capitalized)
+                Text(eventType.rawValue.capitalized).tag(eventType)
             }
+            
         }
+        .contentShape(Rectangle())
+        .onTapGesture(count: 99) {}
+        
+        
+        
+        
+        
 
     }
 }
@@ -28,6 +36,6 @@ struct EventTypePicker: View {
 
 
 enum EventType: String, CaseIterable,Identifiable {
-    case tournament,camp,clinic
+    case tournament,camp,clinic, Duals
     var id: String { self.rawValue }
 }

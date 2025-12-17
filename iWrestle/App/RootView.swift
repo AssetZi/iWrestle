@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct RootView: View {
+    @Environment(LocationManager.self) var locationManager
     
     var body: some View {
         TabView {
@@ -22,6 +23,7 @@ struct RootView: View {
                 }
         }
         .tint(.primary)
+        .onAppear(perform: locationManager.requestUserLocaiton)
     }
 }
 

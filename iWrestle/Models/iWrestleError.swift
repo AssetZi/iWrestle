@@ -10,6 +10,7 @@ import Foundation
 public enum iWrestleError {
     case noData
     case noUserEvents
+    case locationError
     
     
     var title: String {
@@ -18,6 +19,8 @@ public enum iWrestleError {
             return "No Events Found"
         case .noUserEvents:
             return "No User Events Found"
+        case .locationError:
+            return "Error with Location"
         }
     }
     
@@ -27,6 +30,8 @@ public enum iWrestleError {
             return "Try again later or with a different location."
         case .noUserEvents:
             return "Add an Event to Get Started"
+        case .locationError:
+            return "Close the app and make sure location permissions are enabled."
         }
     }
     var image: String {
@@ -35,6 +40,8 @@ public enum iWrestleError {
             return "icloud.slash"
         case .noUserEvents:
             return "magnifyingglass.circle"
+        case .locationError:
+            return "mappin.slash"
         }
     }
 }

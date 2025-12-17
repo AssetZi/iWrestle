@@ -86,6 +86,50 @@ extension CloudKitManager {
         }
         return events
     }
+    func fetchEvents(milesAway: Double, location: CLLocation) async throws -> [Event]{
+        let container = CKContainer.default()
+        let database = container.publicCloudDatabase
+        
+        let radiusInMeters = milesAway.milesToMeters
+        let predicate = NSPredicate(
+            format: "distanceToLocation:fromLocation:(location, %@) < %f",
+            location,
+            radiusInMeters
+        )
+        
+        let query = CKQuery(recordType: "Event", predicate: predicate)
+        
+        let result = try await database.records(matching: query)
+        var events: [Event] = []
+        
+        for (_, matchResult) in result.matchResults {
+            if case let .success(record) = matchResult {
+                let returnedEvent = Event(record: record)
+                events.append(returnedEvent)
+            }
+        }
+        return events
+    }
+    func fetchEvents(predicates: [NSPredicate]) async throws -> [Event]{
+        
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        let container = CKContainer.default()
+        let database = container.publicCloudDatabase
+
+        let query = CKQuery(recordType: "Event", predicate: predicate)
+        
+        let result = try await database.records(matching: query)
+        var events: [Event] = []
+        
+        for (_, matchResult) in result.matchResults {
+            if case let .success(record) = matchResult {
+                let returnedEvent = Event(record: record)
+                events.append(returnedEvent)
+            }
+        }
+        return events
+    }
+    
     
     func updateEvent(_ event: Event, newFlyer: URL?, newLogo: URL?) async throws {
         let db = CKContainer.default().publicCloudDatabase

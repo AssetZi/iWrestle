@@ -38,7 +38,6 @@ struct AddEventScreen: View {
                         TextField("Event Name", text: $eventData.name)
                             .autocorrectionDisabled(true)
                         EventTypePicker(eventType: $eventData.eventType)
-                        
                             
                         Button {
                             withAnimation {
