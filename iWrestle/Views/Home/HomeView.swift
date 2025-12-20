@@ -53,13 +53,30 @@ struct HomeView: View {
     
     func loadEvents() {
         Task {
-//            let events = try await ck.fetchEvents()
-            guard let userLocation = lm.userLocation else {viewState = .error(.locationError); return}
-            let events = try await ck.fetchEvents(milesAway: 50, location: userLocation)
+            let predicates = setPredicates()
+            let events = try await ck.fetchEvents(predicates: predicates)
             if !events.isEmpty {
                 viewState = .loaded(events)
             } else {viewState = .error(.noData)}
         }
+    }
+    func setPredicates() -> [NSPredicate] {
+        var predicates = [NSPredicate]()
+        guard let userLocation = lm.userLocation else {viewState = .error(.locationError); return []}
+        
+        let radiusInMeters = 250.milesToMeters
+        let distancePredicate = NSPredicate(
+            format: "distanceToLocation:fromLocation:(location, %@) < %f",
+            userLocation,
+            radiusInMeters
+        )
+        predicates.append(distancePredicate)
+        
+        if let interval = DateOptionsIWrestle.thisMonth.dateInterval() {
+            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", interval.start as CVarArg, interval.end as CVarArg)
+            predicates.append(datePredicate)
+        }
+        return predicates
     }
     
     

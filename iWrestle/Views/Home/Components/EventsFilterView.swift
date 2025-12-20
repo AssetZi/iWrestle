@@ -153,7 +153,7 @@ struct EventsFilterView: View {
             predicates.append(agePredicate)
         }
         if let interval = dateSelection.dateInterval(customDate: customDate) {
-            let datePredicate = NSPredicate(format: "date >= %@ AND date <= %@", interval.start as CVarArg, interval.end as CVarArg)
+            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", interval.start as CVarArg, interval.end as CVarArg)
             predicates.append(datePredicate)
         }
         return predicates

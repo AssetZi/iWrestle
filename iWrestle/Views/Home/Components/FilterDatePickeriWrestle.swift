@@ -72,15 +72,22 @@ enum DateOptionsIWrestle: String, CaseIterable, Identifiable {
         
         switch self {
         case .thisWeek:
-            return calendar.dateInterval(of: .weekOfYear, for: Date())
+            guard
+                let thisWeek = calendar.dateInterval(of: .weekOfYear, for: Date()),
+                let endInclusive = calendar.date(byAdding: .day, value: 1, to: thisWeek.end)
+            else { return nil }
+//            return calendar.dateInterval(of: .weekOfYear, for: Date())
+            return DateInterval(start: thisWeek.start, end: endInclusive)
             
         case .nextWeek:
             guard
                 let thisWeek = calendar.dateInterval(of: .weekOfYear, for: Date()),
-                let nextWeekStart = calendar.date(byAdding: .weekOfYear, value: 1, to: thisWeek.start)
+                let nextWeekStart = calendar.date(byAdding: .weekOfYear, value: 1, to: thisWeek.start),
+                let nextWeek = calendar.dateInterval(of: .weekOfYear, for: nextWeekStart),
+                let nextWeekEndInclusive = calendar.date(byAdding: .day, value: 1, to: nextWeek.end)
             else { return nil }
             
-            return calendar.dateInterval(of: .weekOfYear, for: nextWeekStart)
+            return DateInterval(start: nextWeekStart, end: nextWeekEndInclusive)
             
         case .thisMonth:
             let start = Date()
