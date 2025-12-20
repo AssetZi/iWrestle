@@ -9,16 +9,10 @@ import SwiftUI
 
 struct SupportView: View {
     @Environment(\.openURL) private var openURL
+    @Environment(NotificationManager.self) var nm
     var body: some View {
         Section {
-            Text("🔔 Allow Notifications")
-                .onTapGesture {
-//                    NotificationManager.requestPermission { granted, _ in
-//                        if granted {
-//                            NotificationManager.scheduleDefaultWeightReminders()
-//                        }
-//                    }
-                }
+            NotificationButton()
             Text("💡 Feature Request")
                 .onTapGesture {
                     openEmail(subject: "iWrestle Feature Request 💡")
@@ -37,6 +31,22 @@ struct SupportView: View {
         let subjectEncoded = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? subject
         guard let url = URL(string: "mailto:\(email)?subject=\(subjectEncoded)") else { return }
         openURL(url)
+    }
+    
+    func NotificationButton() -> some View {
+        Group {
+            if nm.permissionGranted {
+                Text("🔕 Remove Notifications")
+                    .onTapGesture {
+                        nm.openAppSettings()
+                    }
+            } else {
+                Text("🔔 Allow Notifications")
+                    .onTapGesture {
+                        nm.requestPermission()
+                    }
+            }
+        }
     }
 }
 

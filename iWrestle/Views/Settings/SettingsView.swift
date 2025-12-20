@@ -9,20 +9,32 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.colorScheme) var cs
+    @Environment(CloudKitManager.self) var ck
     @State private var showAddSheet: Bool = false
+    @State private var userEvents: [Event] = []
     var body: some View {
-        Form {
-            SupportView()
-            iWrestleButton(title: "Add Event") {
-                showAddSheet = true
+        NavigationStack{
+            Form {
+                Section(header: Label("Settings", systemImage: "gear")) {
+                    NavigationLink {
+                        UserEventsView(userEvents: $userEvents)
+                    } label: {
+                        Text("🏆 Manage Events")
+                    }
+                    
+                }
+                SupportView()
+                
+                iWrestleButton(title: "Add Event") {
+                    showAddSheet = true
+                }
+                
             }
-            
-        }
-        .sheet(isPresented: $showAddSheet) {
-            AddEventScreen()
+            .sheet(isPresented: $showAddSheet) {
+                AddEventScreen(userEvents: $userEvents)
+            }
         }
     }
- 
 }
 
 #Preview {

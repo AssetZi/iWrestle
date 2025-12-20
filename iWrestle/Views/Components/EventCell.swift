@@ -6,33 +6,38 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct EventCell: View {
-    let image: String = mockSquares.randomElement()!
-    let name: String = mockEventNames.randomElement()!
-    let address: String = mockAddresses.randomElement()!
+    let event: Event
+    
+    let userLocation: CLLocation?
+    
     let weighInType: String = weightInTypes.randomElement()!
     let style = tournamentFormat.randomElement()!
-    let distance: Int = Int.random(in: 10...300)
+    var distance: Int {
+        guard let userLocation = userLocation else { return 0 }
+        let meters = userLocation.distance(from: event.location)
+        return Int(meters.metersToMiles)
+    }
     var body: some View {
         HStack{
-            Image(image)
-                .resizable()
-                .scaledToFit()
-                .cornerRadius(10)
-                .frame(width: 100,height: 100)
+            EventLogoView(url: event.logo)
             VStack(alignment: .leading){
                 HStack{
-                    Text(name).font(.headline)
+                    Text(event.name).font(.headline)
                     Spacer()
                     distanceChip(distance: distance)
                 }
-                Label(address, systemImage: "mappin.circle")
+                let formattedDate = event.date.formatted(date: .abbreviated, time: .omitted)
+                Label(formattedDate, systemImage: "calendar.circle")
                     .font(.caption).foregroundStyle(.secondary)
-                Label("Open, Novice, & Girls Tournament", systemImage: "figure.wrestling.circle")
+                Label(event.address, systemImage: "mappin.circle")
                     .font(.caption).foregroundStyle(.secondary)
-                Label("\(weighInType) | \(style)", systemImage: "trophy.circle")
+                Label(event.ageGroups.joined(separator: ", "), systemImage: "figure.wrestling.circle")
                     .font(.caption).foregroundStyle(.secondary)
+//                Label("\(style)", systemImage: "trophy.circle")
+//                    .font(.caption).foregroundStyle(.secondary)
                 
             }
         }
@@ -50,8 +55,8 @@ struct EventCell: View {
     }
 }
 
-#Preview {
-    EventCell()
-}
+//#Preview {
+//    EventCell(event: )
+//}
 
 

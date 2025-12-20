@@ -9,9 +9,16 @@ import SwiftUI
 
 @main
 struct iWrestleApp: App {
+    @State var ck = CloudKitManager()
+    @State var locationManager: LocationManager = .init()
+    @State var nm: NotificationManager = .init()
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(ck)
+                .environment(locationManager)
+                .environment(nm)
+                
         }
     }
 }

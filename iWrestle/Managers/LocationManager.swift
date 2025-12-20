@@ -18,6 +18,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     var currentRegion: MKCoordinateRegion?
     var position: MapCameraPosition = .automatic
     var userCoordinates: CLLocationCoordinate2D?
+    var userLocation: CLLocation?
     
     // search properties
     var searchText: String = ""
@@ -48,6 +49,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         
         //updating user cordinates
         userCoordinates = coordinates
+        userLocation = locations.first
         let region = MKCoordinateRegion(center: coordinates, latitudinalMeters: 1000, longitudinalMeters: 1000)
         position = .region(region)
         

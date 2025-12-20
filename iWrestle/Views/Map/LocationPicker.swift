@@ -25,6 +25,7 @@ fileprivate struct LocationPickerView: View {
     @Namespace private var mapSpace
     @FocusState private var isKeyboardActive: Bool
     @State private var manager: LocationManager = .init()
+    
     @State private var selectedMapItem: MKMapItem?
     
     @Environment(\.openURL) private var openURL

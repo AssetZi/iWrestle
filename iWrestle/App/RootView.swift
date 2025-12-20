@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct RootView: View {
+    @Environment(LocationManager.self) var locationManager
+    @Environment(NotificationManager.self) var nm
     var body: some View {
         TabView {
             HomeView()
@@ -21,6 +23,11 @@ struct RootView: View {
                 }
         }
         .tint(.primary)
+        .onAppear(perform: locationManager.requestUserLocaiton)
+        .task {
+            guard let loc = locationManager.userLocation else { return }
+            nm.scheduleWeeklyNotification(userLocation: loc)
+        }
     }
 }
 
