@@ -12,16 +12,20 @@ struct iWrestleButton: View {
     let title: String
     let action: () -> Void
     var body: some View {
-        Button(title) { action() }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .font(.headline).bold()
-            .background(cs == .dark ? Color.white : Color.black)
-            .foregroundStyle(cs == .dark ? .black : .white)
-            .cornerRadius(25)
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets())
-            .padding()
+        Button(action: action) {
+            Text(title)
+                .font(.headline).bold()
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(cs == .dark ? Color.white : Color.black)
+                .foregroundStyle(cs == .dark ? .black : .white)
+                .cornerRadius(25)
+                .contentShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .listRowBackground(Color.clear)
+        .listRowInsets(EdgeInsets())
+        .padding()
     }
 }
 

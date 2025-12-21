@@ -15,7 +15,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack{
             Form {
-                Section(header: Label("Settings", systemImage: "gear")) {
+                Section(header: Label("Settings", systemImage: "gearshape")) {
                     NavigationLink {
                         UserEventsView(userEvents: $userEvents)
                     } label: {
@@ -25,6 +25,7 @@ struct SettingsView: View {
                 }
                 SupportView()
                 
+                DealText()
                 iWrestleButton(title: "Add Event") {
                     showAddSheet = true
                 }

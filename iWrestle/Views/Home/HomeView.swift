@@ -18,7 +18,7 @@ struct HomeView: View {
             Group{
                 switch viewState {
                 case .loading:
-                    iWrestleProgressView()
+                    iWrestleProgressViewHome()
                 case .loaded(let events):
                     EventsListView(events: events, userLocation: lm.userLocation)
                 case .error(let error):
