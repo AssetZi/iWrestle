@@ -230,7 +230,7 @@ fileprivate struct LocationPickerView: View {
         ScrollView(.vertical) {
             LazyVStack(spacing: 15){
                 ForEach(manager.searchResults, id: \.self){ mapItem in
-                    SearchResultCard(mapItem)
+                    SearchResultCard(mapItem).padding()
                 }
             }
         }

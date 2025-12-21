@@ -28,6 +28,7 @@ struct EventData{
     var ageGroupStrings: [String] {
         ageGroups.map { $0.rawValue }
     }
+    
 }
 
 

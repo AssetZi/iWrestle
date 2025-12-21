@@ -50,9 +50,8 @@ struct UserEventsView: View {
         }
     }
     func eventList() -> some View {
-        Form {
+        ScrollView {
             ForEach($userEvents) { $event in
-                
                 NavigationLink {
                     UserEventDetailView(ogEvent: $event, event: event)
                 } label: {
@@ -60,6 +59,9 @@ struct UserEventsView: View {
                 }
 
             }
+        }
+        .refreshable {
+            loadUserEvents()
         }
     }
     

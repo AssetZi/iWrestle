@@ -49,7 +49,7 @@ struct AgeGroupPicker: View {
     AgeGroupPicker(selectedAgeGroups: $selectedAgeGroups)
 }
 
-enum AgeGroup: String, CaseIterable, Identifiable {
+enum AgeGroup: String, CaseIterable, Identifiable,Equatable {
     case novice = "Novice"
     case youth = "Youth"
     case jrHigh = "Jr High"
