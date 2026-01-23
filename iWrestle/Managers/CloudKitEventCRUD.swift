@@ -129,6 +129,44 @@ extension CloudKitManager {
         }
         return events
     }
+    func fetchFirstTenEvents(_ predicates: [NSPredicate]) async throws -> [Event] {
+        let container = CKContainer.default()
+        let database = container.publicCloudDatabase
+
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        let query = CKQuery(recordType: "Event", predicate: predicate)
+        // Ensure deterministic ordering for "first" results
+        query.sortDescriptors = [NSSortDescriptor(key: Event.Field.date, ascending: true)]
+
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[Event], Error>) in
+            let operation = CKQueryOperation(query: query)
+            operation.resultsLimit = 10
+
+            var events: [Event] = []
+
+            operation.recordMatchedBlock = { _, result in
+                switch result {
+                case .success(let record):
+                    let event = Event(record: record)
+                    events.append(event)
+                case .failure(let error):
+                    // If a single record fails, finish with error
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            operation.queryResultBlock = { result in
+                switch result {
+                case .success:
+                    continuation.resume(returning: events)
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+
+            database.add(operation)
+        }
+    }
     
     
     func updateEvent(_ event: Event, newFlyer: URL?, newLogo: URL?) async throws {

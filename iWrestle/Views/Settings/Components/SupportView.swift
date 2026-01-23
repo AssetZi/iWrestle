@@ -10,9 +10,11 @@ import SwiftUI
 struct SupportView: View {
     @Environment(\.openURL) private var openURL
     @Environment(NotificationManager.self) var nm
+    @Environment(LocationManager.self) var lm
     var body: some View {
         Section {
             NotificationButton()
+            LocationButton()
             Text("💡 Feature Request")
                 .onTapGesture {
                     openEmail(subject: "iWrestle Feature Request 💡")
@@ -43,10 +45,18 @@ struct SupportView: View {
             } else {
                 Text("🔔 Allow Notifications")
                     .onTapGesture {
-                        nm.requestPermission()
+                        nm.openAppSettings()
                     }
             }
         }
+    }
+    func LocationButton() -> some View {
+        Text("📍 Turn \(lm.userLocation == nil ? "On" : "Off") Location")
+            .onTapGesture {
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString){
+                    openURL(settingsURL)
+                }
+            }
     }
 }
 

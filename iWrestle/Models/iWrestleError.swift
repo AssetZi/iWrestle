@@ -20,18 +20,18 @@ public enum iWrestleError {
         case .noUserEvents:
             return "No User Events Found"
         case .locationError:
-            return "Error with Location"
+            return "iWrestle is Better with Location"
         }
     }
     
     var description: String {
         switch self {
         case .noData:
-            return "Try again later or with a different location."
+            return "We will Update you when they are available."
         case .noUserEvents:
             return "Add an Event to Get Started"
         case .locationError:
-            return "Close the app and make sure location permissions are enabled."
+            return "For the best experience enable Location Services"
         }
     }
     var image: String {

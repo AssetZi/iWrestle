@@ -25,7 +25,6 @@ class NotificationManager {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.badge]) { success, error in
             if success {
                 self.permissionGranted = true
-                print("All Set")
             } else if let error {
                 print(error.localizedDescription)
             }

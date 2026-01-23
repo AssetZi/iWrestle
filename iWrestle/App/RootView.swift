@@ -25,6 +25,7 @@ struct RootView: View {
         .tint(.primary)
         .onAppear(perform: locationManager.requestUserLocaiton)
         .task {
+            nm.requestPermission()
             guard let loc = locationManager.userLocation else { return }
             nm.scheduleWeeklyNotification(userLocation: loc)
         }

@@ -31,30 +31,17 @@ fileprivate struct LocationPickerView: View {
     @Environment(\.openURL) private var openURL
     var body: some View {
         ZStack{
-            if let isPermissionDenied = manager.isPermissionDenied {
-                if isPermissionDenied{
-                    UserPermissionDeniedView()
-                } else {
-                    ZStack{
-                        SearchResultView()
-                        MapDisplayView()
-                            .safeAreaInset(edge: .bottom,spacing: 0) {
-                                SelectLocationButton()
-                            }
-                            .opacity(manager.showSearchResults ? 0:1)
-                            .ignoresSafeArea(.keyboard,edges: .all)
+            ZStack{
+                SearchResultView()
+                MapDisplayView()
+                    .safeAreaInset(edge: .bottom,spacing: 0) {
+                        SelectLocationButton()
                     }
-                    .safeAreaInset(edge: .top,spacing: 0) {
-                        MapSearchBar()
-                    }
-                    
-                    
-                }
-            } else {
-                Rectangle()
-                    .fill(.ultraThinMaterial)
-                    .ignoresSafeArea()
-                ProgressView()
+                    .opacity(manager.showSearchResults ? 0:1)
+                    .ignoresSafeArea(.keyboard,edges: .all)
+            }
+            .safeAreaInset(edge: .top,spacing: 0) {
+                MapSearchBar()
             }
         }
         .onAppear(perform: manager.requestUserLocaiton)

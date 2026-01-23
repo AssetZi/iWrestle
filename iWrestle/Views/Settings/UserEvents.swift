@@ -25,7 +25,7 @@ struct UserEventsView: View {
             case .loaded:
                 eventList()
             case .error(let iWrestleError):
-                ErrorViewiWrestle(error: iWrestleError)
+                ErrorViewiWrestle(error: iWrestleError, action: {})
             }
         }
         .task {
