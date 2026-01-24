@@ -67,15 +67,19 @@ struct UserEventsView: View {
     
     func loadUserEvents() {
         Task {
-            if userEvents.isEmpty {
-                userEvents = try await ck.fetchUserEvents()
-                if !userEvents.isEmpty {
-                    viewState = .loaded
-                } else {
-                    viewState = .error(.noUserEvents)
+            do {
+                if userEvents.isEmpty {
+                    userEvents = try await ck.fetchUserEvents()
+                    if !userEvents.isEmpty {
+                        viewState = .loaded
+                    } else {
+                        viewState = .error(.noUserEvents)
+                    }
                 }
+                else {viewState = .loaded}
+            } catch {
+                viewState = .error(.noUserEvents)
             }
-            else {viewState = .loaded}
         }
     }
 }
