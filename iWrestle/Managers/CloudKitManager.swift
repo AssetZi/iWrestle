@@ -16,7 +16,7 @@ import Observation
 class CloudKitManager {
     var isSignedIn: Bool = false
     var permissionStatus: Bool = false
-
+    var isAdmin: Bool = false 
     var error: String = ""
     var userRef: CKRecord.Reference?
     
@@ -56,6 +56,7 @@ class CloudKitManager {
         CKContainer.default().fetchUserRecordID { [weak self] returnRecord, returnedError in
             if let id = returnRecord {
                 self?.userRef = CKRecord.Reference(recordID: id, action: .deleteSelf)
+                self?.isAdmin = id.recordName == admin
 //                self?.discoveriCloudUser(id)
             }
         }

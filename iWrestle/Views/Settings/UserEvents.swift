@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import CloudKit
 
 struct UserEventsView: View {
     @Environment(CloudKitManager.self) var ck
     @Binding var userEvents: [Event]
     @State private var viewState: ViewState = .loading
+    
     
     enum ViewState {
         case loading
@@ -25,7 +27,10 @@ struct UserEventsView: View {
             case .loaded:
                 eventList()
             case .error(let iWrestleError):
-                ErrorViewiWrestle(error: iWrestleError, action: {})
+                Group {
+                    if ck.isAdmin { adminButton() }
+                    ErrorViewiWrestle(error: iWrestleError, action: {})
+                }
             }
         }
         .task {
@@ -51,6 +56,7 @@ struct UserEventsView: View {
     }
     func eventList() -> some View {
         ScrollView {
+            if ck.isAdmin { adminButton() }
             ForEach($userEvents) { $event in
                 NavigationLink {
                     UserEventDetailView(ogEvent: $event, event: event)
@@ -81,6 +87,18 @@ struct UserEventsView: View {
                 viewState = .error(.noUserEvents)
             }
         }
+    }
+    func adminButton() -> some View {
+        HStack{
+            Spacer()
+            NavigationLink {
+                AddEventScreenAdmin(userEvents: $userEvents)
+            } label: {
+                Text("⊕")
+            }
+
+        }
+        .padding()
     }
 }
 
