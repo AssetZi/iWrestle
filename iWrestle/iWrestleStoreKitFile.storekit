@@ -1,0 +1,72 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "894BAF39",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "9.99",
+      "familyShareable" : false,
+      "internalID" : "6756827532",
+      "localizations" : [
+        {
+          "description" : "ability to display one event on iWrestle. ",
+          "displayName" : "iWrestle Event Purchase",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "event_purchase",
+      "referenceName" : "eventPurchase",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "59.99",
+      "familyShareable" : false,
+      "internalID" : "6756828083",
+      "localizations" : [
+        {
+          "description" : "iWrestle Event with custom logo",
+          "displayName" : "Event Purchase with Logo",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "event_with_logo_gen",
+      "referenceName" : "eventPurchasePhoto",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6756827197",
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_developerTeamID" : "RLZG42V7Y4",
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 787963174.35589194,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
