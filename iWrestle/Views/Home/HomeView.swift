@@ -82,7 +82,7 @@ struct HomeView: View {
         return predicates
     }
     func fetchEvents(_ predicates: [NSPredicate]) async throws {
-        let events = try await ck.fetchFirstTenEvents([])
+        let events = try await ck.fetchFirstTenEvents(predicates)
         if !events.isEmpty {
             viewState = .loaded(events)
         } else {viewState = .error(.noData)}
