@@ -7,9 +7,13 @@
 
 import SwiftUI
 import MapKit
+import StoreKit
 
 struct EventDetailView: View {
     @Environment(\.openURL) private var openURL
+    @Environment(\.requestReview) private var requestReview
+    @AppStorage("eventDetailViewCount") private var eventDetailViewCount = 0
+    @AppStorage("lastReviewRequestDate") private var lastReviewRequestDate = Date.distantPast.timeIntervalSince1970
     let event: Event
     var formattedDate: String{
         event.date.formatted(date: .abbreviated, time: .omitted)
@@ -61,7 +65,18 @@ struct EventDetailView: View {
             }
         }
         .scrollIndicators(.hidden)
-        
+        .onAppear {
+            requestReviewIfAppropriate()
+        }
+    }
+
+    private func requestReviewIfAppropriate() {
+        eventDetailViewCount += 1
+        let thirtyDaysAgo = Date().addingTimeInterval(-30 * 24 * 60 * 60).timeIntervalSince1970
+        guard eventDetailViewCount >= 3, lastReviewRequestDate < thirtyDaysAgo else { return }
+        lastReviewRequestDate = Date().timeIntervalSince1970
+        eventDetailViewCount = 0
+        requestReview()
     }
 }
 
