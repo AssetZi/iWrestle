@@ -48,124 +48,31 @@ extension CloudKitManager {
             return nil
         }
     }
-    func fetchEvents() async throws -> [Event] {
-        let container = CKContainer.default()
-        let database = container.publicCloudDatabase
-        
-        let predicate = NSPredicate(value: true)
-        let query = CKQuery(recordType: "Event", predicate: predicate)
-        
-        let result = try await database.records(matching: query)
-        var events: [Event] = []
-        
-        for (_, matchResult) in result.matchResults {
-            if case let .success(record) = matchResult {
-                let returnedEvent = Event(record: record)
-                events.append(returnedEvent)
-            }
-        }
-        return events
-        
-    }
     func fetchUserEvents() async throws -> [Event] {
         guard let userRef = await getUserReference() else {return []}
-        let container = CKContainer.default()
-        let database = container.publicCloudDatabase
-        
-        let predicate = NSPredicate(format: "%K == %@", Event.Field.userID, userRef)
-        let query = CKQuery(recordType: "Event", predicate: predicate)
-        
-        let result = try await database.records(matching: query)
-        var events: [Event] = []
-
-        for (_, matchResult) in result.matchResults {
-            if case let .success(record) = matchResult {
-                let event = Event(record: record)
-                events.append(event)
-            }
-        }
-        return events
+        let predicates = [NSPredicate(format: "%K == %@", Event.Field.userID, userRef)]
+        return try await fetchEvents(predicates: predicates)
     }
-    func fetchEvents(milesAway: Double, location: CLLocation) async throws -> [Event]{
-        let container = CKContainer.default()
-        let database = container.publicCloudDatabase
-        
-        let radiusInMeters = milesAway.milesToMeters
-        let predicate = NSPredicate(
-            format: "distanceToLocation:fromLocation:(location, %@) < %f",
-            location,
-            radiusInMeters
-        )
-        
-        let query = CKQuery(recordType: "Event", predicate: predicate)
-        
-        let result = try await database.records(matching: query)
-        var events: [Event] = []
-        
-        for (_, matchResult) in result.matchResults {
-            if case let .success(record) = matchResult {
-                let returnedEvent = Event(record: record)
-                events.append(returnedEvent)
-            }
-        }
-        return events
-    }
-    func fetchEvents(predicates: [NSPredicate]) async throws -> [Event]{
-        
-        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        let container = CKContainer.default()
-        let database = container.publicCloudDatabase
 
+    func fetchEvents(predicates: [NSPredicate], limit: Int? = nil) async throws -> [Event] {
+        let predicate = predicates.isEmpty
+            ? NSPredicate(value: true)
+            : NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         let query = CKQuery(recordType: "Event", predicate: predicate)
-        
-        let result = try await database.records(matching: query)
-        var events: [Event] = []
-        
-        for (_, matchResult) in result.matchResults {
-            if case let .success(record) = matchResult {
-                let returnedEvent = Event(record: record)
-                events.append(returnedEvent)
-            }
-        }
-        return events
-    }
-    func fetchFirstTenEvents(_ predicates: [NSPredicate]) async throws -> [Event] {
-        let container = CKContainer.default()
-        let database = container.publicCloudDatabase
-
-        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        let query = CKQuery(recordType: "Event", predicate: predicate)
-        // Ensure deterministic ordering for "first" results
         query.sortDescriptors = [NSSortDescriptor(key: Event.Field.date, ascending: true)]
 
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[Event], Error>) in
-            let operation = CKQueryOperation(query: query)
-            operation.resultsLimit = 10
+        let database = CKContainer.default().publicCloudDatabase
+        let result = try await database.records(matching: query, resultsLimit: limit ?? CKQueryOperation.maximumResults)
 
-            var events: [Event] = []
-
-            operation.recordMatchedBlock = { _, result in
-                switch result {
-                case .success(let record):
-                    let event = Event(record: record)
+        var events: [Event] = []
+        for (_, matchResult) in result.matchResults {
+            if case let .success(record) = matchResult {
+                if let event = Event(safeRecord: record) {
                     events.append(event)
-                case .failure(let error):
-                    // If a single record fails, finish with error
-                    continuation.resume(throwing: error)
                 }
             }
-
-            operation.queryResultBlock = { result in
-                switch result {
-                case .success:
-                    continuation.resume(returning: events)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-
-            database.add(operation)
         }
+        return events
     }
     
     

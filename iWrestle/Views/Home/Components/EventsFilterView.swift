@@ -122,11 +122,16 @@ struct EventsFilterView: View {
     func loadEvents() {
         Task {
             isLoading = true
-            let predicates = establishPredicates()
-            let events = try await ck.fetchEvents(predicates: predicates)
-            if !events.isEmpty {
-                viewState = .loaded(events)
-            } else {viewState = .error(.noData)}
+            do {
+                let predicates = establishPredicates()
+                let events = try await ck.fetchEvents(predicates: predicates)
+                if !events.isEmpty {
+                    viewState = .loaded(events)
+                } else { viewState = .error(.noData) }
+            } catch {
+                viewState = .error(.noData)
+            }
+            isLoading = false
             dismiss()
         }
     }

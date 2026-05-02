@@ -11,7 +11,11 @@ struct DealText: View {
     var body: some View {
         HStack{
             Spacer()
-            Text("First 100 Events Get 90% Off!").font(.headline).fontWeight(.heavy)
+            VStack{
+                Text("Launch Pricing - $1").font(.headline).fontWeight(.heavy)
+                Text("Price grows with the app. Capped at $50, always").font(.caption)
+                
+            }
             Spacer()
                 
         }
