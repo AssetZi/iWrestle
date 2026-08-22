@@ -27,8 +27,28 @@ fileprivate struct LocationPickerView: View {
     @State private var manager: LocationManager = .init()
     
     @State private var selectedMapItem: MKMapItem?
-    
+
+    /// The user's actual choice, owned here rather than by the Map.
+    ///
+    /// `Map(selection:)` clears itself whenever the tapped item's `.tag()` leaves
+    /// the rendered content, and `loadPOIs()` replaces `searchResults` wholesale on
+    /// every camera settle. Since `MKMapItem` compares by pointer identity, a
+    /// refetched place is a different object, so relying on `selectedMapItem` alone
+    /// loses the choice as soon as the map recenters — which is exactly what
+    /// tapping a search result does.
+    @State private var chosenMapItem: MKMapItem?
+    @State private var poiTask: Task<Void, Never>?
+
     @Environment(\.openURL) private var openURL
+
+    private var chosenAddress: String? { chosenMapItem?.address?.fullAddress }
+    private var canSelect: Bool { chosenAddress != nil }
+    private var selectButtonTitle: String {
+        if chosenMapItem == nil { return "Tap a place to select it" }
+        if chosenAddress == nil { return "That place has no address — pick another" }
+        return "Select Location"
+    }
+
     var body: some View {
         ZStack{
             ZStack{
@@ -43,8 +63,18 @@ fileprivate struct LocationPickerView: View {
             .safeAreaInset(edge: .top,spacing: 0) {
                 MapSearchBar()
             }
+
+            if manager.isPermissionDenied == true {
+                UserPermissionDeniedView()
+            }
         }
         .onAppear(perform: manager.requestUserLocaiton)
+        .onDisappear { poiTask?.cancel() }
+        .onChange(of: selectedMapItem) { _, newValue in
+            // Only ever promote a real selection; ignore the nil the Map writes
+            // back when a refetch drops the tag out from under us.
+            if let newValue { chosenMapItem = newValue }
+        }
         .animation(.easeInOut(duration: 0.25), value: manager.showSearchResults)
     }
     
@@ -101,8 +131,8 @@ fileprivate struct LocationPickerView: View {
                 let coord = item.location.coordinate
                 Marker(item.name ?? "Place", coordinate: coord)
                     .tag(item)
-                    .tint(item == selectedMapItem ? .green : .red)
-                    
+                    .tint(item == chosenMapItem ? .green : .red)
+
             }
         }
         .mapControls {
@@ -113,7 +143,10 @@ fileprivate struct LocationPickerView: View {
         .mapScope(mapSpace)
         .onMapCameraChange { ctx in
             manager.currentRegion = ctx.region
-            Task{
+            // Cancel the in-flight load so a slow earlier response can't land
+            // after a newer one and clobber the marker list.
+            poiTask?.cancel()
+            poiTask = Task{
                 await manager.loadPOIs()
             }
 //            selecedCoordinates = ctx.region.center
@@ -193,20 +226,24 @@ fileprivate struct LocationPickerView: View {
     @ViewBuilder
     func SelectLocationButton() -> some View {
         Button {
-            guard let item = selectedMapItem else { return }
+            guard let item = chosenMapItem, chosenAddress != nil else { return }
             isPresented = false
-            
+
             mapItem(item)
-            
-            
+
+
         } label: {
-            Text("Select Location")
+            Text(selectButtonTitle)
                 .fontWeight(.semibold)
-                .foregroundStyle(.primary)
+                // .disabled() alone won't dim a label whose colour is pinned, so
+                // the disabled state sets its own colour and opacity.
+                .foregroundStyle(canSelect ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+                .opacity(canSelect ? 1 : 0.5)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical,12)
                 .background(.ultraThinMaterial, in: .rect(cornerRadius: 10))
         }
+        .disabled(!canSelect)
         .padding(15)
         .background(.background)
 
@@ -248,6 +285,9 @@ fileprivate struct LocationPickerView: View {
             isKeyboardActive = false
             // updating map position
             selectedMapItem = mapItem
+            // Set the choice directly: updateMapPosition moves the camera, which
+            // refetches POIs and drops this item's tag, clearing selectedMapItem.
+            chosenMapItem = mapItem
             manager.updateMapPosition(mapItem)
         }
     }

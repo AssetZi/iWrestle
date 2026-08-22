@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,id=552BDFF7-4789-4025-A379-B3757CF7C97C' build)"
+    ]
+  }
+}

@@ -12,6 +12,7 @@ struct HomeView: View {
     @Environment(CloudKitManager.self) var ck
     @Environment(LocationManager.self) var lm
     @State private var viewState: HomeViewState = .loading
+    @State private var isFetching = false
     @State private var showFilter = false
     var body: some View {
         NavigationStack {
@@ -23,16 +24,19 @@ struct HomeView: View {
                     EventsListView(events: events, userLocation: lm.userLocation)
                 case .error(let error):
                     ErrorViewiWrestle(error: error, action: {
-                        Task{
-                            try await fetchEvents([])
-                        }
+                        viewState = .loading
+                        loadEvents()
                     })
-                
                 }
             }
             .navigationTitle(Text("iWrestle"))
-            .task {
+            .task(id: lm.userCoordinates?.latitude) {
                 if case .loading = viewState { loadEvents() }
+            }
+            .onChange(of: lm.isPermissionDenied) { _, denied in
+                if denied == true, case .loading = viewState {
+                    viewState = .error(.locationError)
+                }
             }
             .refreshable {
                 loadEvents()
@@ -40,13 +44,11 @@ struct HomeView: View {
             .scrollIndicators(.hidden)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    
                     Button {
                         showFilter = true
                     } label: {
                         Image(systemName: "slider.horizontal.3")
                     }
-
                 }
             }
             .sheet(isPresented: $showFilter) {
@@ -54,41 +56,54 @@ struct HomeView: View {
             }
         }
     }
-    
+
     func loadEvents() {
+        guard !isFetching else { return }
         Task {
-            let predicates = setPredicates()
-            guard !predicates.isEmpty else {return}
-            try await fetchEvents(predicates)
+            isFetching = true
+            defer { isFetching = false }
+            do {
+                guard let userLocation = lm.userLocation else {
+                    if lm.isPermissionDenied == true {
+                        viewState = .error(.locationError)
+                    }
+                    return
+                }
+                let events = try await fetchWithExpandingRadius(from: userLocation)
+                if !events.isEmpty {
+                    viewState = .loaded(events)
+                } else {
+                    viewState = .error(.noData)
+                }
+            } catch {
+                viewState = .error(.noData)
+            }
         }
     }
-    func setPredicates() -> [NSPredicate] {
-        var predicates = [NSPredicate]()
-        if let userLocation = lm.userLocation {
-            
-            let radiusInMeters = 250.milesToMeters
+
+    func fetchWithExpandingRadius(from location: CLLocation) async throws -> [Event] {
+        let radii: [Double] = [250, 500, 999]
+        for radius in radii {
+            var predicates = [NSPredicate]()
             let distancePredicate = NSPredicate(
                 format: "distanceToLocation:fromLocation:(location, %@) < %f",
-                userLocation,
-                radiusInMeters
+                location,
+                radius.milesToMeters
             )
             predicates.append(distancePredicate)
+            if let interval = DateOptionsIWrestle.thisMonth.dateInterval() {
+                let datePredicate = NSPredicate(
+                    format: "date >= %@ AND date < %@",
+                    interval.start as CVarArg,
+                    interval.end as CVarArg
+                )
+                predicates.append(datePredicate)
+            }
+            let events = try await ck.fetchEvents(predicates: predicates, limit: 20)
+            if !events.isEmpty { return events }
         }
-        
-        if let interval = DateOptionsIWrestle.thisMonth.dateInterval() {
-            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", interval.start as CVarArg, interval.end as CVarArg)
-            predicates.append(datePredicate)
-        }
-        return predicates
+        return []
     }
-    func fetchEvents(_ predicates: [NSPredicate]) async throws {
-        let events = try await ck.fetchFirstTenEvents(predicates)
-        if !events.isEmpty {
-            viewState = .loaded(events)
-        } else {viewState = .error(.noData)}
-    }
-    
-    
 }
 
 enum HomeViewState {
