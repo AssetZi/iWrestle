@@ -9,11 +9,14 @@ import SwiftUI
 
 struct AgeGroupPicker: View {
     @Binding var selectedAgeGroups: Set<AgeGroup>
-    
-    
+    /// Defaulted so any other caller is unaffected; the add screens mark it
+    /// required. (The edit screen uses AgeGroupPickerString, not this type.)
+    var title: String = "Select Age Groups"
+
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Select Age Groups")
+            Text(title)
                 .font(.headline)
             
             ForEach(AgeGroup.allCases) { ageGroup in

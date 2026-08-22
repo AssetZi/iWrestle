@@ -12,6 +12,9 @@ struct iWrestlePhotoPicker: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var imageData: Data?
     @Binding var image: UIImage?
+    /// Defaulted so the edit screen keeps its existing wording; the add screens
+    /// pass a title marked "(Required)".
+    var title: String = "Upload Event Logo"
     var body: some View {
         PhotosPicker(selection: $selectedItem,matching: .images) {
             myview()
@@ -30,7 +33,7 @@ struct iWrestlePhotoPicker: View {
     
     func myview() -> some View {
         HStack {
-            Label("Upload Event Logo", systemImage: "photo")
+            Label(title, systemImage: "photo")
             Spacer()
             if let uiImage = image {
                 Image(uiImage: uiImage)

@@ -20,17 +20,24 @@ struct AddEventScreen: View {
     @State private var isLoading: Bool = false
     @State private var isShowingDatePicker: Bool = false
     
+    /// StoreKit / CloudKit failures only. Validation has its own row so it can
+    /// never hide the pricing line at the moment the user is deciding to buy.
     @State private var purchaseError: String?
-    @State private var showRetry = false
-    
+    /// Set on the first submit attempt; until then the form stays quiet.
+    @State private var attemptedSubmit = false
+
     @FocusState private var focusedField: FocusField?
-    
+
     var body: some View {
+        // Evaluated once per render and reused by the message and the submit
+        // handler, so they can never disagree.
+        let missing = missingFields(data: eventData, logo: eventLogo, wantsImagesMade: wantsImagesMade)
+
         NavigationStack{
             ZStack{
                 Form {
                     Section(header: Text("Event Information")) {
-                        TextField("Event Name", text: $eventData.name)
+                        TextField("Event Name (Required)", text: $eventData.name)
                             .autocorrectionDisabled(true)
                             .focused($focusedField, equals: .title)
                         EventTypePicker(eventType: $eventData.eventType)
@@ -60,23 +67,23 @@ struct AddEventScreen: View {
                                 .onTapGesture(count: 99) {}
                         }
                         
-                        MapView(selectedLocation: $eventData.location, address: $eventData.address)
+                        MapView(selectedLocation: $eventData.location, address: $eventData.address, isRequired: true)
                             .buttonStyle(BorderlessButtonStyle())
-                        AgeGroupPicker(selectedAgeGroups: $eventData.ageGroups)
+                        AgeGroupPicker(selectedAgeGroups: $eventData.ageGroups, title: "Select Age Groups (Required)")
                         TextField("Registration Link (Optional)", text: $eventData.registration)
                             .autocorrectionDisabled(true)
                             .focused($focusedField, equals: .registration)
                         
                     }
                     Section(header: Text("Event Contact Information")) {
-                        TextField("Event Contact First Name", text: $eventData.eventContactFirstName)
+                        TextField("Event Contact First Name (Required)", text: $eventData.eventContactFirstName)
                             .autocorrectionDisabled(true)
                             .accessibilityLabel(Text("First Name"))
                             .focused($focusedField, equals: .firstName)
-                        TextField("Event Contact Last Name", text: $eventData.eventContactLastName)
+                        TextField("Event Contact Last Name (Required)", text: $eventData.eventContactLastName)
                             .autocorrectionDisabled(true)
                             .focused($focusedField, equals: .lastName)
-                        TextField("Event Contact Email", text: $eventData.eventContactEmail)
+                        TextField("Event Contact Email (Required)", text: $eventData.eventContactEmail)
                             .autocorrectionDisabled(true)
                             .keyboardType(.emailAddress)
                             .focused($focusedField, equals: .email)
@@ -86,12 +93,12 @@ struct AddEventScreen: View {
                             .focused($focusedField, equals: .phone)
                     }
                     Section(header: Text("File Uploads")){
-                        iWrestlePDFPicker(title: "Event Flyer", importedURL: $eventData.flyer)
+                        iWrestlePDFPicker(title: "Event Flyer (Required)", importedURL: $eventData.flyer)
                             .buttonStyle(BorderlessButtonStyle())
 //                        CreateMyLogosToggle() // not gonna have this option in first iteration.
                         Group{
                             if !wantsImagesMade{
-                                iWrestlePhotoPicker(image: $eventLogo)
+                                iWrestlePhotoPicker(image: $eventLogo, title: "Upload Event Logo (Required)")
                                     .buttonStyle(BorderlessButtonStyle())
                                     
                             }
@@ -101,6 +108,19 @@ struct AddEventScreen: View {
                     .onChange(of: wantsImagesMade){focusedField = nil}
                     .onChange(of: eventData.flyer){focusedField = nil}
                     
+                    if attemptedSubmit, let message = validationMessage(for: missing) {
+                        HStack {
+                            Spacer()
+                            Text(message)
+                                .foregroundStyle(.red)
+                                .multilineTextAlignment(.center)
+                            Spacer()
+                        }
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                    }
+
                     if let purchaseError {
                         HStack {
                             Spacer()
@@ -115,18 +135,11 @@ struct AddEventScreen: View {
                         DealText()
                     }
                     
-                    iWrestleButton(title: showRetry ? "Retry" : "Create Event") {
+                    iWrestleButton(title: "Create Event") {
                         Task {
-                            let isValid = checkIfFormIsValid()
-                            if isValid{
-                                if showRetry{
-                                    await createEvent()
-                                } else {
-                                    await buyThenCreateEvent()
-                                }
-                            }
-                            
-                            
+                            attemptedSubmit = true
+                            guard missing.isEmpty else { return }
+                            await buyThenCreateEvent()
                         }
                     }
                     .buttonStyle(BorderlessButtonStyle())
@@ -159,22 +172,6 @@ struct AddEventScreen: View {
                 }
                 
             }
-    }
-    
-    func checkIfFormIsValid() -> Bool {
-        // event information
-        guard !eventData.name.isEmpty else {purchaseError = "Please fill out Event Name" ;return false}
-        guard eventData.location != nil else {purchaseError = "Please select a location" ;return false}
-        guard !eventData.ageGroups.isEmpty else {purchaseError = "Please select age groups" ;return false}
-        guard eventData.flyer != nil else {purchaseError = "Please upload an event flyer" ;return false}
-        
-        // event contact information
-        guard !eventData.eventContactFirstName.isEmpty, !eventData.eventContactLastName.isEmpty, !eventData.eventContactEmail.isEmpty else {purchaseError = "Please fill out Event Contact Information" ;return false}
-        
-        // photo decision
-//        guard wantsImagesMade || eventLogo != nil else {purchaseError = "Please either upload an event logo or opt to have one generated for you" ;return false} // not in MVP
-        guard wantsImagesMade || eventLogo != nil else {purchaseError = "Please upload an event logo." ;return false}
-        return true
     }
     
     private func createEvent() async {
