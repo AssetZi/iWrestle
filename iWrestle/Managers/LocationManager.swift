@@ -106,9 +106,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         
         let search = MKLocalSearch(request: request)
         if let response = try? await search.start() {
+            // A newer camera change already superseded this load; dropping the
+            // response keeps a slow earlier search from overwriting a newer one.
+            if Task.isCancelled { return }
             await MainActor.run {
-                
-                // clear all other results 
+
+                // clear all other results
                 searchResults = response.mapItems
             }
         }

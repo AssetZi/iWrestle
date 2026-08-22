@@ -56,7 +56,7 @@ extension Event {
     init (record: CKRecord) {
         let logoAsset = record[Event.Field.logo] as! CKAsset
         let flyerAsset = record[Event.Field.flyer] as! CKAsset
-        
+
         let logo = logoAsset.fileURL
         let flyer = flyerAsset.fileURL
         self.record = record
@@ -70,10 +70,45 @@ extension Event {
         self.ageGroups = record[Event.Field.ageGroups] as! [String]
         self.logo = logo!
         self.flyer = flyer!
-        
+
         self.eventContactFirstName = record[Event.Field.eventContactFirstName] as! String
         self.eventContactLastName = record[Event.Field.eventContactLastName] as! String
         self.eventContactEmail = record[Event.Field.eventContactEmail] as! String
         self.eventContactPhone = record[Event.Field.eventContactPhone] as! String
+    }
+
+    init?(safeRecord record: CKRecord) {
+        guard let logoAsset = record[Event.Field.logo] as? CKAsset,
+              let logoURL = logoAsset.fileURL,
+              let flyerAsset = record[Event.Field.flyer] as? CKAsset,
+              let flyerURL = flyerAsset.fileURL,
+              let userID = record[Event.Field.userID] as? CKRecord.Reference,
+              let eventType = record[Event.Field.type] as? String,
+              let name = record[Event.Field.name] as? String,
+              let date = record[Event.Field.date] as? Date,
+              let location = record[Event.Field.location] as? CLLocation,
+              let address = record[Event.Field.address] as? String,
+              let ageGroups = record[Event.Field.ageGroups] as? [String],
+              let contactFirstName = record[Event.Field.eventContactFirstName] as? String,
+              let contactLastName = record[Event.Field.eventContactLastName] as? String,
+              let contactEmail = record[Event.Field.eventContactEmail] as? String,
+              let contactPhone = record[Event.Field.eventContactPhone] as? String
+        else { return nil }
+
+        self.record = record
+        self.userID = userID
+        self.eventType = eventType
+        self.registration = record[Event.Field.registration] as? String
+        self.name = name
+        self.date = date
+        self.location = location
+        self.address = address
+        self.ageGroups = ageGroups
+        self.logo = logoURL
+        self.flyer = flyerURL
+        self.eventContactFirstName = contactFirstName
+        self.eventContactLastName = contactLastName
+        self.eventContactEmail = contactEmail
+        self.eventContactPhone = contactPhone
     }
 }

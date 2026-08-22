@@ -25,7 +25,6 @@ struct SettingsView: View {
                 }
                 SupportView()
                 
-                DealText()
                 iWrestleButton(title: "Add Event") {
                     showAddSheet = true
                 }
