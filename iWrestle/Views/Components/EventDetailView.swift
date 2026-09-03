@@ -12,62 +12,190 @@ import StoreKit
 struct EventDetailView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.requestReview) private var requestReview
+    @Environment(LocationManager.self) private var lm
     @AppStorage("eventDetailViewCount") private var eventDetailViewCount = 0
     @AppStorage("lastReviewRequestDate") private var lastReviewRequestDate = Date.distantPast.timeIntervalSince1970
     let event: Event
-    var formattedDate: String{
-        event.date.formatted(date: .abbreviated, time: .omitted)
-    }
-    var body: some View {
-        Form{
-            HStack{
-                EventLogoView(url: event.logo)
-                VStack(alignment: .leading){
-                    Text(event.name)
-                        .font(.largeTitle)
-                        .bold()
-                    Text(formattedDate).font(.caption).foregroundStyle(.secondary)
-                    Text(event.ageGroups.joined(separator: ", ")).font(.caption).foregroundStyle(.secondary)
-                }
-            }
-            Section {
-                NavigationLink {
-                    PDFQuickLookView(url: event.flyer)
-                } label: {
-                    Text("Event Flyer")
-                }
-                if let registration = event.registration{
-                    Text("Registration Link")
-                        .onTapGesture {
-                            if let url = URL(string: registration){
-                                openURL(url)
-                            }
-                        }
-                        .foregroundStyle(.link)
-                }
 
+    private var parts: AddressParts { AddressParts(event.address) }
+
+    /// What the share sheet sends. There is no public event URL yet, so the
+    /// share is the event's essentials plus the registration link if any.
+    private var shareText: String {
+        var lines = [event.name, event.date.longDateLabel, event.address]
+        if let registration = event.registration, !registration.isEmpty {
+            lines.append(registration)
+        }
+        lines.append("Found on iWrestle")
+        return lines.joined(separator: "\n")
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack {
+                BackButton()
+                Spacer()
+                ShareLink(item: shareText, subject: Text(event.name), message: Text(shareText)) {
+                    IconButtonLabel(icon: .share, size: 38, iconSize: 16)
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel("Share event")
             }
-            Section(header: Label("Contact Info", systemImage: "trophy")){
-                Text("\(event.eventContactFirstName) \(event.eventContactLastName)")
-                EmailLabel(email: event.eventContactEmail).foregroundStyle(.link)
-                if !event.eventContactPhone.isEmpty{
-                    PhoneLabel(number: event.eventContactPhone).foregroundStyle(.link)
+            .padding(.horizontal, Theme.gutter)
+            .padding(.top, 6)
+            .padding(.bottom, 8)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    header
+                    ChipFlow(spacing: 6) {
+                        ForEach(event.ageGroups, id: \.self) { AgePill(text: $0) }
+                    }
+                    if let registration = event.registration, let url = URL(string: registration) {
+                        PrimaryGoldButton(title: "Register for this event", icon: .arrowUpRight) {
+                            openURL(url)
+                        }
+                    }
+                    flyerCard
+                    whenAndWhere
+                    contact
+                }
+                .padding(.horizontal, Theme.gutter)
+                .padding(.top, 8)
+                .padding(.bottom, 44)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .canvas()
+        .toolbar(.hidden, for: .navigationBar)
+        .enableSwipeBack()
+        .onAppear { requestReviewIfAppropriate() }
+    }
+
+    // MARK: - Sections
+
+    private var header: some View {
+        HStack(spacing: 14) {
+            EventLogoView(url: event.logo, name: event.name, size: 64,
+                          radius: Theme.Radius.tile64, font: .monoTile18)
+            VStack(alignment: .leading, spacing: 5) {
+                Eyebrow("\(event.typeTitle) · \(event.date.shortDayLabel)", size: 10)
+                Text(event.name)
+                    .font(.detailTitle)
+                    .tracked(-0.02, 23)
+                    .foregroundStyle(Theme.textPrimary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private var flyerCard: some View {
+        NavigationLink(value: AppRoute.flyer(event.flyer)) {
+            RowSurface {
+                CardRow(icon: .fileText, label: "Event flyer") {
+                    Text("PDF")
+                        .font(.monoTag)
+                        .foregroundStyle(Theme.textTertiary)
+                    Chevron()
                 }
             }
-            Section(header: Label("Location Info", systemImage: "map")){
-                Text(event.address)
-                Text("Open In Maps")
-                    .onTapGesture {
-                        let loc = MKMapItem(location: event.location, address: MKAddress(fullAddress: event.address, shortAddress: nil))
-                        loc.openInMaps()
+        }
+        .buttonStyle(SurfaceButtonStyle(scale: 1))
+        .cardContainer()
+    }
+
+    private var whenAndWhere: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            SectionLabel("When & where")
+            VStack(spacing: 0) {
+                MiniMapStrip(coordinate: event.location.coordinate)
+                    .frame(height: 110)
+                CardRow(icon: .calendar, iconSize: 16, label: event.date.longDateLabel, labelFont: .body13_5) {
+                    EmptyView()
+                }
+                HairlineDivider()
+                HStack(spacing: 12) {
+                    LucideIcon(.mapPin, size: 16)
+                        .foregroundStyle(Theme.textTertiary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(parts.venue)
+                            .font(.body13_5)
+                            .foregroundStyle(Theme.textPrimary)
+                            .lineLimit(2)
+                        Text(distanceLine)
+                            .font(.caption11_5)
+                            .foregroundStyle(Theme.textTertiary)
+                            .lineLimit(1)
                     }
-                    .foregroundStyle(.link)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Button(action: openInMaps) {
+                        HStack(spacing: 5) {
+                            LucideIcon(.navigation, size: 13, strokeWidth: 2)
+                            Text("Maps").font(.body12Medium)
+                        }
+                        .foregroundStyle(Theme.gold)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PressableButtonStyle())
+                    .accessibilityLabel("Open in Maps")
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 13)
             }
+            .cardContainer()
         }
-        .scrollIndicators(.hidden)
-        .onAppear {
-            requestReviewIfAppropriate()
+    }
+
+    private var contact: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            SectionLabel("Contact")
+            VStack(spacing: 0) {
+                HStack(spacing: 12) {
+                    Text(event.contactInitials)
+                        .font(.caption11_5Medium)
+                        .foregroundStyle(Theme.textSecondary)
+                        .frame(width: 34, height: 34)
+                        .background(Circle().fill(Theme.slate800))
+                    Text(event.contactName)
+                        .font(.body14)
+                        .foregroundStyle(Theme.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Text("ORGANIZER")
+                        .font(.monoTag)
+                        .foregroundStyle(Theme.textTertiary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 13)
+
+                HairlineDivider()
+                ContactRow(icon: .mail, text: event.eventContactEmail,
+                           url: URL(string: "mailto:\(event.eventContactEmail)"))
+
+                if !event.eventContactPhone.isEmpty {
+                    HairlineDivider()
+                    let digits = event.eventContactPhone.filter { $0.isNumber || $0 == "+" }
+                    ContactRow(icon: .phone, text: event.eventContactPhone,
+                               url: URL(string: "tel:\(digits)"))
+                }
+            }
+            .cardContainer()
         }
+    }
+
+    private var distanceLine: String {
+        if let miles = event.miles(from: lm.userLocation) {
+            return parts.city.isEmpty ? "\(miles) mi away" : "\(parts.city) · \(miles) mi away"
+        }
+        return parts.city
+    }
+
+    // MARK: - Actions
+
+    private func openInMaps() {
+        let item = MKMapItem(location: event.location,
+                             address: MKAddress(fullAddress: event.address, shortAddress: nil))
+        item.name = event.name
+        item.openInMaps()
     }
 
     private func requestReviewIfAppropriate() {
@@ -80,4 +208,67 @@ struct EventDetailView: View {
     }
 }
 
+/// Gold, tappable email / phone row.
+struct ContactRow: View {
+    let icon: Lucide
+    let text: String
+    let url: URL?
 
+    var body: some View {
+        Group {
+            if let url {
+                Link(destination: url) { label }
+                    .buttonStyle(SurfaceButtonStyle(scale: 1))
+            } else {
+                label
+            }
+        }
+    }
+
+    private var label: some View {
+        RowSurface {
+            HStack(spacing: 12) {
+                LucideIcon(icon, size: 15)
+                    .foregroundStyle(Theme.textTertiary)
+                Text(text)
+                    .font(.body13)
+                    .foregroundStyle(Theme.gold)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .contentShape(Rectangle())
+        }
+    }
+}
+
+/// Non-interactive dark map strip with a gold pin at the event.
+struct MiniMapStrip: View {
+    let coordinate: CLLocationCoordinate2D
+
+    var body: some View {
+        Map(initialPosition: .region(MKCoordinateRegion(center: coordinate,
+                                                        latitudinalMeters: 1600,
+                                                        longitudinalMeters: 1600)),
+            interactionModes: []) {
+            Annotation("", coordinate: coordinate, anchor: .bottom) {
+                VStack(spacing: 0) {
+                    LucideIcon(.mapPin, size: 14, strokeWidth: 2)
+                        .foregroundStyle(Theme.onAccent)
+                        .frame(width: 30, height: 30)
+                        .background(Circle().fill(Theme.gold))
+                    Rectangle().fill(Theme.gold600).frame(width: 2, height: 7)
+                }
+            }
+            .annotationTitles(.hidden)
+        }
+        .mapStyle(.standard(elevation: .flat, emphasis: .muted, pointsOfInterest: .excludingAll, showsTraffic: false))
+        .mapControlVisibility(.hidden)
+        .saturation(0.25)
+        .brightness(-0.04)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}

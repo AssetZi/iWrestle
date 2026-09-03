@@ -19,6 +19,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     var position: MapCameraPosition = .automatic
     var userCoordinates: CLLocationCoordinate2D?
     var userLocation: CLLocation?
+    /// "Clarion, PA" — reverse-geocoded once per location fix for the home
+    /// header. Nil until the lookup completes or when it fails.
+    var userCity: String?
     
     // search properties
     var searchText: String = ""
@@ -55,6 +58,16 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         
         // stopping updates
         manager.stopUpdatingLocation()
+        Task { await reverseGeocodeCity(locations.first) }
+    }
+
+    /// Resolves the user's city for the "Events near {city}." title.
+    func reverseGeocodeCity(_ location: CLLocation?) async {
+        guard let location, let request = MKReverseGeocodingRequest(location: location) else { return }
+        guard let item = try? await request.mapItems.first else { return }
+        let representations = item.addressRepresentations
+        let city = representations?.cityWithContext ?? item.address?.shortAddress
+        await MainActor.run { userCity = city }
     }
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         /// handle errors

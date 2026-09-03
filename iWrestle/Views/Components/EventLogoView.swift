@@ -7,44 +7,46 @@
 
 import SwiftUI
 
+/// The event logo from CloudKit, with the slate-800 + gold monogram tile as
+/// the loading / failure placeholder.
 struct EventLogoView: View {
     let url: URL
+    let name: String
+    var size: CGFloat = 48
+    var radius: CGFloat = Theme.Radius.tile48
+    var font: Font = .monoTile14
+    var fill: Color = Theme.slate800
+    var showsBorder = true
 
     var body: some View {
-        // If event.logo is a remote URL (http/https), use AsyncImage
-        // If it's a file URL, you can still use AsyncImage in iOS 17+, or load via a task below.
         AsyncImage(url: url) { phase in
             switch phase {
-            case .empty:
-                placeholder
             case .success(let image):
                 image
                     .resizable()
-                    .scaledToFit()
-                    
-                    
-            case .failure:
-                placeholder
-            @unknown default:
-                placeholder
+                    .scaledToFill()
+                    .frame(width: size, height: size)
+                    .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: radius, style: .continuous)
+                            .strokeBorder(showsBorder ? Theme.borderSubtle : .clear, lineWidth: 1)
+                    )
+            default:
+                MonogramTile(text: name.monogram, size: size, radius: radius, font: font,
+                             fill: fill, showsBorder: showsBorder)
             }
         }
-        .cornerRadius(10)
-        .frame(width: 100,height: 100)
-        
-    }
-
-    private var placeholder: some View {
-        RoundedRectangle(cornerRadius: 10, style: .continuous)
-            .fill(.secondary.opacity(0.2))
-            .overlay {
-                Image(systemName: "photo")
-                    .foregroundStyle(.secondary)
-            }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
     }
 }
 
-
 #Preview {
-    EventLogoView(url: URL(string: "https://dxbhsrqyrr690.cloudfront.net/sidearm.nextgen.sites/clariongoldeneagles.com/images/2025/10/23/_Zacherl_Brock.jpg?width=300")!)
+    HStack(spacing: 12) {
+        EventLogoView(url: URL(string: "https://example.invalid/none.png")!, name: "Interstate Classic")
+        EventLogoView(url: URL(string: "https://example.invalid/none.png")!, name: "Knights Novice Tournament",
+                      size: 64, radius: Theme.Radius.tile64, font: .monoTile18)
+    }
+    .padding()
+    .background(Theme.ink)
 }

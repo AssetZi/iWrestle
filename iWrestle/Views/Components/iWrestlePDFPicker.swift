@@ -1,22 +1,23 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+/// Dashed upload row that imports a PDF into the app's Documents directory.
 struct iWrestlePDFPicker: View {
-    let title: String
+    var title: String = "Upload event flyer (PDF, required)"
     @Binding var importedURL: URL?
-    
+    var isInvalid = false
+
     @State private var showImporter = false
-    @State private var fileUploadSuccessful: Bool = false
-    
+
     var body: some View {
         Button { showImporter = true } label: {
-            HStack{
-                Label(title, systemImage: "doc.text")
-                Spacer()
-                Text(importedURL != nil ? "✓" :"＋")
-            }
-            
+            UploadRowLabel(icon: .file,
+                           label: importedURL?.lastPathComponent ?? title,
+                           filled: importedURL != nil,
+                           isInvalid: isInvalid)
         }
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityLabel(importedURL == nil ? title : "Event flyer, \(importedURL!.lastPathComponent)")
         .fileImporter(
             isPresented: $showImporter,
             allowedContentTypes: [.pdf],
@@ -24,7 +25,7 @@ struct iWrestlePDFPicker: View {
         ) { result in
             do {
                 guard let picked = try result.get().first else { return }
-                // Access sandboxed file and copy into your app’s Documents
+                // Access sandboxed file and copy into your app's Documents
                 let saved = try persistToDocuments(picked)
                 DispatchQueue.main.async {
                     importedURL = saved
@@ -33,7 +34,6 @@ struct iWrestlePDFPicker: View {
                 print("Import failed:", error.localizedDescription)
             }
         }
-
     }
 }
 

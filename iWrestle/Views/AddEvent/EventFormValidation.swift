@@ -2,9 +2,7 @@
 //  EventFormValidation.swift
 //  iWrestle
 //
-//  Shared by AddEventScreen and AddEventScreenAdmin so the rules live in one
-//  place. The two screens still duplicate their view bodies; extracting those
-//  is tracked separately in TODOS.md.
+//  Validation rules for AddEventScreen (both the paid and admin modes).
 //
 
 import Foundation
@@ -26,12 +24,12 @@ enum RequiredField: CaseIterable {
 
     var displayName: String {
         switch self {
-        case .name:        return "Event Name"
-        case .location:    return "Location"
-        case .ageGroups:   return "Age Groups"
-        case .flyer:       return "Event Flyer"
-        case .contactInfo: return "Contact Information"
-        case .logo:        return "Event Logo"
+        case .name:        return "event name"
+        case .location:    return "location"
+        case .ageGroups:   return "age groups"
+        case .flyer:       return "event flyer"
+        case .contactInfo: return "contact information"
+        case .logo:        return "event logo"
         }
     }
 }
@@ -40,11 +38,8 @@ enum RequiredField: CaseIterable {
 ///
 /// Replaces a sequential `guard` chain that could only ever report the first
 /// failure, so someone with three empty fields had to submit three times to
-/// discover all three. The checks themselves are unchanged from that chain —
-/// including the `wantsImagesMade ||` operand, which is currently always false
-/// because its only setter (`CreateMyLogosToggle`) is commented out. Kept
-/// verbatim so this refactor provably changes no validation behavior; see
-/// TODOS.md for retiring the flag.
+/// discover all three. The `wantsImagesMade ||` operand is currently always
+/// false (the paid-logo toggle never shipped); see TODOS.md for retiring it.
 func missingFields(data: EventData, logo: UIImage?, wantsImagesMade: Bool) -> [RequiredField] {
     var missing: [RequiredField] = []
 
