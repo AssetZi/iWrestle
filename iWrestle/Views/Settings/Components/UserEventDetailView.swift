@@ -64,6 +64,8 @@ struct UserEventDetailView: View {
                     .padding(.horizontal, Theme.gutter)
                     .padding(.top, 14)
                     .padding(.bottom, 40)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .hideKeyboardOnTap()
                 }
                 .scrollIndicators(.hidden)
                 .scrollDismissesKeyboard(.interactively)
@@ -78,7 +80,6 @@ struct UserEventDetailView: View {
         .canvas()
         .toolbar(.hidden, for: .navigationBar)
         .enableSwipeBack()
-        .hideKeyboardOnTap()
         .task {
             location = CLLocationCoordinate2D(latitude: event.location.coordinate.latitude,
                                               longitude: event.location.coordinate.longitude)

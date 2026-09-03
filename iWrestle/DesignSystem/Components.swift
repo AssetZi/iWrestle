@@ -111,6 +111,8 @@ struct MonogramTile: View {
     var font: Font = .monoTile14
     var fill: Color = Theme.slate800
     var showsBorder = true
+    /// Override on light surfaces — the default white@8% is invisible on gold.
+    var borderColor: Color = Theme.borderSubtle
 
     var body: some View {
         Text(text)
@@ -121,7 +123,7 @@ struct MonogramTile: View {
             .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .strokeBorder(showsBorder ? Theme.borderSubtle : .clear, lineWidth: 1)
+                    .strokeBorder(showsBorder ? borderColor : .clear, lineWidth: 1)
             )
     }
 }

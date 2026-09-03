@@ -17,16 +17,21 @@ struct EventDetailView: View {
     @AppStorage("lastReviewRequestDate") private var lastReviewRequestDate = Date.distantPast.timeIntervalSince1970
     let event: Event
 
+    @State private var sharePayload: SharePayload?
+    @State private var isPreparingShare = false
+
     private var parts: AddressParts { AddressParts(event.address) }
 
-    /// What the share sheet sends. There is no public event URL yet, so the
-    /// share is the event's essentials plus the registration link if any.
+    /// What the share sheet sends alongside the flyer PDF. There is no public
+    /// event URL yet, so the text is the event's essentials, the registration
+    /// link if any, and the App Store link.
     private var shareText: String {
         var lines = [event.name, event.date.longDateLabel, event.address]
         if let registration = event.registration, !registration.isEmpty {
             lines.append(registration)
         }
         lines.append("Found on iWrestle")
+        lines.append("Get the iWrestle app: \(AppLinks.appStore.absoluteString)")
         return lines.joined(separator: "\n")
     }
 
@@ -35,10 +40,12 @@ struct EventDetailView: View {
             HStack {
                 BackButton()
                 Spacer()
-                ShareLink(item: shareText, subject: Text(event.name), message: Text(shareText)) {
+                Button(action: prepareShare) {
                     IconButtonLabel(icon: .share, size: 38, iconSize: 16)
+                        .overlay { if isPreparingShare { GoldSpinner(size: 16) } }
                 }
                 .buttonStyle(PressableButtonStyle())
+                .disabled(isPreparingShare)
                 .accessibilityLabel("Share event")
             }
             .padding(.horizontal, Theme.gutter)
@@ -69,6 +76,10 @@ struct EventDetailView: View {
         .canvas()
         .toolbar(.hidden, for: .navigationBar)
         .enableSwipeBack()
+        .sheet(item: $sharePayload) { payload in
+            ActivityShareSheet(items: payload.items)
+                .presentationDetents([.medium, .large])
+        }
         .onAppear { requestReviewIfAppropriate() }
     }
 
@@ -169,7 +180,8 @@ struct EventDetailView: View {
 
                 HairlineDivider()
                 ContactRow(icon: .mail, text: event.eventContactEmail,
-                           url: URL(string: "mailto:\(event.eventContactEmail)"))
+                           url: .mailto(event.eventContactEmail,
+                                        subject: "Question about \(event.name)"))
 
                 if !event.eventContactPhone.isEmpty {
                     HairlineDivider()
@@ -190,6 +202,19 @@ struct EventDetailView: View {
     }
 
     // MARK: - Actions
+
+    /// Renders the flyer, then opens the share sheet with text + PDF. If the
+    /// render fails the text still goes out on its own.
+    private func prepareShare() {
+        guard !isPreparingShare else { return }
+        isPreparingShare = true
+        var items: [Any] = [ShareTextItem(text: shareText, subject: event.name)]
+        if let pdf = EventPDFExporter.makePDF(for: event) {
+            items.append(pdf)
+        }
+        isPreparingShare = false
+        sharePayload = SharePayload(items: items)
+    }
 
     private func openInMaps() {
         let item = MKMapItem(location: event.location,

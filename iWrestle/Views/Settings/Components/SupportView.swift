@@ -52,9 +52,7 @@ struct SupportView: View {
     }
 
     private func openEmail(subject: String) {
-        let email = "zacherlinvestments@gmail.com"
-        let subjectEncoded = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? subject
-        guard let url = URL(string: "mailto:\(email)?subject=\(subjectEncoded)") else { return }
+        guard let url = URL.mailto("zacherlinvestments@gmail.com", subject: subject) else { return }
         openURL(url)
     }
 

@@ -140,10 +140,11 @@ struct AddEventScreen: View {
             .padding(.horizontal, Theme.gutter)
             .padding(.top, 18)
             .padding(.bottom, 40)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .hideKeyboardOnTap()
         }
         .scrollIndicators(.hidden)
         .scrollDismissesKeyboard(.interactively)
-        .hideKeyboardOnTap()
         .onChange(of: eventLogo) { focusedField = nil }
         .onChange(of: eventData.flyer) { focusedField = nil }
     }

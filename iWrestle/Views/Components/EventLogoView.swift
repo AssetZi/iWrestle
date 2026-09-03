@@ -17,6 +17,8 @@ struct EventLogoView: View {
     var font: Font = .monoTile14
     var fill: Color = Theme.slate800
     var showsBorder = true
+    /// Override on light surfaces — the default white@8% is invisible on gold.
+    var borderColor: Color = Theme.borderSubtle
 
     var body: some View {
         AsyncImage(url: url) { phase in
@@ -29,11 +31,11 @@ struct EventLogoView: View {
                     .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: radius, style: .continuous)
-                            .strokeBorder(showsBorder ? Theme.borderSubtle : .clear, lineWidth: 1)
+                            .strokeBorder(showsBorder ? borderColor : .clear, lineWidth: 1)
                     )
             default:
                 MonogramTile(text: name.monogram, size: size, radius: radius, font: font,
-                             fill: fill, showsBorder: showsBorder)
+                             fill: fill, showsBorder: showsBorder, borderColor: borderColor)
             }
         }
         .frame(width: size, height: size)

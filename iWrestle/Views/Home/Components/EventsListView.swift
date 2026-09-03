@@ -57,20 +57,28 @@ struct HeroEventCard: View {
         let parts = AddressParts(event.address)
         GoldFeatureCard {
             VStack(alignment: .leading, spacing: 10) {
-                HStack(alignment: .top) {
-                    Eyebrow("Next up · \(event.date.shortDayLabel)", color: Theme.inkOnGold62, size: 10, weight: .semibold)
-                    Spacer(minLength: 8)
-                    if let miles = event.miles(from: userLocation) {
-                        Text("\(miles) MI")
-                            .font(.distance)
-                            .foregroundStyle(Theme.inkOnGold62)
+                HStack(alignment: .top, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Eyebrow("Next up · \(event.date.shortDayLabel)", color: Theme.inkOnGold62, size: 10, weight: .semibold)
+                        Text(event.name)
+                            .font(.heroTitle)
+                            .tracked(-0.02, 24)
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    VStack(alignment: .trailing, spacing: 6) {
+                        EventLogoView(url: event.logo, name: event.name, size: 44,
+                                      radius: Theme.Radius.tile44, font: .monoTile13,
+                                      borderColor: Theme.slate950.opacity(0.14))
+                        if let miles = event.miles(from: userLocation) {
+                            Text("\(miles) MI")
+                                .font(.distance)
+                                .foregroundStyle(Theme.inkOnGold62)
+                        }
                     }
                 }
-                Text(event.name)
-                    .font(.heroTitle)
-                    .tracked(-0.02, 24)
-                    .lineLimit(2)
-                    .frame(maxWidth: 290, alignment: .leading)
                 Text(parts.city.isEmpty ? parts.venue : "\(parts.venue) · \(parts.city)")
                     .font(.body12_5)
                     .foregroundStyle(Theme.inkOnGold72)
