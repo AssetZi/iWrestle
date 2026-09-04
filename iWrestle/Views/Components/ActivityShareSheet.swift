@@ -2,8 +2,8 @@
 //  ActivityShareSheet.swift
 //  iWrestle
 //
-//  `ShareLink` cannot mix a text item with a file item, so the event share
-//  goes through `UIActivityViewController`.
+//  The event share is a single PDF, but Mail's subject has to come from a
+//  `UIActivityItemSource`, so it goes through `UIActivityViewController`.
 //
 
 import SwiftUI
@@ -24,20 +24,21 @@ struct ActivityShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ controller: UIActivityViewController, context: Context) {}
 }
 
-/// Plain-text share item that also supplies Mail's subject line.
-final class ShareTextItem: NSObject, UIActivityItemSource {
-    let text: String
+/// A shared URL that also supplies Mail's subject line. Used for the flyer's
+/// file URL, which keeps Mail from titling the message with the PDF filename.
+final class ShareURLItem: NSObject, UIActivityItemSource {
+    let url: URL
     let subject: String
 
-    init(text: String, subject: String) {
-        self.text = text
+    init(url: URL, subject: String) {
+        self.url = url
         self.subject = subject
     }
 
-    func activityViewControllerPlaceholderItem(_ controller: UIActivityViewController) -> Any { text }
+    func activityViewControllerPlaceholderItem(_ controller: UIActivityViewController) -> Any { url }
 
     func activityViewController(_ controller: UIActivityViewController,
-                                itemForActivityType activityType: UIActivity.ActivityType?) -> Any? { text }
+                                itemForActivityType activityType: UIActivity.ActivityType?) -> Any? { url }
 
     func activityViewController(_ controller: UIActivityViewController,
                                 subjectForActivityType activityType: UIActivity.ActivityType?) -> String { subject }

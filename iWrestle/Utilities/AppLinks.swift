@@ -8,10 +8,9 @@
 import Foundation
 
 enum AppLinks {
-    /// TODO: replace `id0000000000` with the numeric Apple ID from
-    /// App Store Connect (App Information → General → Apple ID) before shipping.
-    /// Used in the event share text and on the shared event PDF.
-    static let appStore = URL(string: "https://apps.apple.com/app/id0000000000")!
+    /// The App Store listing. Printed in the shared event flyer's footer, where
+    /// it is also stamped as a clickable link annotation.
+    static let appStore = URL(string: "https://apps.apple.com/us/app/iwrestle-youth-wrestling-hub/id6756827197")!
 }
 
 extension URL {
@@ -30,5 +29,22 @@ extension URL {
             string += "?subject=" + (subject.addingPercentEncoding(withAllowedCharacters: allowed) ?? "")
         }
         return URL(string: string)
+    }
+
+    /// `https://example.com/register` from a link a user typed without a scheme.
+    /// Nil for anything empty or unparseable.
+    static func web(_ string: String) -> URL? {
+        let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        if let url = URL(string: trimmed), url.scheme != nil { return url }
+        return URL(string: "https://" + trimmed)
+    }
+
+    /// `tel:` from a formatted phone number, keeping digits and a leading `+`.
+    static func tel(_ number: String) -> URL? {
+        var digits = number.filter { $0.isNumber }
+        guard !digits.isEmpty else { return nil }
+        if number.trimmingCharacters(in: .whitespaces).hasPrefix("+") { digits = "+" + digits }
+        return URL(string: "tel:" + digits)
     }
 }

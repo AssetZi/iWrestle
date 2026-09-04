@@ -16,6 +16,9 @@ struct EventSharePDFPage: View {
     let event: Event
     let logo: UIImage?
     let qr: UIImage?
+    /// Collects the rects of every `pdfLink` below so the exporter can turn
+    /// them into clickable annotations. Nil in previews.
+    var linkSink: PDFLinkSink? = nil
 
     private var parts: AddressParts { AddressParts(event.address) }
 
@@ -40,6 +43,10 @@ struct EventSharePDFPage: View {
         return link
     }
 
+    /// The registration link as something a PDF viewer can open. Organizers
+    /// often type `knightswrestling.com/signup` with no scheme.
+    private var registrationURL: URL? { registration.flatMap(URL.web) }
+
     private let margin: CGFloat = 48
 
     var body: some View {
@@ -61,6 +68,7 @@ struct EventSharePDFPage: View {
         .frame(minHeight: Self.pageSize.height, alignment: .top)
         .background(Theme.ink)
         .environment(\.colorScheme, .dark)
+        .collectPDFLinks(into: linkSink)
     }
 
     // MARK: - Sections
@@ -176,6 +184,7 @@ struct EventSharePDFPage: View {
                         .font(.monoCaption)
                         .foregroundStyle(Theme.gold)
                         .fixedSize(horizontal: false, vertical: true)
+                        .pdfLink(registrationURL)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -189,6 +198,7 @@ struct EventSharePDFPage: View {
                             RoundedRectangle(cornerRadius: Theme.Radius.tile44, style: .continuous)
                                 .fill(Color.white)
                         )
+                        .pdfLink(registrationURL)
                 }
             }
             .padding(16)
@@ -219,18 +229,21 @@ struct EventSharePDFPage: View {
 
                 if !event.eventContactEmail.isEmpty {
                     HairlineDivider()
-                    row(icon: .mail, text: event.eventContactEmail, color: Theme.gold)
+                    row(icon: .mail, text: event.eventContactEmail, color: Theme.gold,
+                        link: .mailto(event.eventContactEmail))
                 }
                 if !event.eventContactPhone.isEmpty {
                     HairlineDivider()
-                    row(icon: .phone, text: event.eventContactPhone, color: Theme.gold)
+                    row(icon: .phone, text: event.eventContactPhone, color: Theme.gold,
+                        link: .tel(event.eventContactPhone))
                 }
             }
             .cardContainer()
         }
     }
 
-    private func row(icon: Lucide, text: String, color: Color = Theme.textPrimary) -> some View {
+    private func row(icon: Lucide, text: String, color: Color = Theme.textPrimary,
+                     link: URL? = nil) -> some View {
         HStack(spacing: 12) {
             LucideIcon(icon, size: 16)
                 .foregroundStyle(Theme.textTertiary)
@@ -238,6 +251,7 @@ struct EventSharePDFPage: View {
                 .font(.body14)
                 .foregroundStyle(color)
                 .fixedSize(horizontal: false, vertical: true)
+                .pdfLink(link)
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 16)
@@ -257,6 +271,7 @@ struct EventSharePDFPage: View {
                 Text("Get the app: \(AppLinks.appStore.absoluteString)")
                     .font(.monoCaption)
                     .foregroundStyle(Theme.gold)
+                    .pdfLink(AppLinks.appStore)
             }
         }
         .padding(.horizontal, margin)

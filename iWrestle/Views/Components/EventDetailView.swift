@@ -22,19 +22,6 @@ struct EventDetailView: View {
 
     private var parts: AddressParts { AddressParts(event.address) }
 
-    /// What the share sheet sends alongside the flyer PDF. There is no public
-    /// event URL yet, so the text is the event's essentials, the registration
-    /// link if any, and the App Store link.
-    private var shareText: String {
-        var lines = [event.name, event.date.longDateLabel, event.address]
-        if let registration = event.registration, !registration.isEmpty {
-            lines.append(registration)
-        }
-        lines.append("Found on iWrestle")
-        lines.append("Get the iWrestle app: \(AppLinks.appStore.absoluteString)")
-        return lines.joined(separator: "\n")
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -203,17 +190,21 @@ struct EventDetailView: View {
 
     // MARK: - Actions
 
-    /// Renders the flyer, then opens the share sheet with text + PDF. If the
-    /// render fails the text still goes out on its own.
+    /// Renders the flyer and opens the share sheet with it, and nothing else.
+    /// The PDF already carries the event's details and a tappable App Store
+    /// link in its footer, so sending a separate link would only make the
+    /// message read as an ad for the app.
+    ///
+    /// Rendering fails only if the temp directory or the PDF context cannot be
+    /// created, and there is nothing worth sharing without it, so the sheet
+    /// simply does not open.
     private func prepareShare() {
         guard !isPreparingShare else { return }
         isPreparingShare = true
-        var items: [Any] = [ShareTextItem(text: shareText, subject: event.name)]
-        if let pdf = EventPDFExporter.makePDF(for: event) {
-            items.append(pdf)
-        }
-        isPreparingShare = false
-        sharePayload = SharePayload(items: items)
+        defer { isPreparingShare = false }
+
+        guard let pdf = EventPDFExporter.makePDF(for: event) else { return }
+        sharePayload = SharePayload(items: [ShareURLItem(url: pdf, subject: event.name)])
     }
 
     private func openInMaps() {
