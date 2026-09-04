@@ -56,3 +56,18 @@ def forget(source_key: str, environment: str) -> dict[str, Any] | None:
     if removed:
         save(entries)
     return removed
+
+
+def find_cross_source(name_slug: str, day: str) -> list[str]:
+    """Keys already pushed for the same event name and day from another source.
+
+    The natural key is source-prefixed, so the same tournament listed by two
+    sites would otherwise be pushed twice. This cannot be resolved
+    automatically (the two listings may differ), so it is surfaced in review.
+    """
+    suffix = f":{name_slug}:{day}"
+    return [
+        entry["sourceKey"]
+        for entry in load().values()
+        if entry["sourceKey"].endswith(suffix)
+    ]

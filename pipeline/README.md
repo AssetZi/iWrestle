@@ -125,10 +125,33 @@ make it the only one and delete the other.
 
 | Source | State | Notes |
 | --- | --- | --- |
-| pywrestling.com | Working | Static HTML. Blocks are found by content, not CSS class, because class names are generated. Divisions are read from icon filenames. |
-| FloWrestling | Not built | Listing is partly JS rendered; an XHR endpoint exists behind a session cookie. |
-| Trackwrestling | Not built | Initial HTML carries ~30 tournaments; search and paging need a headless browser. |
+| pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Needs geocoding. |
+| FloWrestling | Working | Uses the site's own schedule API, which returns coordinates and needs no geocoding or browser. Publishes no age divisions, so every event is flagged for review. |
+| Trackwrestling | Not built | Returns 406 to plain HTTP clients. Would need the headless browser. |
 | USA Wrestling | Blocked | Event listings sit behind a login. |
+
+### FloWrestling API
+
+The public pages return 406 to scripts, but the API host does not:
+
+```
+POST https://prod-web-api.flowrestling.org/api/schedule/events
+{"tz": "America/New_York", "limit": 100,
+ "filters": [{"id": "administrative-region", "value": "29USPA00000000000"}],
+ "cursor": "<meta.nextCursor from the previous page>"}
+```
+
+State codes come from `POST /api/schedule/filters/administrative-region`.
+Multi-day events are returned once per day under the same id and are
+collapsed to one record. Events with no logo of their own carry a
+FloWrestling-branded still, which is rejected in favor of the monogram tile.
+
+### Overlapping sources
+
+pywrestling and FloWrestling both list many of the same Pennsylvania
+tournaments. Collect flags an event whose name and date match one already
+pushed from a different source and marks it `skip`, so the first source in
+wins and the second is surfaced for a decision rather than pushed blindly.
 
 ## Scheduling
 

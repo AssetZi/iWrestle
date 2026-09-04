@@ -1,0 +1,492 @@
+[
+ {
+  "id": "24drSAn3vKCci3qW",
+  "name": "2026 BTC Battle in the Burgh",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/14479196/information",
+  "location": {
+   "venueName": "Monroeville Convention Center",
+   "city": "Monroeville",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.4326759,
+    "longitude": -79.7911664
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-09-05T10:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2RL9IGpLuyavva1r",
+  "name": "2027 BTC Battle in the Burgh",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16134087/information",
+  "location": {
+   "venueName": "Monroeville Convention Center",
+   "city": "Monroeville",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.4326759,
+    "longitude": -79.7911664
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-09-05T10:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2ODNiWFMhH6OQGq2",
+  "name": "11th Annual Harold Winshel Memorial",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16117746/information",
+  "location": {
+   "venueName": "Bucks County Community College",
+   "city": "Newtown",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.2390377,
+    "longitude": -74.96717900000002
+   }
+  },
+  "isFavorite": false,
+  "registration": {
+   "url": "https://events.flowrestling.org/event/f6f66b17-ad95-4a52-a7dd-e2f144ae10ed/registration",
+   "startAt": "2026-08-03T13:14:00.000Z",
+   "endAt": "2026-09-12T00:00:00.000Z",
+   "status": "open"
+  },
+  "daySegmentName": null,
+  "startTime": "2026-09-12T12:30:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2HBtzsUhPKTaQ1DO",
+  "name": "2026 Waterway Duals",
+  "isStreamedOnFlo": true,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16145546/information",
+  "location": {
+   "venueName": "Spooky Nook Sports",
+   "city": "Manheim",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.1060004,
+    "longitude": -76.4190038
+   }
+  },
+  "isFavorite": false,
+  "registration": {
+   "url": "https://events.flowrestling.org/event/7658f184-304f-4725-8015-681786d1c911/registration",
+   "startAt": "2026-08-29T17:37:00.000Z",
+   "endAt": "2026-09-07T03:59:00.000Z",
+   "status": "open"
+  },
+  "daySegmentName": "Day 1",
+  "startTime": "2026-09-12T13:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2HBtzsUhPKTaQ1DO",
+  "name": "2026 Waterway Duals",
+  "isStreamedOnFlo": true,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16145546/information",
+  "location": {
+   "venueName": "Spooky Nook Sports",
+   "city": "Manheim",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.1060004,
+    "longitude": -76.4190038
+   }
+  },
+  "isFavorite": false,
+  "registration": {
+   "url": "https://events.flowrestling.org/event/7658f184-304f-4725-8015-681786d1c911/registration",
+   "startAt": "2026-08-29T17:37:00.000Z",
+   "endAt": "2026-09-07T03:59:00.000Z",
+   "status": "open"
+  },
+  "daySegmentName": "Day 2",
+  "startTime": "2026-09-13T13:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2V5CxeTf2B0EnddX",
+  "name": "Takedown in the Den",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://www.trackwrestling.com/tw/uploads/O-1016937132-View_recent_photos.png",
+  "url": "https://www.flowrestling.org/nextgen/events/16126737/information",
+  "location": {
+   "venueName": "Elizabethtown Area High School",
+   "city": "Elizabethtown",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.15610789999999,
+    "longitude": -76.5947777
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-09-19T12:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2sKCwSb81JwXGSIq",
+  "name": "AWC Gladiator Duals",
+  "isStreamedOnFlo": true,
+  "logoUrl": "https://www.trackwrestling.com/tw/uploads/T-1016926132-View_recent_photos.png",
+  "url": "https://www.flowrestling.org/nextgen/events/16151196/information",
+  "location": {
+   "venueName": "Alvernia University PLEX",
+   "city": "Reading",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.3128948,
+    "longitude": -75.9311038
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": "Day 1",
+  "startTime": "2026-10-03T12:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2sKCwSb81JwXGSIq",
+  "name": "AWC Gladiator Duals",
+  "isStreamedOnFlo": true,
+  "logoUrl": "https://www.trackwrestling.com/tw/uploads/T-1016926132-View_recent_photos.png",
+  "url": "https://www.flowrestling.org/nextgen/events/16151196/information",
+  "location": {
+   "venueName": "Alvernia University PLEX",
+   "city": "Reading",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.3128948,
+    "longitude": -75.9311038
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": "Day 1",
+  "startTime": "2026-10-04T12:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2JQqMXF8w3LA0ffq",
+  "name": "Monster Mash",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16133811/information",
+  "location": {
+   "venueName": "Monroeville Convention and Events Center",
+   "city": "Monroeville",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.4326897,
+    "longitude": -79.7911514
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-10-18T06:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2Gi7sHxFyZO7FtLK",
+  "name": "Mat Town USA Fall Classic",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16133809/information",
+  "location": {
+   "venueName": "The Liberty Arena",
+   "city": "Williamsport",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 41.2391899,
+    "longitude": -77.00751919999999
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-10-19T02:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "24drSAn3vKCci3qW",
+  "name": "2026 BTC Battle in the Burgh",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/14479196/information",
+  "location": {
+   "venueName": "Monroeville Convention Center",
+   "city": "Monroeville",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.4326759,
+    "longitude": -79.7911664
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-09-05T10:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2RL9IGpLuyavva1r",
+  "name": "2027 BTC Battle in the Burgh",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16134087/information",
+  "location": {
+   "venueName": "Monroeville Convention Center",
+   "city": "Monroeville",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.4326759,
+    "longitude": -79.7911664
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-09-05T10:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2ODNiWFMhH6OQGq2",
+  "name": "11th Annual Harold Winshel Memorial",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16117746/information",
+  "location": {
+   "venueName": "Bucks County Community College",
+   "city": "Newtown",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.2390377,
+    "longitude": -74.96717900000002
+   }
+  },
+  "isFavorite": false,
+  "registration": {
+   "url": "https://events.flowrestling.org/event/f6f66b17-ad95-4a52-a7dd-e2f144ae10ed/registration",
+   "startAt": "2026-08-03T13:14:00.000Z",
+   "endAt": "2026-09-12T00:00:00.000Z",
+   "status": "open"
+  },
+  "daySegmentName": null,
+  "startTime": "2026-09-12T12:30:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2HBtzsUhPKTaQ1DO",
+  "name": "2026 Waterway Duals",
+  "isStreamedOnFlo": true,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16145546/information",
+  "location": {
+   "venueName": "Spooky Nook Sports",
+   "city": "Manheim",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.1060004,
+    "longitude": -76.4190038
+   }
+  },
+  "isFavorite": false,
+  "registration": {
+   "url": "https://events.flowrestling.org/event/7658f184-304f-4725-8015-681786d1c911/registration",
+   "startAt": "2026-08-29T17:37:00.000Z",
+   "endAt": "2026-09-07T03:59:00.000Z",
+   "status": "open"
+  },
+  "daySegmentName": "Day 1",
+  "startTime": "2026-09-12T13:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2HBtzsUhPKTaQ1DO",
+  "name": "2026 Waterway Duals",
+  "isStreamedOnFlo": true,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16145546/information",
+  "location": {
+   "venueName": "Spooky Nook Sports",
+   "city": "Manheim",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.1060004,
+    "longitude": -76.4190038
+   }
+  },
+  "isFavorite": false,
+  "registration": {
+   "url": "https://events.flowrestling.org/event/7658f184-304f-4725-8015-681786d1c911/registration",
+   "startAt": "2026-08-29T17:37:00.000Z",
+   "endAt": "2026-09-07T03:59:00.000Z",
+   "status": "open"
+  },
+  "daySegmentName": "Day 2",
+  "startTime": "2026-09-13T13:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2V5CxeTf2B0EnddX",
+  "name": "Takedown in the Den",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://www.trackwrestling.com/tw/uploads/O-1016937132-View_recent_photos.png",
+  "url": "https://www.flowrestling.org/nextgen/events/16126737/information",
+  "location": {
+   "venueName": "Elizabethtown Area High School",
+   "city": "Elizabethtown",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.15610789999999,
+    "longitude": -76.5947777
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-09-19T12:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2sKCwSb81JwXGSIq",
+  "name": "AWC Gladiator Duals",
+  "isStreamedOnFlo": true,
+  "logoUrl": "https://www.trackwrestling.com/tw/uploads/T-1016926132-View_recent_photos.png",
+  "url": "https://www.flowrestling.org/nextgen/events/16151196/information",
+  "location": {
+   "venueName": "Alvernia University PLEX",
+   "city": "Reading",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.3128948,
+    "longitude": -75.9311038
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": "Day 1",
+  "startTime": "2026-10-03T12:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2sKCwSb81JwXGSIq",
+  "name": "AWC Gladiator Duals",
+  "isStreamedOnFlo": true,
+  "logoUrl": "https://www.trackwrestling.com/tw/uploads/T-1016926132-View_recent_photos.png",
+  "url": "https://www.flowrestling.org/nextgen/events/16151196/information",
+  "location": {
+   "venueName": "Alvernia University PLEX",
+   "city": "Reading",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.3128948,
+    "longitude": -75.9311038
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": "Day 1",
+  "startTime": "2026-10-04T12:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2JQqMXF8w3LA0ffq",
+  "name": "Monster Mash",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16133811/information",
+  "location": {
+   "venueName": "Monroeville Convention and Events Center",
+   "city": "Monroeville",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 40.4326897,
+    "longitude": -79.7911514
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-10-18T06:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ },
+ {
+  "id": "2Gi7sHxFyZO7FtLK",
+  "name": "Mat Town USA Fall Classic",
+  "isStreamedOnFlo": false,
+  "logoUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "url": "https://www.flowrestling.org/nextgen/events/16133809/information",
+  "location": {
+   "venueName": "The Liberty Arena",
+   "city": "Williamsport",
+   "region": "PA",
+   "coordinates": {
+    "latitude": 41.2391899,
+    "longitude": -77.00751919999999
+   }
+  },
+  "isFavorite": false,
+  "registration": null,
+  "daySegmentName": null,
+  "startTime": "2026-10-19T02:00:00.000Z",
+  "startTimeTbd": false,
+  "status": "upcoming",
+  "resumesAt": null
+ }
+]

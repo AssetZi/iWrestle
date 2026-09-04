@@ -136,6 +136,19 @@ def main() -> int:
         ):
             event["review"]["status"] = schema.STATUS_SKIP
             schema.note(event, "already pushed")
+        else:
+            duplicates = [
+                key
+                for key in ledger.find_cross_source(
+                    schema.slug(event.get("name", "")), (event.get("date") or "")[:10]
+                )
+                if key != event["sourceKey"]
+            ]
+            if duplicates:
+                event["review"]["status"] = schema.STATUS_SKIP
+                schema.note(
+                    event, "possible duplicate of " + ", ".join(duplicates)
+                )
         events.append(event)
 
     out = args.out or DATA_DIR / (

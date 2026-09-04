@@ -5,8 +5,9 @@ the app's exact vocabulary happens once, in bin/collect.py.
 """
 from __future__ import annotations
 
-from . import pywrestling
+from . import flowrestling, pywrestling
 
 COLLECTORS = {
+    "flowrestling": flowrestling,
     "pywrestling": pywrestling,
 }
