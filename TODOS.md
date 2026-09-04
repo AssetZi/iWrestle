@@ -14,6 +14,32 @@
 **Priority:** P3
 **Depends on:** None
 
+## Events pipeline
+
+### Relax the required logo and flyer on Event
+
+**What:** Let `Event.init?(safeRecord:)` accept a record with no `logo` or no `flyer`, falling back to the monogram tile and hiding the flyer button.
+
+**Why:** Both assets are currently required, so a record missing either is silently dropped from every fetch — it exists in CloudKit but never appears in the app, with no error anywhere. The `pipeline/` importer has to manufacture a placeholder logo and render a flyer PDF for every scraped event just to satisfy this, which puts generated files in front of users where "no flyer" would read better.
+
+**Context:** `iWrestle/Models/Event.swift` — make `logo` and `flyer` optional `URL?` in the struct and drop them from the `guard` in `init?(safeRecord:)`. `EventLogoView` already renders a monogram fallback (`String.monogram` in `iWrestle/Utilities/EventFormatting.swift`), so the logo side is mostly wiring. The flyer side needs `EventDetailView` and `EventSharePDFPage` to hide their flyer affordances when it is nil. Once this lands, `iwpipe/assets.py` can stop rendering placeholders and the pipeline can flag "no flyer" instead.
+
+**Effort:** M
+**Priority:** P2
+**Depends on:** None
+
+### Add a sourceKey field to the Event schema
+
+**What:** Add an optional queryable `sourceKey` string to the CloudKit `Event` record type, written by the pipeline.
+
+**Why:** The pipeline currently tracks what it has pushed in a local file (`pipeline/data/pushed.json`). If that file is lost or edited on another machine, a re-run creates duplicate events in the public database with no way to detect them. A queryable field on the record makes CloudKit itself the source of truth.
+
+**Context:** Export the schema with `xcrun cktool export-schema` (management token), add the field, `import-schema` into development, then deploy to production. The app ignores unknown fields, so no Swift change is needed. Then `pipeline/bin/reconcile.py` can rebuild the ledger from CloudKit and `push.py` can pre-check by query instead of trusting the file.
+
+**Effort:** S
+**Priority:** P3
+**Depends on:** First successful production push
+
 ## Testing
 
 ### Stand up a test target

@@ -1,0 +1,17 @@
+.DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+
+# Pipeline: local venv, scraped output, downloaded assets.
+pipeline/.venv/
+pipeline/data/*
+!pipeline/data/pushed.json
+!pipeline/data/geocache.json
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
