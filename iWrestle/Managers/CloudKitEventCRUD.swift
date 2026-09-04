@@ -101,9 +101,9 @@ extension CloudKitManager {
         record[Event.Field.eventContactEmail] = event.eventContactEmail
         record[Event.Field.eventContactPhone] = event.eventContactPhone
         
-        do {
-            let _ = try await db.save(record)
-        } catch {print("Error updating event:\(error)")}
+        // Rethrows so the edit screen can show the failure instead of
+        // reporting a save that never happened.
+        _ = try await db.save(record)
     }
     func deleteEvent(_ event: Event) async throws {
         let db = CKContainer.default().publicCloudDatabase

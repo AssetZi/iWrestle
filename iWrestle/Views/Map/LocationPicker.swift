@@ -68,6 +68,8 @@ fileprivate struct LocationPickerView: View {
                 UserPermissionDeniedView()
             }
         }
+        .background(Theme.ink.ignoresSafeArea())
+        .preferredColorScheme(.dark)
         .onAppear(perform: manager.requestUserLocaiton)
         .onDisappear { poiTask?.cancel() }
         .onChange(of: selectedMapItem) { _, newValue in
@@ -82,38 +84,30 @@ fileprivate struct LocationPickerView: View {
     @ViewBuilder
     func UserPermissionDeniedView() -> some View {
         ZStack(alignment: .bottom) {
-            Rectangle().fill(.ultraThinMaterial).ignoresSafeArea()
+            Rectangle().fill(Theme.scrim).ignoresSafeArea()
             Text("Please allow location permission\nin the app settings.")
-                .fontWeight(.semibold).multilineTextAlignment(.center)
+                .font(.body14Medium)
+                .foregroundStyle(Theme.textPrimary)
+                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             
             Button {
                 isPresented = false
             } label: {
-                Image(systemName: "xmark")
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(Color.primary)
+                IconButtonLabel(icon: .x, size: 34, radius: 10, iconSize: 15, strokeWidth: 2)
                     .padding(15)
-                    .contentShape(.rect)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             
             VStack(spacing: 12){
-                Button("Try Again", action: manager.requestUserLocaiton)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
-                Button {
+                Button("Try again", action: manager.requestUserLocaiton)
+                    .font(.body13)
+                    .foregroundStyle(Theme.textTertiary)
+                    .buttonStyle(.plain)
+                PrimaryGoldButton(title: "Go to Settings", icon: .arrowUpRight) {
                     if let settingsURL = URL(string: UIApplication.openSettingsURLString){
                         openURL(settingsURL)
                     }
-                } label: {
-                    Text("Go to Settings")
-                        .fontWeight(.semibold)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical,12)
-                        .foregroundStyle(.background)
-                        .background(Color.primary, in: .rect(cornerRadius: 12))
                 }
                 .padding(.horizontal, 30)
                 .padding(.bottom,10)
@@ -131,7 +125,7 @@ fileprivate struct LocationPickerView: View {
                 let coord = item.location.coordinate
                 Marker(item.name ?? "Place", coordinate: coord)
                     .tag(item)
-                    .tint(item == chosenMapItem ? .green : .red)
+                    .tint(item == chosenMapItem ? Theme.gold : Theme.slate400)
 
             }
         }
@@ -141,6 +135,7 @@ fileprivate struct LocationPickerView: View {
             MapPitchToggle(scope: mapSpace)
         }
         .mapScope(mapSpace)
+        .mapStyle(.standard(elevation: .flat, emphasis: .muted, showsTraffic: false))
         .onMapCameraChange { ctx in
             manager.currentRegion = ctx.region
             // Cancel the in-flight load so a slow earlier response can't land
@@ -156,8 +151,9 @@ fileprivate struct LocationPickerView: View {
     @ViewBuilder
     func MapSearchBar() -> some View {
         VStack(spacing: 15) {
-            Text("Select Location")
-                .fontWeight(.semibold)
+            Text("Select location")
+                .font(.cardTitle)
+                .foregroundStyle(Theme.textPrimary)
                 .frame(maxWidth: .infinity)
                 .overlay(alignment: .leading) {
                     Button {
@@ -171,20 +167,20 @@ fileprivate struct LocationPickerView: View {
                         
                         
                     } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Color.primary)
-                            .contentShape(.rect)
+                        IconButtonLabel(icon: .chevronLeft, size: 34, radius: 10, iconSize: 16, strokeWidth: 2)
                     }
+                    .buttonStyle(PressableButtonStyle())
 
                 }
             
             HStack(spacing: 12) {
-                Image(systemName: "magnifyingglass")
-                    .foregroundStyle(.gray)
-                TextField("Search", text: $manager.searchText)
-                    .padding(.vertical,10)
+                LucideIcon(.search, size: 15)
+                    .foregroundStyle(Theme.textTertiary)
+                TextField("", text: $manager.searchText, prompt: Text("Search places").foregroundColor(Theme.slate500))
+                    .font(.body14)
+                    .foregroundStyle(Theme.textPrimary)
+                    .tint(Theme.gold)
+                    .padding(.vertical,12)
                     .focused($isKeyboardActive)
                     .submitLabel(.search)
                     .onSubmit {
@@ -205,22 +201,23 @@ fileprivate struct LocationPickerView: View {
                     Button {
                         manager.clearSearch()
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title3).foregroundStyle(.gray)
+                        LucideIcon(.x, size: 15, strokeWidth: 2)
+                            .foregroundStyle(Theme.textTertiary)
                     }
                     .opacity(manager.isSeaching ? 0 : 1)
                     .overlay{
-                        ProgressView()
+                        GoldSpinner(size: 16)
                             .opacity(manager.isSeaching ? 1 : 0)
                     }
 
                 }
             }
-            .padding(.horizontal,15)
-            .background(.ultraThinMaterial, in: .rect(cornerRadius: 10))
+            .padding(.horizontal,14)
+            .background(RoundedRectangle(cornerRadius: Theme.Radius.input, style: .continuous).fill(Theme.slate950))
+            .overlay(RoundedRectangle(cornerRadius: Theme.Radius.input, style: .continuous).strokeBorder(Theme.borderDefault, lineWidth: 1))
         }
         .padding(15)
-        .background(.background)
+        .background(Theme.ink)
     }
     
     @ViewBuilder
@@ -234,51 +231,56 @@ fileprivate struct LocationPickerView: View {
 
         } label: {
             Text(selectButtonTitle)
-                .fontWeight(.semibold)
+                .font(.buttonLabel)
                 // .disabled() alone won't dim a label whose colour is pinned, so
                 // the disabled state sets its own colour and opacity.
-                .foregroundStyle(canSelect ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
-                .opacity(canSelect ? 1 : 0.5)
+                .foregroundStyle(canSelect ? Theme.onAccent : Theme.textSecondary)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical,12)
-                .background(.ultraThinMaterial, in: .rect(cornerRadius: 10))
+                .padding(.vertical,14)
+                .background(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                    .fill(canSelect ? Theme.gold : Theme.slate900))
+                .overlay(RoundedRectangle(cornerRadius: Theme.Radius.button, style: .continuous)
+                    .strokeBorder(canSelect ? .clear : Theme.borderDefault, lineWidth: 1))
         }
+        .buttonStyle(PressableButtonStyle(scale: 0.99))
         .disabled(!canSelect)
         .padding(15)
-        .background(.background)
+        .background(Theme.ink)
 
     }
     
     @ViewBuilder
     func SearchResultView() -> some View {
         ScrollView(.vertical) {
-            LazyVStack(spacing: 15){
+            LazyVStack(spacing: 4){
                 ForEach(manager.searchResults, id: \.self){ mapItem in
-                    SearchResultCard(mapItem).padding()
+                    SearchResultCard(mapItem)
+                        .padding(.horizontal, Theme.gutter)
+                        .padding(.vertical, 8)
                 }
             }
         }
         .frame(maxWidth: .infinity)
-        .background(.background)
+        .background(Theme.ink)
     }
     
     @ViewBuilder
     func SearchResultCard(_ mapItem: MKMapItem) -> some View {
         VStack(spacing: 10){
             HStack(spacing: 10){
-                VStack(alignment: .leading,spacing: 8) {
+                VStack(alignment: .leading,spacing: 4) {
                     Text(mapItem.name ?? "")
+                        .font(.rowTitle)
+                        .foregroundStyle(Theme.textPrimary)
                     Text(mapItem.address?.fullAddress ?? "")
-                        .font(.caption).foregroundStyle(.gray)
-                    
-                    
+                        .font(.body12).foregroundStyle(Theme.textTertiary)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "checkmark")
-                    .font(.callout).foregroundStyle(.gray)
+                LucideIcon(.check, size: 16, strokeWidth: 2)
+                    .foregroundStyle(Theme.gold)
                     .opacity(manager.selectedResult == mapItem ? 1 : 0)
             }
-            Divider()
+            HairlineDivider()
         }
         .contentShape(.rect)
         .onTapGesture {

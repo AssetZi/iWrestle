@@ -11,73 +11,131 @@ import MapKit
 struct HomeView: View {
     @Environment(CloudKitManager.self) var ck
     @Environment(LocationManager.self) var lm
+    @Binding var path: NavigationPath
+    @Environment(\.tabBarInset) private var tabBarInset
+
     @State private var viewState: HomeViewState = .loading
     @State private var isFetching = false
     @State private var showFilter = false
+    @State private var filters: EventFilters = .default
+    @State private var viewMode: ViewMode = .list
+    @State private var selectedPin: Event.ID?
+
+    enum ViewMode { case list, map }
+
+    private var title: String {
+        "Events near\n\(lm.userCity ?? "you")."
+    }
+
     var body: some View {
-        NavigationStack {
-            Group{
-                switch viewState {
-                case .loading:
-                    iWrestleProgressViewHome()
-                case .loaded(let events):
-                    EventsListView(events: events, userLocation: lm.userLocation)
-                case .error(let error):
-                    ErrorViewiWrestle(error: error, action: {
-                        viewState = .loading
-                        loadEvents()
-                    })
+        NavigationStack(path: $path) {
+            VStack(spacing: 0) {
+                ScreenHeader(eyebrow: "Nearby · \(Date().monthYearLabel)", title: title) {
+                    HStack(spacing: 8) {
+                        IconButton(icon: viewMode == .list ? .map : .list,
+                                   accessibilityLabel: viewMode == .list ? "Show map" : "Show list") {
+                            withAnimation(Motion.normal) {
+                                viewMode = viewMode == .list ? .map : .list
+                                selectedPin = nil
+                            }
+                        }
+                        IconButton(icon: .slidersHorizontal,
+                                   badge: !filters.isDefault,
+                                   accessibilityLabel: "Filter events") {
+                            showFilter = true
+                        }
+                    }
+                }
+
+                content
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .safeAreaPadding(.bottom, tabBarInset)
+            .canvas()
+            .toolbar(.hidden, for: .navigationBar)
+            .navigationDestination(for: AppRoute.self) { route in
+                switch route {
+                case .eventDetail(let event):
+                    EventDetailView(event: event)
+                case .flyer(let url):
+                    PDFQuickLookView(url: url)
+                default:
+                    EmptyView()
                 }
             }
-            .navigationTitle(Text("iWrestle"))
             .task(id: lm.userCoordinates?.latitude) {
-                if case .loading = viewState { loadEvents() }
+                if case .loading = viewState { await loadEvents() }
             }
             .onChange(of: lm.isPermissionDenied) { _, denied in
                 if denied == true, case .loading = viewState {
                     viewState = .error(.locationError)
                 }
             }
-            .refreshable {
-                loadEvents()
-            }
-            .scrollIndicators(.hidden)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showFilter = true
-                    } label: {
-                        Image(systemName: "slider.horizontal.3")
-                    }
-                }
-            }
             .sheet(isPresented: $showFilter) {
-                EventsFilterView(viewState: $viewState)
+                EventsFilterView(filters: filters) { applied, events in
+                    filters = applied
+                    viewState = events.isEmpty ? .error(.noData) : .loaded(events)
+                }
             }
         }
     }
 
-    func loadEvents() {
-        guard !isFetching else { return }
-        Task {
-            isFetching = true
-            defer { isFetching = false }
-            do {
-                guard let userLocation = lm.userLocation else {
-                    if lm.isPermissionDenied == true {
-                        viewState = .error(.locationError)
-                    }
-                    return
-                }
-                let events = try await fetchWithExpandingRadius(from: userLocation)
-                if !events.isEmpty {
-                    viewState = .loaded(events)
-                } else {
-                    viewState = .error(.noData)
-                }
-            } catch {
-                viewState = .error(.noData)
+    @ViewBuilder
+    private var content: some View {
+        switch viewState {
+        case .loading:
+            iWrestleProgressViewHome()
+        case .loaded(let events):
+            switch viewMode {
+            case .list:
+                EventsListView(events: events, userLocation: lm.userLocation)
+                    .refreshable { await loadEvents() }
+                    .transition(.opacity)
+            case .map:
+                EventsMapView(events: events, userLocation: lm.userLocation, selected: $selectedPin)
+                    .transition(.opacity)
             }
+        case .error(let error):
+            ErrorViewiWrestle(error: error, retryTitle: error == .noData ? "Try again" : nil) {
+                viewState = .loading
+                Task { await loadEvents() }
+            }
+        }
+    }
+
+    // MARK: - Loading
+
+    func loadEvents() async {
+        guard !isFetching else { return }
+        isFetching = true
+        defer { isFetching = false }
+
+        #if DEBUG
+        if MockEvents.isEnabled {
+            viewState = .loaded(MockEvents.nearby)
+            return
+        }
+        #endif
+
+        guard let userLocation = lm.userLocation else {
+            if lm.isPermissionDenied == true {
+                viewState = .error(.locationError)
+            }
+            return
+        }
+
+        do {
+            let events: [Event]
+            if filters.isDefault {
+                events = try await fetchWithExpandingRadius(from: userLocation)
+            } else if let predicates = filters.predicates(userLocation: userLocation) {
+                events = try await ck.fetchEvents(predicates: predicates)
+            } else {
+                events = []
+            }
+            viewState = events.isEmpty ? .error(.noData) : .loaded(events)
+        } catch {
+            viewState = .error(.noData)
         }
     }
 
@@ -85,19 +143,17 @@ struct HomeView: View {
         let radii: [Double] = [250, 500, 999]
         for radius in radii {
             var predicates = [NSPredicate]()
-            let distancePredicate = NSPredicate(
+            predicates.append(NSPredicate(
                 format: "distanceToLocation:fromLocation:(location, %@) < %f",
                 location,
                 radius.milesToMeters
-            )
-            predicates.append(distancePredicate)
+            ))
             if let interval = DateOptionsIWrestle.thisMonth.dateInterval() {
-                let datePredicate = NSPredicate(
+                predicates.append(NSPredicate(
                     format: "date >= %@ AND date < %@",
                     interval.start as CVarArg,
                     interval.end as CVarArg
-                )
-                predicates.append(datePredicate)
+                ))
             }
             let events = try await ck.fetchEvents(predicates: predicates, limit: 20)
             if !events.isEmpty { return events }
@@ -110,10 +166,4 @@ enum HomeViewState {
     case loading
     case loaded([Event])
     case error(iWrestleError)
-
 }
-
-//#Preview {
-//    HomeView()
-//}
-

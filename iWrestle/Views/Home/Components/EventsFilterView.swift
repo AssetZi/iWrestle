@@ -2,177 +2,162 @@
 //  EventsFilterView.swift
 //  iWrestle
 //
-//  Created by Brock Zacherl on 12/17/25.
+//  Bottom sheet that edits a draft copy of the home filters. The Apply
+//  button carries a live count, fetched (debounced) as the draft changes;
+//  Apply hands the already-fetched events back so nothing is queried twice.
 //
 
 import SwiftUI
+import CoreLocation
 
 struct EventsFilterView: View {
     @Environment(CloudKitManager.self) var ck
     @Environment(LocationManager.self) var lm
     @Environment(\.dismiss) var dismiss
-    @Binding var viewState: HomeViewState
-    @State private var eventType: EventTypeFilter = .all
-    @State private var ageGroup: AgeGroupFilter = .all
-    @State private var distance: DistanceOption = .any
-    @State private var dateSelection: DateOptionsIWrestle = .thisWeek
-    @State private var isLoading: Bool = false
-    @State private var customDate: Date = Date()
+
+    let onApply: (EventFilters, [Event]) -> Void
+    @State private var draft: EventFilters
+    @State private var count: CountState = .idle
+    @State private var isApplying = false
+    @State private var sheetHeight: CGFloat = 600
+
+    enum CountState: Equatable {
+        case idle, counting, needsLocation
+        case counted(EventFilters, [Event])
+
+        static func == (lhs: CountState, rhs: CountState) -> Bool {
+            switch (lhs, rhs) {
+            case (.idle, .idle), (.counting, .counting), (.needsLocation, .needsLocation): return true
+            case (.counted(let a, let x), .counted(let b, let y)): return a == b && x.map(\.id) == y.map(\.id)
+            default: return false
+            }
+        }
+    }
+
+    init(filters: EventFilters, onApply: @escaping (EventFilters, [Event]) -> Void) {
+        self.onApply = onApply
+        _draft = State(initialValue: filters)
+    }
+
     var body: some View {
-        ZStack{
-            Form {
-                
-                Section(header: Text("Events")) {
-                    Picker("Event Type", selection: $eventType) {
-                        ForEach(EventTypeFilter.allCases) { option in
-                            Text(option.title).tag(option)
-                        }
-                    }
-                    Picker("Age Group", selection: $ageGroup) {
-                        ForEach(AgeGroupFilter.allCases) { option in
-                            Text(option.title).tag(option)
-                        }
-                    }
-                    Picker("Distance", selection: $distance) {
-                        ForEach(DistanceOption.allCases, id: \.self) { option in
-                            Text(option.title).tag(option)
-                        }
+        VStack(spacing: 16) {
+            DragHandle()
+
+            HStack(alignment: .firstTextBaseline) {
+                Text("Filter events")
+                    .font(.sheetTitle)
+                    .tracked(-0.01, 17)
+                    .foregroundStyle(Theme.textPrimary)
+                Spacer()
+                Button("Clear") {
+                    withAnimation(Motion.fast) { draft = .default }
+                }
+                .font(.body12)
+                .foregroundStyle(Theme.textTertiary)
+                .buttonStyle(.plain)
+            }
+
+            chipGroup("Event type", EventTypeFilter.allCases, selection: $draft.eventType) { $0.title }
+            chipGroup("Age group", AgeGroupFilter.allCases, selection: $draft.ageGroup) { $0.title }
+            chipGroup("Distance", DistanceOption.allCases, selection: $draft.distance) { $0.title }
+            chipGroup("Date", DateOptionsIWrestle.allCases, selection: $draft.date) { $0.rawValue }
+
+            if count == .needsLocation {
+                Text("Enable location to filter by distance.")
+                    .font(.caption11_5)
+                    .foregroundStyle(Theme.danger)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            PrimaryGoldButton(title: applyTitle, isBusy: isApplying) { apply() }
+                .disabled(count == .needsLocation)
+                .padding(.top, 4)
+        }
+        .padding(.horizontal, Theme.gutter)
+        .padding(.bottom, 6)
+        // The sheet sizes itself to the content; the device's bottom safe area
+        // supplies the rest of the mock's 34pt bottom padding.
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { sheetHeight = $0 }
+        .frame(maxHeight: .infinity, alignment: .top)
+        .background(Theme.slate900)
+        .presentationDetents([.height(sheetHeight)])
+        .presentationDragIndicator(.hidden)
+        .presentationBackground(Theme.slate900)
+        .presentationCornerRadius(Theme.Radius.sheet)
+        .interactiveDismissDisabled(isApplying)
+        .task(id: draft) { await refreshCount() }
+    }
+
+    private func chipGroup<T: Hashable & Identifiable>(_ label: String,
+                                                        _ options: [T],
+                                                        selection: Binding<T>,
+                                                        title: @escaping (T) -> String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Eyebrow(label, color: Theme.textTertiary, size: 10)
+            ChipFlow {
+                ForEach(options) { option in
+                    SelectChip(label: title(option), selected: option == selection.wrappedValue) {
+                        selection.wrappedValue = option
                     }
                 }
-                FilterDatePickeriWrestle(selection: $dateSelection, customDate: $customDate)
-                
-                iWrestleButton(title: "Apply") {
-                    loadEvents()
-                }
-                HStack{
-                    Spacer()
-                    Button("Clear"){clearFilters()}
-                }.foregroundStyle(.secondary).listRowBackground(Color.clear).listRowSeparator(.hidden)
-                
-                
-            }
-            .disabled(isLoading)
-            .opacity(isLoading ? 0.3 : 1)
-            if isLoading {
-                iWrestleProgressView()
             }
         }
-
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
-    
-    enum DistanceOption: Double, CaseIterable {
-        case under50=50, under100=100, under200=200, under300=300, any = 100000
-        
-        var title: String {
-            switch self {
-            case .under50: return "Under 50m"
-            case .under100: return "Under 100m"
-            case .under200: return "Under 200m"
-            case .under300: return "Under 300m"
-            case .any: return "Any"
-            }
+
+    private var applyTitle: String {
+        switch count {
+        case .counted(let filters, let events) where filters == draft:
+            return events.count == 1 ? "Show 1 event" : "Show \(events.count) events"
+        case .needsLocation:
+            return "Show events"
+        default:
+            return "Show … events"
         }
     }
-    enum AgeGroupFilter: Identifiable, CaseIterable, Hashable {
-        case all
-        case specific(AgeGroup)
 
-        var id: String {
-            switch self {
-            case .all: return "all"
-            case .specific(let age): return age.rawValue
-            }
+    // MARK: - Fetching
+
+    private func refreshCount() async {
+        guard let predicates = draft.predicates(userLocation: lm.userLocation) else {
+            count = .needsLocation
+            return
         }
-
-        static var allCases: [AgeGroupFilter] {
-            [.all] + AgeGroup.allCases.map { .specific($0) }
+        count = .counting
+        // Debounce so tapping through chips doesn't fire a query per tap.
+        try? await Task.sleep(for: .milliseconds(300))
+        guard !Task.isCancelled else { return }
+        let snapshot = draft
+        #if DEBUG
+        if MockEvents.isEnabled {
+            let filtered = MockEvents.nearby.filter { NSCompoundPredicate(andPredicateWithSubpredicates: predicates.filter { !$0.predicateFormat.contains("distanceToLocation") }).evaluate(with: MockEvents.predicateObject($0)) }
+            count = .counted(snapshot, filtered)
+            return
         }
-
-        var title: String {
-            switch self {
-            case .all: return "All"
-            case .specific(let age): return age.rawValue.capitalized
-            }
-        }
-    }
-    enum EventTypeFilter: Identifiable, CaseIterable, Hashable {
-        case all
-        case specific(EventType)
-
-        var id: String {
-            switch self {
-            case .all: return "all"
-            case .specific(let age): return age.rawValue
-            }
-        }
-
-        static var allCases: [EventTypeFilter] {
-            [.all] + EventType.allCases.map { .specific($0) }
-        }
-
-        var title: String {
-            switch self {
-            case .all: return "All"
-            case .specific(let age): return age.rawValue.capitalized
-            }
+        #endif
+        if let events = try? await ck.fetchEvents(predicates: predicates), !Task.isCancelled {
+            count = .counted(snapshot, events)
+        } else if !Task.isCancelled {
+            count = .idle
         }
     }
-    
-    func loadEvents() {
+
+    private func apply() {
+        if case .counted(let filters, let events) = count, filters == draft {
+            onApply(draft, events)
+            dismiss()
+            return
+        }
+        guard let predicates = draft.predicates(userLocation: lm.userLocation) else {
+            count = .needsLocation
+            return
+        }
+        isApplying = true
         Task {
-            isLoading = true
-            do {
-                let predicates = establishPredicates()
-                let events = try await ck.fetchEvents(predicates: predicates)
-                if !events.isEmpty {
-                    viewState = .loaded(events)
-                } else { viewState = .error(.noData) }
-            } catch {
-                viewState = .error(.noData)
-            }
-            isLoading = false
+            let events = (try? await ck.fetchEvents(predicates: predicates)) ?? []
+            isApplying = false
+            onApply(draft, events)
             dismiss()
         }
     }
-    func establishPredicates() -> [NSPredicate] {
-        var predicates: [NSPredicate] = []
-        
-        if distance != .any {
-            guard let userLocation = lm.userLocation else {viewState = .error(.locationError); return []}
-            
-            let radiusInMeters = distance.rawValue.milesToMeters
-            let distancePredicate = NSPredicate(
-                format: "distanceToLocation:fromLocation:(location, %@) < %f",
-                userLocation,
-                radiusInMeters
-            )
-            predicates.append(distancePredicate)
-        }
-        if eventType != .all {
-            let typePredicate = NSPredicate(format: "eventType == %@", eventType.title.lowercased())
-            predicates.append(typePredicate)
-        }
-        if ageGroup != .all {
-            let agePredicate = NSPredicate(format: "ANY ageGroups == %@", ageGroup.title)
-            predicates.append(agePredicate)
-        }
-        if let interval = dateSelection.dateInterval(customDate: customDate) {
-            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", interval.start as CVarArg, interval.end as CVarArg)
-            predicates.append(datePredicate)
-        }
-        return predicates
-    }
-    func clearFilters() {
-        self.distance = .any
-        self.eventType = .all
-        self.ageGroup = .all
-        self.customDate = Date()
-        self.dateSelection = .thisMonth
-    }
 }
-
-//#Preview {
-//    @Previewable @State var vs : HomeViewState = .loading
-//    EventsFilterView(viewState: $vs)
-//}

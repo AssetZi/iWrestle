@@ -7,88 +7,52 @@
 
 import SwiftUI
 
+/// Gold ring around the white mark: sheets and pushed screens.
 struct iWrestleProgressView: View {
-    @Environment(\.colorScheme) var cs
-    @State private var rotation: Double = 0
     @State private var pulse: Bool = false
-    var colors : [Color] {
-        cs == .dark ? [.white,.gray]: [.black,.gray]
-    }
+
     var body: some View {
-        VStack(spacing: 30) {
-            ZStack {
-                // Outer ring
-                Circle()
-                    .stroke(Color.gray.opacity(0.2), lineWidth: 8)
-                    .frame(width: 120, height: 120)
-                
-                // Animated ring
-                Circle()
-                    .trim(from: 0, to: 0.7)
-                    .stroke(
-                        LinearGradient(
-                            colors: colors,
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ),
-                        style: StrokeStyle(lineWidth: 8, lineCap: .round)
-                    )
-                    .frame(width: 120, height: 120)
-                    .rotationEffect(.degrees(rotation))
-                    .animation(
-                        .linear(duration: 1.5)
-                        .repeatForever(autoreverses: false),
-                        value: rotation
-                    )
-                
-                // Center logo
-                Image(cs == .dark ? "iWrestleWhite" : "iWrestleBlack")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 90, height: 90)
-                    .scaleEffect(pulse ? 1.06 : 0.94)
-                    .shadow(color: .black.opacity(0.12), radius: pulse ? 14 : 6, y: 6)
-                    .onAppear {
-                        withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
-                            pulse = true
-                        }
-                        withAnimation(.linear(duration: 2.2).repeatForever(autoreverses: false)) {
-                            
-                        }
+        ZStack {
+            GoldSpinner(size: 96)
+            Image("iWrestleWhite")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 56, height: 56)
+                .scaleEffect(pulse ? 1.04 : 0.96)
+                .onAppear {
+                    withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                        pulse = true
                     }
+                }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+/// Pulsing white mark used while the home feed loads.
+struct iWrestleProgressViewHome: View {
+    @State private var pulse: Bool = false
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Image("iWrestleWhite")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 140, height: 140)
+                .scaleEffect(pulse ? 1.05 : 0.95)
+                .shadow(color: .black.opacity(0.3), radius: pulse ? 14 : 6, y: 6)
+            GoldSpinner(size: 22)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                pulse = true
             }
         }
-        .onAppear {rotation = 360}
     }
 }
 
-
-struct iWrestleProgressViewHome: View {
-    @Environment(\.colorScheme) var cs
-    @State private var pulse: Bool = false
-    var colors : [Color] {
-        cs == .dark ? [.white,.gray]: [.black,.gray]
-    }
-    var body: some View {
-        // Center logo
-        Image(cs == .dark ? "iWrestleWhite" : "iWrestleBlack")
-            .resizable()
-            .scaledToFit()
-            .frame(width: 180, height: 180)
-            .scaleEffect(pulse ? 1.06 : 0.94)
-            .shadow(color: .black.opacity(0.12), radius: pulse ? 14 : 6, y: 6)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
-                    pulse = true
-                }
-                withAnimation(.linear(duration: 2.2).repeatForever(autoreverses: false)) {
-                    
-                }
-            }
-    }
-}
-
-// Preview
 #Preview {
     iWrestleProgressViewHome()
+        .background(Theme.ink)
 }

@@ -16,7 +16,19 @@
     {
       "layers" : [
         {
+          "image-name" : "24396ecc-cb4a-4f81-83b3-775becbbb057.png",
+          "name" : "24396ecc-cb4a-4f81-83b3-775becbbb057",
+          "position" : {
+            "scale" : 0.87,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        },
+        {
           "fill" : "none",
+          "hidden" : true,
           "image-name" : "iWrestleWhite.png",
           "name" : "iWrestleWhite",
           "position" : {

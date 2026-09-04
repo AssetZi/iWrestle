@@ -7,52 +7,7 @@
 
 import SwiftUI
 
-struct AgeGroupPicker: View {
-    @Binding var selectedAgeGroups: Set<AgeGroup>
-    /// Defaulted so any other caller is unaffected; the add screens mark it
-    /// required. (The edit screen uses AgeGroupPickerString, not this type.)
-    var title: String = "Select Age Groups"
-
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.headline)
-            
-            ForEach(AgeGroup.allCases) { ageGroup in
-                Button(action: {
-                    if selectedAgeGroups.contains(ageGroup) {
-                        selectedAgeGroups.remove(ageGroup)
-                    } else {
-                        selectedAgeGroups.insert(ageGroup)
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: selectedAgeGroups.contains(ageGroup) ? "checkmark.square.fill" : "square")
-                            .foregroundColor(selectedAgeGroups.contains(ageGroup) ? .primary : .gray)
-                        
-                        Text(ageGroup.rawValue)
-                            .foregroundColor(.primary)
-                        
-                        Spacer()
-                    }
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding()
-        
-        
-    }
-}
-
-#Preview {
-    @Previewable @State var selectedAgeGroups: Set<AgeGroup> = []
-    AgeGroupPicker(selectedAgeGroups: $selectedAgeGroups)
-}
-
-enum AgeGroup: String, CaseIterable, Identifiable,Equatable {
+enum AgeGroup: String, CaseIterable, Identifiable, Equatable {
     case novice = "Novice"
     case youth = "Youth"
     case jrHigh = "Jr High"
@@ -62,42 +17,63 @@ enum AgeGroup: String, CaseIterable, Identifiable,Equatable {
     var id: String { self.rawValue }
 }
 
+/// Multi-select age-group chips for the add screens.
+struct AgeGroupPicker: View {
+    @Binding var selectedAgeGroups: Set<AgeGroup>
+    var title: String = "Age groups (required)"
+    var isInvalid = false
 
-struct AgeGroupPickerString: View {
-    @Binding var selectedAgeGroups: [String]
-    let ageGroups: [String]
-    
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Select Age Groups")
-                .font(.headline)
-            
-            ForEach(ageGroups, id: \.self) { ageGroup in
-                Button(action: {
-                    if let idx = selectedAgeGroups.firstIndex(of: ageGroup) {
-                        selectedAgeGroups.remove(at: idx)
-                    } else {
-                        selectedAgeGroups.append(ageGroup)
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.caption11)
+                .foregroundStyle(isInvalid ? Theme.danger : Theme.textTertiary)
+            ChipFlow {
+                ForEach(AgeGroup.allCases) { ageGroup in
+                    SelectChip(label: ageGroup.rawValue, selected: selectedAgeGroups.contains(ageGroup)) {
+                        if selectedAgeGroups.contains(ageGroup) {
+                            selectedAgeGroups.remove(ageGroup)
+                        } else {
+                            selectedAgeGroups.insert(ageGroup)
+                        }
                     }
-                }) {
-                    HStack {
-                        Image(systemName: selectedAgeGroups.contains(ageGroup) ? "checkmark.square.fill" : "square")
-                            .foregroundColor(selectedAgeGroups.contains(ageGroup) ? .primary : .gray)
-                        
-                        Text(ageGroup)
-                            .foregroundColor(.primary)
-                        
-                        Spacer()
-                    }
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
             }
         }
-        .padding()
-        
-        
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
+/// Same chips over the `[String]` the edit screen stores.
+struct AgeGroupPickerString: View {
+    @Binding var selectedAgeGroups: [String]
+    let ageGroups: [String]
+    var title: String = "Age groups"
 
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.caption11)
+                .foregroundStyle(Theme.textTertiary)
+            ChipFlow {
+                ForEach(ageGroups, id: \.self) { ageGroup in
+                    SelectChip(label: ageGroup, selected: selectedAgeGroups.contains(ageGroup)) {
+                        if let idx = selectedAgeGroups.firstIndex(of: ageGroup) {
+                            selectedAgeGroups.remove(at: idx)
+                        } else {
+                            selectedAgeGroups.append(ageGroup)
+                        }
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+#Preview {
+    @Previewable @State var selectedAgeGroups: Set<AgeGroup> = [.youth]
+    AgeGroupPicker(selectedAgeGroups: $selectedAgeGroups)
+        .padding()
+        .background(Theme.ink)
+}
