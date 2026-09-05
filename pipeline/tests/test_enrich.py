@@ -135,3 +135,10 @@ def test_usage_totals_price_cached_tokens_cheaply():
     totals = enrich.usage_totals([Usage()])
     assert totals["input"] == 1000 and totals["cached"] == 10000
     assert totals["dollars"] == round((1000 + 1000) / 1e6 * 5 + 200 / 1e6 * 25, 4)
+
+
+def test_website_hosts_are_lowercased_but_paths_kept():
+    from iwpipe.enrich import _normalize_url
+
+    assert _normalize_url("BREAKTHECHAINSWRESTLING.COM") == "https://breakthechainswrestling.com"
+    assert _normalize_url("https://Club.org/Events/Fall") == "https://club.org/Events/Fall"

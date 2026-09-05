@@ -188,6 +188,16 @@ def _normalize_phone(raw: str) -> str | None:
     return f"{digits[:3]}-{digits[3:6]}-{digits[6:]}"
 
 
+def _normalize_url(raw: str) -> str:
+    """Banners print sites in caps; hostnames are case-insensitive, paths are not."""
+    url = raw.strip()
+    if not url.lower().startswith(("http://", "https://")):
+        url = "https://" + url.lstrip("/")
+    scheme, _, rest = url.partition("://")
+    host, slash, path = rest.partition("/")
+    return f"{scheme.lower()}://{host.lower()}{slash}{path}"
+
+
 def _remove_notes(event: dict[str, Any], *texts: str) -> None:
     notes = event.setdefault("review", {}).setdefault("notes", [])
     event["review"]["notes"] = [n for n in notes if n not in texts]
@@ -245,10 +255,7 @@ def merge(event: dict[str, Any], extraction: BannerExtraction) -> list[str]:
             note(event, "AI: unmapped division tokens: " + ", ".join(unknown))
 
     if extraction.organizerWebsite and not event.get("organizerWebsite"):
-        if extraction.organizerWebsite.startswith("http"):
-            event["organizerWebsite"] = extraction.organizerWebsite
-        else:
-            event["organizerWebsite"] = "https://" + extraction.organizerWebsite.lstrip("/")
+        event["organizerWebsite"] = _normalize_url(extraction.organizerWebsite)
         note(event, "AI: organizer website from banner")
         filled.append("organizerWebsite")
 

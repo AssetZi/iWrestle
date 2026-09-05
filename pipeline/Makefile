@@ -2,7 +2,8 @@
 PY := ./.venv/bin/python
 SOURCE ?= pywrestling
 DATE := $(shell date +%Y%m%d)
-FILE ?= $(shell ls -t data/events.*.json 2>/dev/null | head -1)
+# The newest collected file for SOURCE. Override with FILE=path.
+FILE ?= $(shell ls -t data/events.$(SOURCE).*.json 2>/dev/null | head -1)
 
 .PHONY: help venv test token-check collect collect-offline enrich enrich-dry review approve push push-dry push-prod reconcile routine clean
 
@@ -19,7 +20,7 @@ help:
 	@echo "make reconcile     compare CloudKit against the local ledger"
 	@echo "make routine       collect + enrich + approve + push (development) for every source"
 	@echo ""
-	@echo "current FILE: $(FILE)"
+	@echo "current SOURCE: $(SOURCE)   FILE: $(FILE)"
 
 venv:
 	python3 -m venv .venv
