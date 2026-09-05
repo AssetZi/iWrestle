@@ -7,9 +7,11 @@ image filenames.
 """
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote
 
 import requests
 from bs4 import BeautifulSoup
@@ -262,6 +264,32 @@ def _parse_block(block) -> dict[str, Any] | None:
     return event
 
 
+JOTFORM_HOST = "https://www.jotform.com"
+
+# Filled by collect(): webmaster addresses that must not become contacts.
+SITE_EMAILS: set[str] = set()
+
+
+def pdf_from_jotform(form_html: str) -> str:
+    """The flyer PDF a JotForm shows through its PDF Embedder widget.
+
+    The widget's settings sit in a hidden input as URL-encoded JSON with the
+    uploaded file's path; the form's HTML never links the PDF directly.
+    """
+    soup = BeautifulSoup(form_html, "html.parser")
+    for field in soup.select("input.form-widget-settings"):
+        try:
+            settings = json.loads(unquote(field.get("value", "")))
+        except (ValueError, TypeError):
+            continue
+        for item in settings if isinstance(settings, list) else []:
+            value = item.get("value") if isinstance(item, dict) else None
+            path = str(value.get("path", "")) if isinstance(value, dict) else ""
+            if path.lower().endswith(".pdf"):
+                return f"{JOTFORM_HOST}{path}?serveInlineWithCache=1"
+    return ""
+
+
 def _site_emails(html: str) -> set[str]:
     """Addresses that belong to the site itself, printed on every page."""
     found = {m.lower() for m in EMAIL.findall(html)}
@@ -322,6 +350,19 @@ def _enrich_from_detail(session, event, site_emails: set[str] = frozenset()) -> 
                 )
                 break
 
+    # The organizer's real flyer usually lives inside that form, as a PDF
+    # widget, and it is where the contact email is printed.
+    flyer = event.setdefault("flyer", {"url": None, "path": None})
+    if not flyer.get("url") and "jotform.com" in (event.get("registration") or ""):
+        try:
+            form_html = get(session, event["registration"]).text
+        except Exception:
+            note(event, "registration form unreachable")
+        else:
+            pdf_url = pdf_from_jotform(form_html)
+            if pdf_url:
+                flyer["url"] = pdf_url
+
 
 def collect(
     session: requests.Session,
@@ -351,6 +392,8 @@ def collect(
 
     if not fixture:
         site_emails = _site_emails(html)
+        SITE_EMAILS.clear()
+        SITE_EMAILS.update(site_emails)
         for event in events:
             _enrich_from_detail(session, event, site_emails)
 

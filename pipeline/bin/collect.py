@@ -18,13 +18,30 @@ from pathlib import Path
 
 import _bootstrap  # noqa: F401
 
-from iwpipe import assets, geocode, ledger, mapping, schema
+from iwpipe import assets, geocode, ledger, mapping, pdftext, schema
 from iwpipe.collectors import COLLECTORS
-from iwpipe.config import DATA_DIR
+from iwpipe.config import DATA_DIR, DEFAULT_CONTACT_EMAIL
 from iwpipe.http import make_session
 
 
-def normalize(event, session, *, source, today, skip_geocode=False, refresh_assets=False):
+DEFAULT_EMAIL_NOTES = (
+    "default contact email",
+    "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
+    "no contact email: set DEFAULT_CONTACT_EMAIL in .env",
+)
+
+
+def _is_default_email(email):
+    return not email or email == DEFAULT_CONTACT_EMAIL or email.endswith("example.com")
+
+
+def _drop_notes(event, texts):
+    notes = event.setdefault("review", {}).setdefault("notes", [])
+    event["review"]["notes"] = [n for n in notes if n not in texts]
+
+
+def normalize(event, session, *, source, today, skip_geocode=False, refresh_assets=False,
+              site_emails=frozenset()):
     """Raw collector output -> a pushable event, flagging anything doubtful."""
     event.setdefault("source", source)
 
@@ -55,8 +72,6 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
     contact = event.setdefault(
         "contact", {"firstName": "", "lastName": "", "email": "", "phone": ""}
     )
-    from iwpipe.config import DEFAULT_CONTACT_EMAIL
-
     if not contact.get("firstName"):
         organizer = event.get("organizer") or event.get("name", "Event")
         contact["firstName"] = organizer[:60]
@@ -98,6 +113,19 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
         event["logo"] = str(folder / "logo.png")
         event.setdefault("flyer", {})["path"] = str(folder / "flyer.pdf")
 
+        # A real flyer PDF beats every default: read the contact off it.
+        source_pdf = folder / "source-flyer.pdf"
+        if source_pdf.exists():
+            event["flyerText"] = pdftext.extract_text(source_pdf)
+            email, phone = pdftext.contacts_from_text(event["flyerText"], site_emails)
+            if email and _is_default_email(contact.get("email", "")):
+                contact["email"] = email
+                _drop_notes(event, DEFAULT_EMAIL_NOTES)
+                schema.note(event, "email from flyer PDF")
+            if phone and not contact.get("phone"):
+                contact["phone"] = phone
+                schema.note(event, "phone from flyer PDF")
+
     # "2027 Battle in the Burgh" dated 2026 is a placeholder listing.
     year_in_name = re.search(r"\b(20\d\d)\b", event.get("name", ""))
     if year_in_name and event.get("date") and year_in_name.group(1) != event["date"][:4]:
@@ -125,6 +153,7 @@ def main() -> int:
 
     session = make_session()
     collector = COLLECTORS[args.source]
+    site_emails = getattr(collector, "SITE_EMAILS", frozenset())
     raw = collector.collect(
         session, fixture=args.from_fixture, limit=args.limit,
         dump_unparsed=args.dump_unparsed,
@@ -137,6 +166,7 @@ def main() -> int:
         event = normalize(
             item, session, source=args.source, today=today,
             skip_geocode=args.skip_geocode, refresh_assets=args.refresh_assets,
+            site_emails=site_emails,
         )
         if ledger.contains(event["sourceKey"], "production") or ledger.contains(
             event["sourceKey"], "development"

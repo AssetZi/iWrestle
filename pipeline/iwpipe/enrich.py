@@ -24,7 +24,7 @@ from .config import DEFAULT_CONTACT_EMAIL, ENRICH_CACHE_PATH, ENRICH_MODEL
 from .schema import note
 
 # Bump when the prompt or schema changes so cached answers are re-asked.
-PROMPT_VERSION = 1
+PROMPT_VERSION = 2
 
 DEFAULTED_DIVISIONS_NOTE = "no divisions found, defaulted"
 DEFAULT_EMAIL_NOTES = (
@@ -66,7 +66,9 @@ class BannerExtraction(BaseModel):
     evidence: str
 
 
-SYSTEM_PROMPT = """You read the promotional banner for a youth wrestling event and report only what is legibly printed on it. The pipeline already scraped the listing; you fill the gaps.
+SYSTEM_PROMPT = """You read the promotional material for a youth wrestling event and report only what is legibly printed. You get the event's banner image, and when the organizer published a flyer PDF you get that too. The pipeline already scraped the listing; you fill the gaps.
+
+Prefer the flyer PDF for contact, times, fees, registration and divisions; use the banner for the logo location (logoBBox always refers to the banner image, never the PDF).
 
 Rules:
 - Return null for anything that is not printed on the banner or not fully legible. Never guess, and never derive a phone, email, or website from a club or school name.
@@ -85,8 +87,9 @@ def banner_hash(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:16]
 
 
-def cache_key(event: dict[str, Any], image_hash: str) -> str:
-    return f"{event['sourceKey']}:{image_hash}:v{PROMPT_VERSION}"
+def cache_key(event: dict[str, Any], image_hash: str, pdf_hash: str = "") -> str:
+    suffix = f":{pdf_hash}" if pdf_hash else ""
+    return f"{event['sourceKey']}:{image_hash}{suffix}:v{PROMPT_VERSION}"
 
 
 def load_cache() -> dict[str, Any]:
@@ -109,7 +112,10 @@ def _is_default_email(email: str) -> bool:
     return not email or email == DEFAULT_CONTACT_EMAIL or email.endswith("example.com")
 
 
-def build_messages(event: dict[str, Any], image_bytes: bytes, media_type: str = "image/jpeg") -> list[dict[str, Any]]:
+def build_messages(
+    event: dict[str, Any], image_bytes: bytes, media_type: str = "image/jpeg",
+    pdf_bytes: bytes | None = None,
+) -> list[dict[str, Any]]:
     contact = event.get("contact") or {}
     notes = event.get("review", {}).get("notes", [])
     known = {
@@ -127,26 +133,33 @@ def build_messages(event: dict[str, Any], image_bytes: bytes, media_type: str = 
     if event.get("detailText"):
         text += "\n\nText from the event's own web page:\n" + event["detailText"]
 
-    return [{
-        "role": "user",
-        "content": [
-            {
-                "type": "image",
-                "source": {
-                    "type": "base64",
-                    "media_type": media_type,
-                    "data": base64.standard_b64encode(image_bytes).decode("ascii"),
-                },
-            },
-            {"type": "text", "text": text},
-        ],
+    content: list[dict[str, Any]] = [{
+        "type": "image",
+        "source": {
+            "type": "base64",
+            "media_type": media_type,
+            "data": base64.standard_b64encode(image_bytes).decode("ascii"),
+        },
     }]
+    if pdf_bytes:
+        content.append({
+            "type": "document",
+            "source": {
+                "type": "base64",
+                "media_type": "application/pdf",
+                "data": base64.standard_b64encode(pdf_bytes).decode("ascii"),
+            },
+        })
+        text = "The organizer's flyer PDF is attached.\n\n" + text
+    content.append({"type": "text", "text": text})
+    return [{"role": "user", "content": content}]
 
 
 def extract(
-    client: anthropic.Anthropic, event: dict[str, Any], image_bytes: bytes
+    client: anthropic.Anthropic, event: dict[str, Any], image_bytes: bytes,
+    pdf_bytes: bytes | None = None,
 ) -> tuple[BannerExtraction | None, Any]:
-    """One banner in, one validated extraction out (None on refusal)."""
+    """One banner (and flyer PDF, if any) in, one validated extraction out."""
     response = client.messages.parse(
         model=ENRICH_MODEL,
         max_tokens=4096,
@@ -156,7 +169,7 @@ def extract(
             "text": SYSTEM_PROMPT,
             "cache_control": {"type": "ephemeral"},
         }],
-        messages=build_messages(event, image_bytes),
+        messages=build_messages(event, image_bytes, pdf_bytes=pdf_bytes),
         output_format=BannerExtraction,
     )
     if response.stop_reason == "refusal":
@@ -164,11 +177,11 @@ def extract(
     return response.parsed_output, response.usage
 
 
-def extract_with_retry(client, event, image_bytes):
+def extract_with_retry(client, event, image_bytes, pdf_bytes=None):
     """Most specific failures first; transient ones get one more try."""
     for attempt in (1, 2):
         try:
-            return extract(client, event, image_bytes)
+            return extract(client, event, image_bytes, pdf_bytes)
         except anthropic.RateLimitError as error:
             if attempt == 2:
                 raise

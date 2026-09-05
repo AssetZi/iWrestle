@@ -142,3 +142,16 @@ def test_website_hosts_are_lowercased_but_paths_kept():
 
     assert _normalize_url("BREAKTHECHAINSWRESTLING.COM") == "https://breakthechainswrestling.com"
     assert _normalize_url("https://Club.org/Events/Fall") == "https://club.org/Events/Fall"
+
+
+def test_flyer_pdf_travels_with_the_banner():
+    event = base_event()
+    messages = enrich.build_messages(event, b"\xff\xd8fake", pdf_bytes=b"%PDF-1.4 fake")
+    types = [block["type"] for block in messages[0]["content"]]
+    assert types == ["image", "document", "text"]
+    assert messages[0]["content"][1]["source"]["media_type"] == "application/pdf"
+
+
+def test_cache_key_includes_the_pdf():
+    event = base_event()
+    assert enrich.cache_key(event, "img") != enrich.cache_key(event, "img", "pdf")

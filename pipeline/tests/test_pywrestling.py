@@ -147,3 +147,21 @@ def test_site_wide_webmaster_email_is_not_an_organizer_contact():
     pywrestling._enrich_from_detail(_FakeGetSession(Response()), event, site)
     assert event["contact"]["email"] == ""
     assert event["registration"] == "https://form.jotform.com/1"
+
+
+def test_flyer_pdf_is_found_in_jotform_widget_settings():
+    """The PDF Embedder widget keeps its file path as URL-encoded JSON."""
+    from urllib.parse import quote
+
+    from iwpipe.collectors.pywrestling import pdf_from_jotform
+
+    settings = quote(
+        '[{"name":"link","value":{"name":"26sepa.pdf","type":"application/pdf",'
+        '"path":"/uploads/pywrestlingadam/form_files/26sepa-abc.pdf","url":"www.jotform.com"}},'
+        '{"name":"attach","value":true}]'
+    )
+    html = f'<input class="form-hidden form-widget-settings" type="hidden" value="{settings}">'
+    assert pdf_from_jotform(html) == (
+        "https://www.jotform.com/uploads/pywrestlingadam/form_files/26sepa-abc.pdf?serveInlineWithCache=1"
+    )
+    assert pdf_from_jotform("<form></form>") == ""

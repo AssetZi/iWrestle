@@ -72,11 +72,14 @@ def main() -> int:
 
         image_bytes = banner.read_bytes()
         image_hash = enrich.banner_hash(image_bytes)
-        key = enrich.cache_key(event, image_hash)
+        source_pdf = assets.event_asset_dir(event["sourceKey"]) / "source-flyer.pdf"
+        pdf_bytes = source_pdf.read_bytes() if source_pdf.exists() else None
+        pdf_hash = enrich.banner_hash(pdf_bytes) if pdf_bytes else ""
+        key = enrich.cache_key(event, image_hash, pdf_hash)
 
         if args.dry_run:
             state = "cached" if key in cache else "would send"
-            print(f"{DIM}{state:<10}{RESET} {label}")
+            print(f"{DIM}{state:<10}{RESET} {label}  {'+pdf' if pdf_bytes else ''}")
             continue
 
         extraction = None
@@ -89,7 +92,7 @@ def main() -> int:
 
         if extraction is None:
             try:
-                extraction, usage = enrich.extract_with_retry(client, event, image_bytes)
+                extraction, usage = enrich.extract_with_retry(client, event, image_bytes, pdf_bytes)
             except anthropic.RateLimitError:
                 schema.note(event, "AI: rate limited, try again later")
                 counts["failed"] += 1

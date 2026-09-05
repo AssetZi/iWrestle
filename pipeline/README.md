@@ -86,8 +86,9 @@ about: age groups and event types become the exact raw values from
 timestamp, addresses are geocoded, and a logo and flyer are produced for every
 event. Anything doubtful becomes a note rather than a crash.
 
-**enrich** sends each event's banner image to Claude (`claude-opus-5`,
-structured JSON output) and fills only what is empty or defaulted: contact
+**enrich** sends each event's banner image, plus the organizer's flyer PDF
+when one was found, to Claude (`claude-opus-5`, structured JSON output) and
+fills only what is empty or defaulted: contact
 name, email, phone, organizer website, divisions, start and weigh-in times,
 entry fee, a registration URL if one is printed, and where the logo sits so
 it can be cropped. Scraped values are never overwritten. Every AI-sourced
@@ -120,9 +121,9 @@ of them:
   graphic laid onto a page with the essentials and links under it; else a
   one-page PDF rendered from the event's text. Every link on a flyer is a PDF
   link annotation, so it is tappable in the app's QuickLook viewer.
-- **Contact**: the source contact if parseable, else what the banner prints,
-  else the organizer's name plus the default email from `.env`, flagged in
-  review. Phone is optional: the app hides an empty row. It is still written
+- **Contact**: the email and phone printed on the organizer's flyer PDF
+  when there is one, else what enrich reads off the banner, else the
+  organizer's name plus the default email from `.env`, flagged in review. Phone is optional: the app hides an empty row. It is still written
   as an empty string because the App Store build's decode guard needs the
   field to exist; the relaxed guard ships with the next app update.
 
@@ -152,7 +153,7 @@ are now the only shapes in `iwpipe/cktool.py`:
 
 | Source | State | Notes |
 | --- | --- | --- |
-| pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Each block carries a 2:1 banner graphic, which becomes the flyer and feeds enrich. Detail pages hold no PDF or contact, only a JotForm registration iframe, which is captured as the registration link. Emails obfuscated with the site's `emN()` shift are decoded. Needs geocoding. |
+| pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Each block carries a 2:1 banner graphic that feeds enrich (logo location). Detail pages hold only a JotForm iframe, captured as the registration link; the organizer's real flyer PDF sits inside that form as a PDF Embedder widget, whose file path is parsed out of the widget settings and downloaded. Email and phone are read off the PDF text, and the PDF becomes the flyer and is attached to the enrich request. Emails obfuscated with the site's `emN()` shift are decoded; the site's own webmaster address is excluded. Needs geocoding. |
 | FloWrestling | Working | Uses the site's own schedule API, which returns coordinates and needs no geocoding or browser. Publishes no age divisions, so every event is flagged for review. |
 | Trackwrestling | Not built | Returns 406 to plain HTTP clients. Would need the headless browser. |
 | USA Wrestling | Blocked | Event listings sit behind a login. |
