@@ -3,11 +3,12 @@ PY := ./.venv/bin/python
 SOURCE ?= pywrestling
 FILE ?= $(shell ls -t data/events.*.json 2>/dev/null | head -1)
 
-.PHONY: help venv test collect review approve push push-prod reconcile clean
+.PHONY: help venv test token-check collect review approve push push-prod reconcile clean
 
 help:
 	@echo "make venv          create .venv and install pinned deps"
 	@echo "make test          offline parser and mapping tests"
+	@echo "make token-check   is the cktool token saved and working?"
 	@echo "make collect       scrape SOURCE=$(SOURCE) into data/"
 	@echo "make review        show the newest collected file"
 	@echo "make approve       approve every complete event in it"
@@ -25,6 +26,16 @@ venv:
 
 test:
 	$(PY) -m pytest tests -q
+
+# Is the cktool token saved and does it reach our container?
+token-check:
+	@xcrun cktool query-records \
+		--team-id RLZG42V7Y4 \
+		--container-id iCloud.zacherlInvestmentsLLC.iWrestle \
+		--environment development --database-type public \
+		--record-type Event --limit 1 >/dev/null 2>/tmp/cktool-check.err \
+		&& echo "token OK: reached the development database" \
+		|| (echo "token NOT working:"; cat /tmp/cktool-check.err | head -3)
 
 collect:
 	$(PY) bin/collect.py --source $(SOURCE)

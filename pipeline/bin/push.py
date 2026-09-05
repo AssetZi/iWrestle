@@ -26,41 +26,27 @@ BOLD, GREEN, YELLOW, RED, RESET = (
 )
 
 
-def push_one(event, environment, *, shape, dry_run):
-    """Create one record. Returns (record name, shape that worked)."""
+def push_one(event, environment, *, dry_run):
+    """Create one record; returns its CloudKit record name."""
     folder = event_asset_dir(event["sourceKey"])
     fields_path = folder / "fields.json"
     logo = Path(event["logo"])
     flyer = Path(event["flyer"]["path"])
 
-    for candidate in (shape,) + tuple(s for s in cktool.SHAPES if s != shape):
-        fields_path.write_text(
-            json.dumps(cktool.build_fields(event, candidate), indent=2) + "\n"
-        )
-        if dry_run:
-            print(f"    would run cktool create-record (shape={candidate})")
-            print(f"      --fields-file {fields_path}")
-            print(f"      --asset-files LOGO={logo} FLYER={flyer}")
-            return None, candidate
-        try:
-            response = cktool.create_record(fields_path, logo, flyer, environment)
-        except cktool.CKToolError as error:
-            message = str(error)
-            retryable = any(
-                token in message.lower()
-                for token in ("location", "reference", "field", "type", "decode")
-            )
-            if candidate != cktool.SHAPES[-1] and retryable:
-                print(f"    {YELLOW}shape {candidate} rejected, trying next{RESET}")
-                continue
-            raise
-        record_name = (
-            response.get("recordName")
-            or response.get("record", {}).get("recordName", "")
-        )
-        return record_name, candidate
+    fields_path.write_text(
+        json.dumps(cktool.build_fields(event), indent=2) + "\n"
+    )
+    if dry_run:
+        print("    would run cktool create-record")
+        print(f"      --fields-file {fields_path}")
+        print(f"      --asset-files LOGO={logo} FLYER={flyer}")
+        return None
 
-    raise cktool.CKToolError("every field shape was rejected")
+    response = cktool.create_record(fields_path, logo, flyer, environment)
+    return (
+        response.get("recordName")
+        or response.get("record", {}).get("recordName", "")
+    )
 
 
 def main() -> int:
@@ -106,14 +92,11 @@ def main() -> int:
             print("aborted")
             return 1
 
-    shape = cktool.SHAPES[0]
     pushed = 0
     for event in queue:
         print(f"{BOLD}push{RESET} {event['date'][:10]}  {event['name'][:50]}")
         try:
-            record_name, shape = push_one(
-                event, environment, shape=shape, dry_run=args.dry_run
-            )
+            record_name = push_one(event, environment, dry_run=args.dry_run)
         except cktool.CKToolError as error:
             print(f"  {RED}failed{RESET}: {error}")
             break

@@ -1,6 +1,4 @@
 """The fields file must mirror createEvent in CloudKitEventCRUD.swift."""
-import pytest
-
 from iwpipe import cktool
 from iwpipe.config import ADMIN_RECORD_NAME
 
@@ -54,8 +52,10 @@ def test_age_groups_use_the_list_type():
     assert fields["ageGroups"]["value"] == ["Youth", "Jr High"]
 
 
-@pytest.mark.parametrize("shape", cktool.SHAPES)
-def test_both_shapes_stay_serializable(shape):
-    import json
 
-    json.dumps(cktool.build_fields(EVENT, shape))
+
+def test_location_and_reference_use_the_confirmed_shapes():
+    """Both were verified against the development database on the first push."""
+    fields = cktool.build_fields(EVENT)
+    assert fields["location"]["value"] == {"latitude": 41.2, "longitude": -79.4}
+    assert fields["userID"]["value"]["action"] == "NONE"

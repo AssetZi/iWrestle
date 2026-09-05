@@ -41,26 +41,20 @@ def _run(args: list[str]) -> str:
     return process.stdout
 
 
-# cktool documents stringType, int64Type, timestampType, assetType and
-# assetListType by name but not the location or reference encodings. Both
-# plausible shapes are kept here and tried in order on the first push, so a
-# rejection self-corrects instead of blocking. See README "Field shapes".
-SHAPES = ("object", "compact")
-
-
-def _reference_value(shape: str) -> Any:
-    if shape == "compact":
-        return ADMIN_RECORD_NAME
+# cktool names stringType, int64Type, timestampType, assetType and
+# assetListType in its own docs but not the location or reference encodings.
+# These two were confirmed against the development database on the first
+# push: the record came back with the coordinates and the admin reference
+# intact, matching records the app itself writes.
+def _reference_value() -> Any:
     return {"recordName": ADMIN_RECORD_NAME, "action": "NONE"}
 
 
-def _location_value(latitude: float, longitude: float, shape: str) -> Any:
-    if shape == "compact":
-        return [latitude, longitude]
+def _location_value(latitude: float, longitude: float) -> Any:
     return {"latitude": latitude, "longitude": longitude}
 
 
-def build_fields(event: dict[str, Any], shape: str = "object") -> dict[str, Any]:
+def build_fields(event: dict[str, Any]) -> dict[str, Any]:
     """The fields file cktool consumes, mirroring createEvent in the app.
 
     Keys match Event.Field in iWrestle/Models/Event.swift. `registration` is
@@ -72,7 +66,7 @@ def build_fields(event: dict[str, Any], shape: str = "object") -> dict[str, Any]
     fields: dict[str, Any] = {
         "userID": {
             "type": "referenceType",
-            "value": _reference_value(shape),
+            "value": _reference_value(),
         },
         "eventType": {"type": "stringType", "value": event["eventType"]},
         "name": {"type": "stringType", "value": event["name"]},
@@ -80,7 +74,7 @@ def build_fields(event: dict[str, Any], shape: str = "object") -> dict[str, Any]
         "location": {
             "type": "locationType",
             "value": _location_value(
-                location["latitude"], location["longitude"], shape
+                location["latitude"], location["longitude"]
             ),
         },
         "address": {"type": "stringType", "value": event["address"]},

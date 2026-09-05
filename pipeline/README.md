@@ -115,11 +115,15 @@ Resolve those in review.
 
 ## Field shapes
 
-cktool documents `stringType`, `int64Type`, `timestampType`, `assetType` and
-`assetListType` by name, but not how a location or a reference is encoded. Two
-plausible encodings are implemented in `iwpipe/cktool.py`, and the first push
-tries them in order, keeping whichever the server accepts. Once one succeeds,
-make it the only one and delete the other.
+cktool names `stringType`, `int64Type`, `timestampType`, `assetType` and
+`assetListType` in its docs but not the location or reference encodings.
+Both were confirmed against the development database on the first push and
+are now the only shapes in `iwpipe/cktool.py`:
+
+```json
+"location": {"type": "locationType", "value": {"latitude": 41.3, "longitude": -74.8}}
+"userID":   {"type": "referenceType", "value": {"recordName": "...", "action": "NONE"}}
+```
 
 ## Sources
 
