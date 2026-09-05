@@ -41,6 +41,11 @@ PLACEHOLDER = re.compile(r"^\s*(cancel+ed|postponed|no|tba|tbd|test|placeholder)
 TBA_ADDRESS = re.compile(r"\btba\b|\btbd\b", re.I)
 
 
-def is_placeholder(name: str, address: str = "") -> bool:
-    """A listing that is not really an event: cancelled, or venue still TBA."""
-    return bool(PLACEHOLDER.search(name or "")) or bool(TBA_ADDRESS.search(address or ""))
+def is_placeholder(name: str) -> bool:
+    """A listing that is not an event: cancelled, postponed, or a bare "NO"/"TBA"."""
+    return bool(PLACEHOLDER.search(name or ""))
+
+
+def venue_is_tba(address: str) -> bool:
+    """The event is real but its venue is still "TBA"; worth a look, not a skip."""
+    return bool(TBA_ADDRESS.search(address or ""))

@@ -75,10 +75,13 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
         if not INCLUDE_COLLEGE:
             event["review"]["status"] = schema.STATUS_SKIP
 
-    # Cancelled listings and venues still "TBA" are not events yet.
-    if level.is_placeholder(event.get("name", ""), event.get("address", "")):
+    # Cancelled listings are not events; a "TBA" venue is real but unfinished.
+    if level.is_placeholder(event.get("name", "")):
         schema.note(event, "cancelled or placeholder listing")
         event["review"]["status"] = schema.STATUS_SKIP
+        skip_geocode = True
+    elif level.venue_is_tba(event.get("address", "")):
+        schema.note(event, "venue still TBA at the source")
         skip_geocode = True
 
     if not event.get("ageGroups"):

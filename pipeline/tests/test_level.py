@@ -28,5 +28,13 @@ def test_placeholders():
 
     assert is_placeholder("CANCELLED 2026 MWP Vision Quest")
     assert is_placeholder("NO")
-    assert is_placeholder("IHSA 1A Regional 4", "TBA, TBA, TBA, IL TBA")
-    assert not is_placeholder("Takedown in the Den", "Elizabethtown Area High School, 600 East High Street, Elizabethtown, PA 17022")
+    assert not is_placeholder("IHSA 1A Regional 4")
+    assert not is_placeholder("Northwest Bigfoot Battle")
+    assert not is_placeholder("Takedown in the Den")
+
+
+def test_tba_venue_is_a_note_not_a_skip():
+    from iwpipe.level import venue_is_tba
+
+    assert venue_is_tba("TBA, TBA, TBA, IL TBA")
+    assert not venue_is_tba("Elizabethtown Area High School, 600 East High Street, Elizabethtown, PA 17022")

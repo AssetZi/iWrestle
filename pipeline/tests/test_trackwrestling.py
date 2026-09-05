@@ -65,7 +65,7 @@ def test_rows_flo_already_has_are_dropped(monkeypatch, events):
     monkeypatch.setattr(t, "_session", lambda s: ("1", "abc"))
     pages = iter([html, ""])
     monkeypatch.setattr(t, "_fetch", lambda s, url: next(pages))
-    monkeypatch.setattr(flowrestling, "search_by_name", lambda s, name, day: {"id": "x"} if "Hurst" in name else None)
+    monkeypatch.setattr(flowrestling, "search_by_name", lambda s, name, day: {"id": "x", "location": {"coordinates": {"latitude": 1, "longitude": 2}}} if "Hurst" in name else None)
     kept = t.collect(None, flo_session=object())
     names = [e["name"] for e in kept]
     assert "Hurst Invitational" not in names

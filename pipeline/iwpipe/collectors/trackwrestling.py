@@ -181,10 +181,17 @@ def collect(
         if states and event.get("region") and event["region"] not in states:
             continue
         if not fixture and flo_session is not None:
-            # Flo's version has the contact and a real page; let it win.
-            if flowrestling.search_by_name(flo_session, event["name"], _first_day(event["dateText"])):
+            # Flo's version has the contact and a real page; let it win,
+            # unless Flo lists it without a venue, which the app cannot show.
+            match = flowrestling.search_by_name(flo_session, event["name"], _first_day(event["dateText"]))
+            if match and ((match.get("location") or {}).get("coordinates") or {}).get("latitude") is not None:
                 continue
-            note(event, "Track-only event, no organizer contact available")
+            if match:
+                if match.get("url"):
+                    event["sourceUrl"] = match["url"]
+                note(event, "Flo lists this event without a venue; Track's address used")
+            else:
+                note(event, "Track-only event, no organizer contact available")
         events.append(event)
         if limit and len(events) >= limit:
             break
