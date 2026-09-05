@@ -81,7 +81,7 @@ reconcile:
 # The unattended chain. Development only: production is always a person.
 # enrich exit code 2 means no API key; the chain continues without it.
 routine:
-	@set -e; for src in pywrestling flowrestling; do \
+	@set -e; for src in pywrestling flowrestling trackwrestling; do \
 		f=data/events.$$src.$(DATE).json; \
 		echo "== $$src"; \
 		$(PY) bin/collect.py --source $$src --out $$f; \

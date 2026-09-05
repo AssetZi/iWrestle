@@ -11,7 +11,25 @@
     "longitude": -80.1490638,
     "matched": "2419, State Avenue, Montour Junction, Coraopolis, Allegheny County, Pennsylvania, 15108, United States"
   },
+  "alvernia university plex, 465 saint bernardine street, reading, pa 19607": {
+    "confidence": "city",
+    "latitude": 40.335345,
+    "longitude": -75.9279495,
+    "matched": "Reading, Berks County, Pennsylvania, United States"
+  },
+  "asplundh field house, 2775 buck road, bryn athyn, pa 19009": {
+    "confidence": "precise",
+    "latitude": 40.1304205,
+    "longitude": -75.0594796,
+    "matched": "2775, Buck Road, Bryn Athyn, Montgomery County, Pennsylvania, 19006, United States"
+  },
   "bethel park high school, 309 church road bethel park, pa 15102": {
+    "confidence": "precise",
+    "latitude": 40.3335572,
+    "longitude": -80.0418398,
+    "matched": "Bethel Park High School, 309, Church Road, Coverdale, Bethel Park, Allegheny County, Pennsylvania, 15102, United States"
+  },
+  "bethel park high school, 309 church road, bethel park, pa 15102": {
     "confidence": "precise",
     "latitude": 40.3335572,
     "longitude": -80.0418398,
@@ -59,6 +77,12 @@
     "longitude": -74.214257,
     "matched": "600, Pearl Street, Union Square, Elizabeth, Union County, New Jersey, 07202, United States"
   },
+  "elizabethtown area high school, 600 east high street, elizabethtown, pa 17022": {
+    "confidence": "precise",
+    "latitude": 40.155601,
+    "longitude": -76.5942107,
+    "matched": "Elizabethtown Junior and Senior High School, 600, East High Street, Elizabethtown, Lancaster County, Pennsylvania, 17022, United States"
+  },
   "elizabethtown area school district, 600 east high street, elizabethtown, pa 17022": {
     "confidence": "precise",
     "latitude": 40.155601,
@@ -76,6 +100,12 @@
     "latitude": 40.6643916,
     "longitude": -75.3388303,
     "matched": "Freedom High School, 3149, Chester Avenue, Gradwohl Terrace, Butztown, Bethlehem, Northampton County, Pennsylvania, 18020, United States"
+  },
+  "halifax area school district, 3940 peters mountain road, halifax, pa 17032": {
+    "confidence": "precise",
+    "latitude": 40.456254,
+    "longitude": -76.9266659,
+    "matched": "Peters Mountain Road, Halifax Township, Dauphin County, Pennsylvania, 17032, United States"
   },
   "harrisburg high school, 2451 market street, harrisburg, pa 17103": {
     "confidence": "precise",
@@ -100,6 +130,12 @@
     "latitude": 40.8179605,
     "longitude": -81.4543931,
     "matched": "Canton Avenue Northwest, Perry Township, Stark County, Ohio, 44708, United States"
+  },
+  "mercyhurst university, 501 east 38th street, erie, pa 16546": {
+    "confidence": "precise",
+    "latitude": 42.1041456,
+    "longitude": -80.0538851,
+    "matched": "Mercyhurst University, 501, East 38th Street, Southeast Hills, Erie, Erie County, Pennsylvania, 16546, United States"
   },
   "monroeville convention center, 209 mall plaza boulevard, monroeville, pa 15146": {
     "confidence": "precise",
@@ -136,6 +172,12 @@
     "latitude": 41.2394743,
     "longitude": -77.0063842,
     "matched": "315, Hepburn Street, Williamsport, Lycoming County, Pennsylvania, 17701, United States"
+  },
+  "trinity high school, 231 park avenue, washington, pa 15301": {
+    "confidence": "precise",
+    "latitude": 40.1646651,
+    "longitude": -80.2494264,
+    "matched": "Trinity High School, 231, Park Avenue, Gabby Heights, North Franklin Township, Washington County, Pennsylvania, 15301, United States"
   },
   "trinity high school, 3601 simpson ferry road, camp hill, pa 17011": {
     "confidence": "precise",

@@ -161,7 +161,7 @@ are now the only shapes in `iwpipe/cktool.py`:
 | pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Each block carries a 2:1 banner graphic that feeds enrich (logo location). Every event has up to three pages: an info page (`slug-M-D.html`), a sign-up page (`slug-M-D-or.html`), and sometimes only the organizer's own site; the event link prefers them in that order and is never the site root. Both pages are followed; a JotForm on either is the registration link, and the organizer's real flyer PDF sits inside that form as a PDF Embedder widget, parsed out of the widget settings and downloaded. Email and phone are read off the PDF text, the PDF becomes the flyer, and it is attached to the enrich request. Two events sometimes share one form, so a PDF that names a different event is dropped and noted. Webmaster and form-owner addresses are excluded from contacts. Needs geocoding. |
 | FloWrestling detail | Working | `GET /api/event-hub/{coreId}` per event supplies the organizer contact (`eventContact`), the full street address, and the organizer's website. |
 | FloWrestling | Working | Uses the site's own schedule API, which returns coordinates and needs no geocoding or browser. Publishes no age divisions, so every event is flagged for review. |
-| Trackwrestling | Not built | Returns 406 to plain HTTP clients. Would need the headless browser; PYW events that register through Trackwrestling still get that link. |
+| Trackwrestling | Working (listing) | The open-tournaments search, filtered to PA for the next twelve months, paged with the filter carried on every request. Rows give name, dates, venue and street address, the registration link and the organizer's logo. The site rejects browser-looking clients with a 406 but accepts a plain one, so this collector uses its own minimal headers. Contacts are not exposed: the event viewer behind "Enter Event" is a JavaScript app, so those events keep the default email unless another source covers them. |
 | USA Wrestling | Blocked | Event listings sit behind a login. |
 
 ### FloWrestling API
@@ -190,7 +190,8 @@ wins and the second is surfaced for a decision rather than pushed blindly.
 ## Scheduling
 
 A Claude desktop scheduled task named `iwrestle-events-routine` runs
-`make routine` on the 1st and 15th at 8am and reports what it did: counts of
+`make routine` (pywrestling, FloWrestling, Trackwrestling) on the 1st and
+15th at 8am and reports what it did: counts of
 approved, incomplete and skipped events, which events got AI-sourced
 contacts, possible duplicates across sources, the enrich cost line, and the
 reconcile counts. It only ever writes to the **development** database.
