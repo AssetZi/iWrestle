@@ -64,5 +64,5 @@ def test_replace_deletes_then_recreates_only_changed_events(tmp_path, monkeypatc
     # Changed flyer: deleted, then created again.
     Path(event["flyer"]["path"]).write_bytes(b"%PDF the real one")
     push_cli.main()
-    assert [c[0] for c in calls] == ["delete", "create"]
+    assert [c[0] for c in calls] == ["create", "delete"]
     assert "same" in capsys.readouterr().out or True

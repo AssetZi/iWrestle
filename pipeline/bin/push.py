@@ -51,10 +51,15 @@ def push_one(event, environment, *, dry_run, replace_record=None):
         print(f"      --asset-files LOGO={logo} FLYER={flyer}")
         return None, digest
 
-    if replace_record:
-        cktool.delete_record(replace_record, environment)
+    # Create first, delete second: a failed create must never leave the
+    # event missing from the database.
     response = cktool.create_record(fields_path, logo, flyer, environment)
     name = response.get("recordName") or response.get("record", {}).get("recordName", "")
+    if replace_record:
+        try:
+            cktool.delete_record(replace_record, environment)
+        except cktool.CKToolError as error:
+            print(f"    {YELLOW}old record {replace_record[:8]} not deleted: {str(error).splitlines()[-1][:80]}{RESET}")
     return name, digest
 
 
@@ -113,6 +118,7 @@ def main() -> int:
             return 1
 
     pushed = 0
+    failed = 0
     for event in queue:
         replacing = event.pop("_replace", None)
         verb = "replace" if replacing else "push"
@@ -123,7 +129,8 @@ def main() -> int:
             )
         except cktool.CKToolError as error:
             print(f"  {RED}failed{RESET}: {error}")
-            break
+            failed += 1
+            continue
         if args.dry_run:
             continue
         ledger.record(
@@ -137,7 +144,7 @@ def main() -> int:
     if args.dry_run:
         print(f"\ndry run: {len(queue)} events would be pushed to {environment}")
     else:
-        print(f"\npushed {pushed}/{len(queue)} to {environment}")
+        print(f"\npushed {pushed}/{len(queue)} to {environment}" + (f", {failed} failed" if failed else ""))
     return 0
 
 

@@ -96,12 +96,17 @@ def find_similar(source_key: str, name_slug: str, day: str, location: dict[str, 
     automatically (the two listings may differ), so it is surfaced in review.
     """
     matches: list[str] = []
+    source = source_key.split(":", 1)[0]
     for entry in load().values():
         other = entry["sourceKey"]
         if other == source_key or other in matches:
             continue
         if other.endswith(f":{name_slug}:{day}"):
             matches.append(other)
+            continue
+        # A site listing two events at one gym on one day means two events
+        # (an open and a dual, say). Proximity only matters across sites.
+        if other.split(":", 1)[0] == source:
             continue
         if not location or not entry.get("location") or not entry.get("date"):
             continue

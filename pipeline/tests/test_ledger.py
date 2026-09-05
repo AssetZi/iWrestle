@@ -44,3 +44,12 @@ def test_an_event_never_matches_itself(monkeypatch, tmp_path):
         "harold-winshel-memorial-round-robin", "2026-09-12",
         {"latitude": 40.2394, "longitude": -74.9658},
     ) == []
+
+
+def test_sibling_events_from_the_same_source_are_not_duplicates(monkeypatch, tmp_path):
+    """West Penn Open and West Penn Duals share a gym and a day on purpose."""
+    _seed(monkeypatch, tmp_path)
+    assert ledger.find_similar(
+        "pywrestling:west-penn-duals:2026-09-12", "west-penn-duals", "2026-09-12",
+        {"latitude": 40.2394, "longitude": -74.9658},
+    ) == []
