@@ -29,6 +29,12 @@
     "longitude": -93.2388144,
     "matched": "Si Melby Hall, 715, 23rd Avenue South, Cedar-Riverside, Stadium Village, University, Minneapolis, Hennepin County, Minnesota, 55454, United States"
   },
+  "851 e bardsley ave, 851 east bardsley avenue, tulare, ca 93274": {
+    "confidence": "precise",
+    "latitude": 36.1967368,
+    "longitude": -119.3359503,
+    "matched": "851, East Bardsley Avenue, Tulare, Tulare County, California, 93274, United States"
+  },
   "851 e bardsley ave, tulare, ca": {
     "confidence": "precise",
     "latitude": 36.1967368,
@@ -82,6 +88,12 @@
     "latitude": 41.754829,
     "longitude": -88.3495036,
     "matched": "Aurora University, 347, South Gladstone Avenue, Aurora, Aurora Township, Kane County, Illinois, 60506, United States"
+  },
+  "averett university athletic complex, 707 mount cross road, danville, va 24540": {
+    "confidence": "precise",
+    "latitude": 36.5968843,
+    "longitude": -79.4366246,
+    "matched": "E. Stuart James Grant Center, 707, Mount Cross Road, Danville, Pittsylvania County, Virginia, 24540, United States"
   },
   "averett university athletic complex, danville, va": {
     "confidence": "precise",
@@ -137,6 +149,12 @@
     "longitude": -92.6863607,
     "matched": "Central Methodist University, Old Road, Fayette, Howard County, Missouri, 65248, United States"
   },
+  "chisholm trail high school, 3100 northwest college drive, fort worth, tx 76179": {
+    "confidence": "precise",
+    "latitude": 32.8381374,
+    "longitude": -97.3903334,
+    "matched": "Chisholm Trail High School, 3100, Northwest College Drive, Fort Worth, Tarrant County, Texas, 76179, United States"
+  },
   "chisholm trail high school, fort worth, tx": {
     "confidence": "precise",
     "latitude": 32.8381374,
@@ -155,17 +173,35 @@
     "longitude": -81.2139661,
     "matched": "Clover Community Park, 256, Clover, York County, South Carolina, 29710, United States"
   },
+  "college park high school gymnasium, 3701 college park drive, the woodlands, tx 77384": {
+    "confidence": "precise",
+    "latitude": 30.2043635,
+    "longitude": -95.4698273,
+    "matched": "The Woodlands College Park High School, 3701, College Park Drive, College Park, The Woodlands, Montgomery County, Texas, 77384, United States"
+  },
   "colorado state university-pueblo, 2200 bonforte blvd, 2200 bonforte boulevard, pueblo, co 81001": {
     "confidence": "precise",
     "latitude": 38.308742,
     "longitude": -104.5768455,
     "matched": "Colorado State University-Pueblo, 2200, Bonforte Boulevard, Pueblo, Pueblo County, Colorado, 81001, United States"
   },
+  "coolidge high school, 684 west northern avenue, coolidge, az 85128": {
+    "confidence": "precise",
+    "latitude": 32.9821221,
+    "longitude": -111.5291405,
+    "matched": "Coolidge High School, 684, West Northern Avenue, Heartland Ranch, Coolidge, Pinal County, Arizona, 85128, United States"
+  },
   "coolidge high school, coolidge, az": {
     "confidence": "precise",
     "latitude": 32.9821221,
     "longitude": -111.5291405,
     "matched": "Coolidge High School, 684, West Northern Avenue, Heartland Ranch, Coolidge, Pinal County, Arizona, 85128, United States"
+  },
+  "cornell college - richard and norma small athletic and wellness center - (saw), 835 1st street west, mount vernon, ia 52314": {
+    "confidence": "precise",
+    "latitude": 41.9265636,
+    "longitude": -91.424144,
+    "matched": "835, 1st Street West, Mount Vernon, Linn County, Iowa, 52314, United States"
   },
   "cornell college - richard and norma small athletic and wellness center - (saw), mount vernon, ia": {
     "confidence": "city",
@@ -257,6 +293,18 @@
     "longitude": -82.3249846,
     "matched": "Gainesville, Alachua County, Florida, United States"
   },
+  "fieldhouse at 17 springs, 120 champions drive, millbrook, al 36054": {
+    "confidence": "city",
+    "latitude": 32.4798575,
+    "longitude": -86.3619163,
+    "matched": "Millbrook, Elmore County, Alabama, 36054, United States"
+  },
+  "florence high school, 1000 south main street, florence, az 85132": {
+    "confidence": "precise",
+    "latitude": 33.0223005,
+    "longitude": -111.3897753,
+    "matched": "Florence High School, 1000, South Main Street, Florence, Pinal County, Arizona, 85132, United States"
+  },
   "florence high school, florence, az": {
     "confidence": "precise",
     "latitude": 33.0223005,
@@ -299,6 +347,12 @@
     "longitude": -110.1629678,
     "matched": "412, West Buffalo Street, Rosedale Heights, Holbrook, Navajo County, Arizona, 86025, United States"
   },
+  "hoover high school, 1000 buccaneer drive, hoover, al 35244": {
+    "confidence": "precise",
+    "latitude": 33.3437281,
+    "longitude": -86.837821,
+    "matched": "Hoover High School, 1000, Buccaneer Drive, Hoover, Jefferson County, Alabama, 35226, United States"
+  },
   "hoover high school, hoover, al": {
     "confidence": "precise",
     "latitude": 33.3437281,
@@ -316,6 +370,12 @@
     "latitude": 34.0859216,
     "longitude": -86.5887757,
     "matched": "J. B. Pennington High School, 81, College Street, Blountsville, Blount County, Alabama, 35031, United States"
+  },
+  "jamestown high school, 3751 john tyler highway, williamsburg, va 23185": {
+    "confidence": "precise",
+    "latitude": 37.2602334,
+    "longitude": -76.7380236,
+    "matched": "John Tyler Highway, Canterbury Hills, Williamsburg, James City County, Virginia, 23185, United States"
   },
   "jamestown high school, williamsburg, va": {
     "confidence": "city",
@@ -443,6 +503,12 @@
     "longitude": -97.0585717,
     "matched": "Stillwater, Payne County, Oklahoma, United States"
   },
+  "orange county high school, 201 selma road, orange, va 22960": {
+    "confidence": "precise",
+    "latitude": 38.2447064,
+    "longitude": -78.0946109,
+    "matched": "Orange County High School, 201, Selma Road, Orange, Orange County, Virginia, 22960, United States"
+  },
   "orange county high school, orange, va": {
     "confidence": "precise",
     "latitude": 38.2447064,
@@ -455,11 +521,23 @@
     "longitude": -112.3701989,
     "matched": "Ottawa University Arizona - OUAZ, 15950, North Civic Center Plaza, Maricopa County Northwest Regional Court Center, Surprise, Maricopa County, Arizona, 85374, United States"
   },
+  "palm bay high school, 101 pirate lane, melbourne, fl 32901": {
+    "confidence": "precise",
+    "latitude": 28.0496963,
+    "longitude": -80.6209434,
+    "matched": "Pirate Lane, Melbourne, Brevard County, Florida, 32905, United States"
+  },
   "palm bay high school, melbourne, fl": {
     "confidence": "precise",
     "latitude": 28.0484466,
     "longitude": -80.6184547,
     "matched": "Palm Bay High School, School Street, Melbourne, Brevard County, Florida, 32905, United States"
+  },
+  "pelham recreation center, 2020 pelham park boulevard, pelham, al 35124": {
+    "confidence": "precise",
+    "latitude": 33.3064575,
+    "longitude": -86.8093518,
+    "matched": "PELHAM RECREATION CENTER, 2020, Pelham Park Boulevard, Cahaba Valley Estates, Pelham, Shelby County, Alabama, 35124, United States"
   },
   "pelham recreation center, pelham, al": {
     "confidence": "precise",
@@ -492,11 +570,23 @@
     "longitude": -76.9891472,
     "matched": "Messiah Campus Post Office, 1, University Avenue (Closed May-Aug), Grantham, Mechanicsburg, Cumberland County, Pennsylvania, 17055, United States"
   },
+  "somerset college preparatory academy south, 19701 southwest 127th avenue, miami, fl 33177": {
+    "confidence": "precise",
+    "latitude": 25.5826634,
+    "longitude": -80.3964242,
+    "matched": "19701, Southwest 127th Avenue, Miami, Miami-Dade County, Florida, 33177, United States"
+  },
   "somerset college preparatory academy south, miami, fl": {
     "confidence": "city",
     "latitude": 25.7741566,
     "longitude": -80.1935973,
     "matched": "Miami, Miami-Dade County, Florida, United States"
+  },
+  "sonora elementary school, 830 greenley road, sonora, ca 95370": {
+    "confidence": "precise",
+    "latitude": 37.9802783,
+    "longitude": -120.3700605,
+    "matched": "830, Greenley Road, Sonora, Tuolumne County, California, 95370, United States"
   },
   "sonora elementary school, sonora, ca": {
     "confidence": "precise",
@@ -527,6 +617,12 @@
     "latitude": 32.4338835,
     "longitude": -90.1531806,
     "matched": "Saint Andrew's Episcopal School - North Campus, 370, Old Agency Road, Ridgeland, Madison County, Mississippi, 39157, United States"
+  },
+  "st. johns country day school, 3100 doctors lake drive, orange park, fl 32073": {
+    "confidence": "precise",
+    "latitude": 30.1611009,
+    "longitude": -81.7167156,
+    "matched": "Doctors Lake Drive, Orange Park, Clay County, Florida, 32073, United States"
   },
   "st. johns country day school, orange park, fl": {
     "confidence": "city",
@@ -586,6 +682,12 @@
     "longitude": -77.0063842,
     "matched": "315, Hepburn Street, Williamsport, Lycoming County, Pennsylvania, 17701, United States"
   },
+  "thompson high school, 1921 warrior parkway, alabaster, al 35007": {
+    "confidence": "precise",
+    "latitude": 33.2229005,
+    "longitude": -86.8469868,
+    "matched": "Thompson High School, 1921, Warrior Parkway, Alabaster, Shelby County, Alabama, 35007, United States"
+  },
   "thompson high school, alabaster, al": {
     "confidence": "precise",
     "latitude": 33.2229005,
@@ -616,11 +718,23 @@
     "longitude": -111.7178868,
     "matched": "Utah Valley University, 800, West University Parkway, Orem, Utah County, Utah, 84058, United States"
   },
+  "uindy athletics & recreation center, 3833 campus way, indianapolis, in 46227": {
+    "confidence": "city",
+    "latitude": 39.7683331,
+    "longitude": -86.1583502,
+    "matched": "Indianapolis, Marion County, Indiana, United States"
+  },
   "uindy athletics & recreation center, indianapolis, in": {
     "confidence": "city",
     "latitude": 39.7683331,
     "longitude": -86.1583502,
     "matched": "Indianapolis, Marion County, Indiana, United States"
+  },
+  "union county high school, 4464 u.s. 60, morganfield, ky 42437": {
+    "confidence": "city",
+    "latitude": 37.6833776,
+    "longitude": -87.9166916,
+    "matched": "Morganfield, Union County, Kentucky, United States"
   },
   "university of missouri, 100 matc, columbia, mo 65211": {
     "confidence": "city",
@@ -645,6 +759,12 @@
     "latitude": 39.6682761,
     "longitude": -75.5853813,
     "matched": "William Penn High School, 713, East Basin Road, Penn Acres, Stockton, Wilmington Manor, New Castle County, Delaware, 19720, United States"
+  },
+  "williamson county ag expo park, 4215 long lane, franklin, tn 37064": {
+    "confidence": "precise",
+    "latitude": 35.8650151,
+    "longitude": -86.8278563,
+    "matched": "Williamson County AG Expo Park, 4215, Long Lane, Franklin, Williamson County, Middle Tennessee, Tennessee, 37064, United States"
   },
   "williamson county ag expo park, franklin, tn": {
     "confidence": "precise",

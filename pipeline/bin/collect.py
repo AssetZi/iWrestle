@@ -160,6 +160,11 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
     if year_in_name and event.get("date") and year_in_name.group(1) != event["date"][:4]:
         schema.note(event, f"name says {year_in_name.group(1)} but date is {event['date'][:4]}, verify")
 
+    # A venue still "TBA" with nothing to place on the map is not listable
+    # yet; keep it out of the pending pile so review stays readable.
+    if level.venue_is_tba(event.get("address", "")) and not event.get("location"):
+        event["review"]["status"] = schema.STATUS_SKIP
+
     for problem in schema.validate(event):
         schema.note(event, problem)
 
