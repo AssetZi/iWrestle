@@ -230,8 +230,16 @@ def apply_detail(event: dict[str, Any], detail: dict[str, Any]) -> None:
             event["contact"]["firstName"], event["contact"]["lastName"] = name, "(Organizer)"
         event["organizer"] = event.get("organizer") or name
 
-    address = (detail.get("location") or {}).get("address") or {}
-    venue = (detail.get("location") or {}).get("name") or ""
+    where = detail.get("location") or {}
+    coordinates = where.get("coordinates") or {}
+    if coordinates.get("latitude") is not None and not event.get("location"):
+        event["location"] = {
+            "latitude": coordinates["latitude"], "longitude": coordinates["longitude"],
+        }
+    address = where.get("address") or {}
+    venue = where.get("name") or ""
+    if address.get("state") and not event.get("region"):
+        event["region"] = address["state"]
     parts = [venue, address.get("line1"), address.get("city"),
              " ".join(filter(None, [address.get("state"), address.get("zipCode")]))]
     full = ", ".join(p for p in parts if p)

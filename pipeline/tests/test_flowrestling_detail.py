@@ -39,3 +39,11 @@ def test_role_names_stay_in_organizer_form():
     event = blank_event("flowrestling")
     flowrestling.apply_detail(event, {"eventContact": {"name": "Tournament Director", "email": "t@d.org"}})
     assert event["contact"]["lastName"] == "(Organizer)"
+
+
+def test_detail_supplies_coordinates_and_state_when_the_listing_lacks_them():
+    detail = json.loads(FIXTURE.read_text())["data"]
+    event = blank_event("flowrestling")
+    flowrestling.apply_detail(event, detail)
+    assert event["location"] == {"latitude": 40.4326759, "longitude": -79.7911664}
+    assert event["region"] == "PA"

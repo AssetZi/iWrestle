@@ -5,6 +5,12 @@
     "longitude": -72.5150285,
     "matched": "Anthony S. Caprio Alumni Healthful Living Center, 1215, Wilbraham Road, Sixteen Acres, Springfield, Hampden County, Massachusetts, 01119, United States"
   },
+  "2 college hill, westminster, md 21157": {
+    "confidence": "precise",
+    "latitude": 39.5851682,
+    "longitude": -77.0037276,
+    "matched": "McDaniel College, 2, Littlestown Pike, Sullivan Heights, Westminster, Carroll County, Maryland, 21157, United States"
+  },
   "5275 trussville clay rd, trussville, al": {
     "confidence": "precise",
     "latitude": 33.6602189,
@@ -41,6 +47,12 @@
     "longitude": -80.1490638,
     "matched": "2419, State Avenue, Montour Junction, Coraopolis, Allegheny County, Pennsylvania, 15108, United States"
   },
+  "alfred j. loos field house, addison, tx": {
+    "confidence": "precise",
+    "latitude": 32.9412584,
+    "longitude": -96.8500488,
+    "matched": "Alfred J. Loos Field House, 3825, Spring Valley Road, Addison, Dallas County, Texas, 75001, United States"
+  },
   "alliance, alliance, oh": {
     "confidence": "precise",
     "latitude": 40.9211679,
@@ -58,6 +70,12 @@
     "latitude": 40.1304205,
     "longitude": -75.0594796,
     "matched": "2775, Buck Road, Bryn Athyn, Montgomery County, Pennsylvania, 19006, United States"
+  },
+  "asplundh field house, bryn athyn, pa": {
+    "confidence": "precise",
+    "latitude": 40.129286,
+    "longitude": -75.059626,
+    "matched": "Asplundh Field House, Buck Road, Bryn Athyn, Montgomery County, Pennsylvania, 19006, United States"
   },
   "aurora university, aurora, il": {
     "confidence": "precise",
@@ -113,6 +131,12 @@
     "longitude": -74.8351007,
     "matched": "Centenary University, 1st Avenue, Hackettstown, Warren County, New Jersey, 07840, United States"
   },
+  "central methodist university , fayette, mo": {
+    "confidence": "precise",
+    "latitude": 39.150919,
+    "longitude": -92.6863607,
+    "matched": "Central Methodist University, Old Road, Fayette, Howard County, Missouri, 65248, United States"
+  },
   "chisholm trail high school, fort worth, tx": {
     "confidence": "precise",
     "latitude": 32.8381374,
@@ -143,11 +167,23 @@
     "longitude": -111.5291405,
     "matched": "Coolidge High School, 684, West Northern Avenue, Heartland Ranch, Coolidge, Pinal County, Arizona, 85128, United States"
   },
+  "cornell college - richard and norma small athletic and wellness center - (saw), mount vernon, ia": {
+    "confidence": "city",
+    "latitude": 41.9222443,
+    "longitude": -91.4171209,
+    "matched": "Mount Vernon, Linn County, Iowa, 52314, United States"
+  },
   "curwensville high school, 650 beech street, curwensville, pa 16833": {
     "confidence": "precise",
     "latitude": 40.9674668,
     "longitude": -78.5185307,
     "matched": "Curwensville Area Junior/Senior High School, 650, Beech Street, Curwensville, Clearfield County, Pennsylvania, 16833, United States"
+  },
+  "dakota wesleyan university, mitchell, sd": {
+    "confidence": "precise",
+    "latitude": 43.6972352,
+    "longitude": -98.0304679,
+    "matched": "Dakota Wesleyan University, West University Avenue, Mitchell, Mitchell Township, Davison County, South Dakota, 57301, United States"
   },
   "delaware valley high school, 256 us-6 e, milford, pa 18337": {
     "confidence": "city",
@@ -166,6 +202,12 @@
     "latitude": 40.0003382,
     "longitude": -76.8517857,
     "matched": "46, West Canal Street, Dover, York County, Pennsylvania, 17315, United States"
+  },
+  "east hartford high school": {
+    "confidence": "precise",
+    "latitude": 41.7549319,
+    "longitude": -72.605548,
+    "matched": "East Hartford High School, 869, Forbes Street, Burnside, East Hartford, Capitol Planning Region, Connecticut, 06118, United States"
   },
   "east stroudsburg university, east stroudsburg, pa": {
     "confidence": "precise",
@@ -209,6 +251,12 @@
     "longitude": -80.0128615,
     "matched": "Ferrum, Franklin County, Virginia, 24088, United States"
   },
+  "fhsaa- florida high school athletic association, 1801 northwest 80 boulevard, gainesville, fl 32606": {
+    "confidence": "city",
+    "latitude": 29.6519684,
+    "longitude": -82.3249846,
+    "matched": "Gainesville, Alachua County, Florida, United States"
+  },
   "florence high school, florence, az": {
     "confidence": "precise",
     "latitude": 33.0223005,
@@ -226,6 +274,12 @@
     "latitude": 40.6643916,
     "longitude": -75.3388303,
     "matched": "Freedom High School, 3149, Chester Avenue, Gradwohl Terrace, Butztown, Bethlehem, Northampton County, Pennsylvania, 18020, United States"
+  },
+  "hackley school, tarrytown, ny": {
+    "confidence": "precise",
+    "latitude": 41.0703745,
+    "longitude": -73.8426345,
+    "matched": "Hackley School, Hackley School Driveway, Village of Tarrytown, Town of Greenburgh, Westchester County, New York, 10591, United States"
   },
   "halifax area school district, 3940 peters mountain road, halifax, pa 17032": {
     "confidence": "precise",
@@ -245,11 +299,29 @@
     "longitude": -110.1629678,
     "matched": "412, West Buffalo Street, Rosedale Heights, Holbrook, Navajo County, Arizona, 86025, United States"
   },
+  "hoover high school, hoover, al": {
+    "confidence": "precise",
+    "latitude": 33.3437281,
+    "longitude": -86.837821,
+    "matched": "Hoover High School, 1000, Buccaneer Drive, Hoover, Jefferson County, Alabama, 35226, United States"
+  },
   "iowa high school athletic association, 1605 south story street, boone, ia 50036": {
     "confidence": "precise",
     "latitude": 42.0385284,
     "longitude": -93.8806434,
     "matched": "Iowa High School Athletic Association, 1605, South Story Street, Boone, Boone County, Iowa, 50036, United States"
+  },
+  "j b pennington high school, blountsville, al": {
+    "confidence": "precise",
+    "latitude": 34.0859216,
+    "longitude": -86.5887757,
+    "matched": "J. B. Pennington High School, 81, College Street, Blountsville, Blount County, Alabama, 35031, United States"
+  },
+  "jamestown high school, williamsburg, va": {
+    "confidence": "city",
+    "latitude": 37.2712497,
+    "longitude": -76.700035,
+    "matched": "Williamsburg, Virginia, United States"
   },
   "john j. duggan academy, springfield, ma": {
     "confidence": "precise",
@@ -287,6 +359,12 @@
     "longitude": -77.0018635,
     "matched": "College View Boulevard, Marbeth Hill, Westminster, Carroll County, Maryland, 21158, United States"
   },
+  "mckinney boyd hs, mckinney, tx": {
+    "confidence": "precise",
+    "latitude": 33.2032355,
+    "longitude": -96.676952,
+    "matched": "McKinney Boyd High School, 600, North Lake Forest Drive, McKinney, Collin County, Texas, 75071, United States"
+  },
   "memorial fieldhouse, 1815 harrison avenue nw, canton, oh 44708": {
     "confidence": "precise",
     "latitude": 40.8182318,
@@ -316,6 +394,12 @@
     "latitude": 42.060757,
     "longitude": -91.0060646,
     "matched": "109, West Green Street, Wyoming, Jones County, Iowa, 52362, United States"
+  },
+  "mitchell hall, la crosse, wi": {
+    "confidence": "precise",
+    "latitude": 43.814781,
+    "longitude": -91.227384,
+    "matched": "Mitchell Hall, Campbell Road, Goosetown, La Crosse, La Crosse County, Wisconsin, 54601, United States"
   },
   "monroeville convention center, 209 mall plaza boulevard, monroeville, pa 15146": {
     "confidence": "precise",
@@ -377,12 +461,25 @@
     "longitude": -80.6184547,
     "matched": "Palm Bay High School, School Street, Melbourne, Brevard County, Florida, 32905, United States"
   },
+  "pelham recreation center, pelham, al": {
+    "confidence": "precise",
+    "latitude": 33.3064575,
+    "longitude": -86.8093518,
+    "matched": "PELHAM RECREATION CENTER, 2020, Pelham Park Boulevard, Cahaba Valley Estates, Pelham, Shelby County, Alabama, 35124, United States"
+  },
+  "phillipsburg": {
+    "confidence": "city",
+    "latitude": 40.6915611,
+    "longitude": -75.1952543,
+    "matched": "Phillipsburg, Warren County, New Jersey, 08865, United States"
+  },
   "rider university, 2083 lawrenceville road, lawrenceville, nj 08648": {
     "confidence": "precise",
     "latitude": 40.3081147,
     "longitude": -74.7175029,
     "matched": "Lawrenceville Road, Lawrenceville, Lawrence Township, Mercer County, New Jersey, 08648, United States"
   },
+  "saint anthonys high school": null,
   "sierra pacific high school, 1259 13th avenue, hanford, ca 93230": {
     "confidence": "precise",
     "latitude": 36.3353295,
@@ -394,6 +491,18 @@
     "latitude": 40.1581468,
     "longitude": -76.9891472,
     "matched": "Messiah Campus Post Office, 1, University Avenue (Closed May-Aug), Grantham, Mechanicsburg, Cumberland County, Pennsylvania, 17055, United States"
+  },
+  "somerset college preparatory academy south, miami, fl": {
+    "confidence": "city",
+    "latitude": 25.7741566,
+    "longitude": -80.1935973,
+    "matched": "Miami, Miami-Dade County, Florida, United States"
+  },
+  "sonora elementary school, sonora, ca": {
+    "confidence": "precise",
+    "latitude": 37.9799245,
+    "longitude": -120.3707488,
+    "matched": "Sonora Elementary School, Delnero Drive, Sonora, Tuolumne County, California, 95370, United States"
   },
   "southmoreland senior high school, 2351 route, 981 alverton, pa 15612": {
     "confidence": "precise",
@@ -407,11 +516,29 @@
     "longitude": -95.7592368,
     "matched": "Southwest Minnesota State University, 1501, State Street, Marshall, Lyon County, Minnesota, 56258, United States"
   },
+  "springville high school, springville, al": {
+    "confidence": "precise",
+    "latitude": 33.7842436,
+    "longitude": -86.4399179,
+    "matched": "Springville High School, Main Street, Springville, St. Clair County, Alabama, 35146, United States"
+  },
   "st andrew`s episcopal school- north campus, 370 old agency road, ridgeland, ms 39157": {
     "confidence": "precise",
     "latitude": 32.4338835,
     "longitude": -90.1531806,
     "matched": "Saint Andrew's Episcopal School - North Campus, 370, Old Agency Road, Ridgeland, Madison County, Mississippi, 39157, United States"
+  },
+  "st. johns country day school, orange park, fl": {
+    "confidence": "city",
+    "latitude": 30.1654707,
+    "longitude": -81.7016346,
+    "matched": "Orange Park, Clay County, Florida, United States"
+  },
+  "st. thomas university, 16401 nw 37th ave, miami, fl 33054": {
+    "confidence": "precise",
+    "latitude": 25.9239907,
+    "longitude": -80.2580691,
+    "matched": "16401, Northwest 37th Avenue, Miami Gardens, Miami-Dade County, Florida, 33054, United States"
   },
   "tba, tba, tba, 96910": {
     "confidence": "precise",
@@ -421,14 +548,19 @@
   },
   "tba, tba, tba, al tba": null,
   "tba, tba, tba, az tba": null,
+  "tba, tba, tba, co tba": null,
   "tba, tba, tba, ga tba": null,
   "tba, tba, tba, ia tba": null,
   "tba, tba, tba, il tba": null,
   "tba, tba, tba, ks tba": null,
+  "tba, tba, tba, md tba": null,
+  "tba, tba, tba, mo tba": null,
   "tba, tba, tba, mt tba": null,
   "tba, tba, tba, nc tba": null,
   "tba, tba, tba, ne tba": null,
+  "tba, tba, tba, nv tba": null,
   "tba, tba, tba, tn tba": null,
+  "tba, tba, tba, tx tba": null,
   "tba, tba, tba, ut 55555": {
     "confidence": "precise",
     "latitude": 37.1284378,
@@ -436,6 +568,12 @@
     "matched": "Red Mountain Resorts (TBA), 1498, Middleton, Washington, Washington County, Utah, 84780, United States"
   },
   "tba, tba, tba, wa tba": null,
+  "tbd": {
+    "confidence": "precise",
+    "latitude": 41.3302092,
+    "longitude": -111.8128497,
+    "matched": "TBD, The Highlands, Ogden Valley, Weber County, Utah, 84310, United States"
+  },
   "the dome arena, 2695 henrietta road, henrietta, ny 14467": {
     "confidence": "precise",
     "latitude": 43.0659371,
@@ -471,6 +609,12 @@
     "latitude": 40.2239928,
     "longitude": -76.9418547,
     "matched": "Trinity High School, 3601, Simpson Ferry Road, Peace Church, Camp Hill, Cumberland County, Pennsylvania, 17011, United States"
+  },
+  "uccu center, 800 west university parkway, orem, ut 84097": {
+    "confidence": "precise",
+    "latitude": 40.2794106,
+    "longitude": -111.7178868,
+    "matched": "Utah Valley University, 800, West University Parkway, Orem, Utah County, Utah, 84058, United States"
   },
   "uindy athletics & recreation center, indianapolis, in": {
     "confidence": "city",
