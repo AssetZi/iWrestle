@@ -16,3 +16,17 @@ def test_youth_events_at_a_university_stay():
 def test_high_school_gym_is_not_college():
     assert classify_level("Trinity Belt Brawl", "Trinity High School") is None
     assert classify_level("Lebanon Wrestling Tournament", "Lebanon High School") is None
+
+
+def test_adult_opens_are_not_youth():
+    assert classify_level("2026 Griffin Open Mens", "Lamar Dixon Expo Center") == "adult"
+    assert classify_level("Yukon Boys Open", "Yukon High School") is None
+
+
+def test_placeholders():
+    from iwpipe.level import is_placeholder
+
+    assert is_placeholder("CANCELLED 2026 MWP Vision Quest")
+    assert is_placeholder("NO")
+    assert is_placeholder("IHSA 1A Regional 4", "TBA, TBA, TBA, IL TBA")
+    assert not is_placeholder("Takedown in the Den", "Elizabethtown Area High School, 600 East High Street, Elizabethtown, PA 17022")

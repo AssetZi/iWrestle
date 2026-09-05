@@ -66,13 +66,20 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
     if unknown:
         schema.note(event, "unmapped division tokens: " + ", ".join(unknown))
 
-    # A college open is not youth wrestling: mark it Open and, by default,
-    # keep it out of the directory.
-    if level.classify_level(event.get("name", ""), event.get("venue", ""), event.get("detailText", "")) == "college":
+    # A college or adult open is not youth wrestling: mark it Open and, by
+    # default, keep it out of the directory.
+    tier = level.classify_level(event.get("name", ""), event.get("venue", ""), event.get("detailText", ""))
+    if tier:
         event["ageGroups"] = ["Open"]
-        schema.note(event, "college-level event")
+        schema.note(event, f"{tier}-level event")
         if not INCLUDE_COLLEGE:
             event["review"]["status"] = schema.STATUS_SKIP
+
+    # Cancelled listings and venues still "TBA" are not events yet.
+    if level.is_placeholder(event.get("name", ""), event.get("address", "")):
+        schema.note(event, "cancelled or placeholder listing")
+        event["review"]["status"] = schema.STATUS_SKIP
+        skip_geocode = True
 
     if not event.get("ageGroups"):
         schema.note(event, "no divisions found, defaulted")

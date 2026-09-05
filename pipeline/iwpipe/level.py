@@ -19,14 +19,28 @@ YOUTH_MARKER = re.compile(
 )
 
 
+ADULT_MARKER = re.compile(r"\b(mens?|men's|womens?|women's|adult|masters|veterans?|seniors? open|olympic|world team)\b", re.I)
+
+
 def classify_level(name: str, venue: str = "", description: str = "") -> str | None:
-    """"college" for a college-level event, else None."""
+    """"college" or "adult" for events that are not youth wrestling, else None."""
     name = name or ""
     blob = " ".join(filter(None, [name, venue, description]))
     if YOUTH_MARKER.search(blob):
         return None
     if COLLEGE_NAME.search(name):
         return "college"
+    if ADULT_MARKER.search(name):
+        return "adult"
     if COLLEGE_VENUE.search(f"{name} {venue}") and OPEN_FAMILY.search(name):
         return "college"
     return None
+
+
+PLACEHOLDER = re.compile(r"^\s*(cancel+ed|postponed|no|tba|tbd|test|placeholder)\b|\b(cancel+ed|postponed)\b", re.I)
+TBA_ADDRESS = re.compile(r"\btba\b|\btbd\b", re.I)
+
+
+def is_placeholder(name: str, address: str = "") -> bool:
+    """A listing that is not really an event: cancelled, or venue still TBA."""
+    return bool(PLACEHOLDER.search(name or "")) or bool(TBA_ADDRESS.search(address or ""))
