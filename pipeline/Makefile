@@ -5,7 +5,7 @@ DATE := $(shell date +%Y%m%d)
 # The newest collected file for SOURCE. Override with FILE=path.
 FILE ?= $(shell ls -t data/events.$(SOURCE).*.json 2>/dev/null | head -1)
 
-.PHONY: help venv test token-check collect collect-offline enrich enrich-dry review approve push push-dry push-prod reconcile routine clean
+.PHONY: help venv test token-check collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod reconcile routine clean
 
 help:
 	@echo "make venv          create .venv and install pinned deps"
@@ -16,6 +16,7 @@ help:
 	@echo "make review        show the newest collected file"
 	@echo "make approve       approve every complete event in it"
 	@echo "make push          write approved events to CloudKit development"
+	@echo "make push-replace  also re-push events whose content changed"
 	@echo "make push-prod     write them to production (asks first)"
 	@echo "make reconcile     compare CloudKit against the local ledger"
 	@echo "make routine       collect + enrich + approve + push (development) for every source"
@@ -67,6 +68,10 @@ push:
 push-dry:
 	$(PY) bin/push.py $(FILE) --dry-run
 
+# Re-push events already in development whose content changed since.
+push-replace:
+	$(PY) bin/push.py $(FILE) --replace
+
 push-prod:
 	$(PY) bin/push.py $(FILE) --production
 
@@ -82,7 +87,7 @@ routine:
 		$(PY) bin/collect.py --source $$src --out $$f; \
 		$(PY) bin/enrich.py $$f || [ $$? -eq 2 ]; \
 		$(PY) bin/review.py $$f --approve-all; \
-		$(PY) bin/push.py $$f; \
+		$(PY) bin/push.py $$f --replace; \
 	done; \
 	$(PY) bin/reconcile.py
 

@@ -113,11 +113,21 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
         event["logo"] = str(folder / "logo.png")
         event.setdefault("flyer", {})["path"] = str(folder / "flyer.pdf")
 
-        # A real flyer PDF beats every default: read the contact off it.
+        # A real flyer PDF beats every default: read the contact off it,
+        # unless it turns out to be another event's flyer.
         source_pdf = folder / "source-flyer.pdf"
         if source_pdf.exists():
             event["flyerText"] = pdftext.extract_text(source_pdf)
-            email, phone = pdftext.contacts_from_text(event["flyerText"], site_emails)
+            match = pdftext.pdf_matches_event(event["flyerText"], event)
+            event["flyerMatch"] = match
+            if match is False:
+                source_pdf.unlink()
+                event["flyer"]["url"] = None
+                event["flyerText"] = ""
+                _, _, regen_notes = assets.ensure_assets(session, event, force=True)
+                schema.note(event, "flyer PDF names a different event, dropped")
+            ignore = set(site_emails) | {e.lower() for e in event.get("ignoreEmails", [])}
+            email, phone = pdftext.contacts_from_text(event["flyerText"], ignore)
             if email and _is_default_email(contact.get("email", "")):
                 contact["email"] = email
                 _drop_notes(event, DEFAULT_EMAIL_NOTES)
@@ -184,6 +194,18 @@ def main() -> int:
                     event, "possible duplicate of " + ", ".join(duplicates)
                 )
         events.append(event)
+
+    # Two events sharing one registration form is how one of them ends up
+    # with the other's flyer; say so where a person will see it.
+    by_form: dict[str, list] = {}
+    for event in events:
+        if event.get("registration"):
+            by_form.setdefault(event["registration"], []).append(event)
+    for shared in by_form.values():
+        if len(shared) > 1:
+            for event in shared:
+                others = ", ".join(e["name"] for e in shared if e is not event)
+                schema.note(event, f"registration form shared with {others}")
 
     out = args.out or DATA_DIR / (
         f"events.{args.source}.{datetime.now().strftime('%Y%m%d')}.json"

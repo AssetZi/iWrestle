@@ -6,6 +6,7 @@ from a token saved once with `xcrun cktool save-token --type user`.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -163,3 +164,12 @@ def delete_record(record_name: str, environment: str = DEVELOPMENT) -> None:
         "--record-name", record_name,
         "--yes",
     ])
+
+
+def content_hash(fields: dict[str, Any], logo_path: Path, flyer_path: Path) -> str:
+    """What was pushed, in one string, so a later run can tell if it changed."""
+    digest = hashlib.sha256()
+    digest.update(json.dumps(fields, sort_keys=True).encode())
+    for path in (logo_path, flyer_path):
+        digest.update(hashlib.sha256(path.read_bytes()).digest() if path.exists() else b"-")
+    return digest.hexdigest()[:16]

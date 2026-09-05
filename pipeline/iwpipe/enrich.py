@@ -24,7 +24,7 @@ from .config import DEFAULT_CONTACT_EMAIL, ENRICH_CACHE_PATH, ENRICH_MODEL
 from .schema import note
 
 # Bump when the prompt or schema changes so cached answers are re-asked.
-PROMPT_VERSION = 2
+PROMPT_VERSION = 3
 
 DEFAULTED_DIVISIONS_NOTE = "no divisions found, defaulted"
 DEFAULT_EMAIL_NOTES = (
@@ -62,6 +62,8 @@ class BannerExtraction(BaseModel):
     entryFee: str | None = None
     registrationUrl: str | None = None
     logoBBox: LogoBBox | None = None
+    logoSource: Literal["banner", "flyer"] | None = None
+    flyerMatchesEvent: bool | None = None
     confidence: Literal["low", "medium", "high"]
     evidence: str
 
@@ -76,7 +78,8 @@ Rules:
 - registrationUrl only if an actual URL is printed. organizerWebsite is a printed website for the host club.
 - divisions: every division or age band printed, verbatim, one per item (for example "Tots", "Bantam", "Jr High", "Girls K-12", "1st Year", "Open").
 - startTime, weighInTime, entryFee: verbatim as printed.
-- logoBBox: the tight box around the distinct logo, crest, or badge artwork only. Not the whole banner, not the title text, not a background photo. Coordinates normalized 0-1 with origin at the top-left (x, y) and size (w, h). Null if the banner has no distinct logo.
+- logoBBox: the tight box around the distinct logo, crest, or badge artwork only. Not the whole image, not the title text, not a background photo. Coordinates normalized 0-1 with origin at the top-left (x, y) and size (w, h), relative to the image named in logoSource. Prefer the banner; use the flyer's first page (when attached as an image) only if the banner has no distinct logo. Null if neither has one.
+- flyerMatchesEvent: when a flyer PDF is attached, true if it describes this event (same name or same venue and date), false if it clearly describes a different event; null when no flyer is attached. If false, take nothing from the flyer.
 - The known fields in the message are context, not targets; do not repeat them. If the banner contradicts a known field (a different date or venue), say so in evidence.
 - confidence reflects how legible the banner is overall. evidence is one sentence describing what was readable and what was not."""
 
@@ -114,7 +117,7 @@ def _is_default_email(email: str) -> bool:
 
 def build_messages(
     event: dict[str, Any], image_bytes: bytes, media_type: str = "image/jpeg",
-    pdf_bytes: bytes | None = None,
+    pdf_bytes: bytes | None = None, page_bytes: bytes | None = None,
 ) -> list[dict[str, Any]]:
     contact = event.get("contact") or {}
     notes = event.get("review", {}).get("notes", [])
@@ -133,7 +136,7 @@ def build_messages(
     if event.get("detailText"):
         text += "\n\nText from the event's own web page:\n" + event["detailText"]
 
-    content: list[dict[str, Any]] = [{
+    content: list[dict[str, Any]] = [{"type": "text", "text": "The event banner (for logoSource = banner):"}, {
         "type": "image",
         "source": {
             "type": "base64",
@@ -151,13 +154,23 @@ def build_messages(
             },
         })
         text = "The organizer's flyer PDF is attached.\n\n" + text
+    if page_bytes:
+        content.append({"type": "text", "text": "The flyer's first page, as an image (for logoSource = flyer):"})
+        content.append({
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": "image/png",
+                "data": base64.standard_b64encode(page_bytes).decode("ascii"),
+            },
+        })
     content.append({"type": "text", "text": text})
     return [{"role": "user", "content": content}]
 
 
 def extract(
     client: anthropic.Anthropic, event: dict[str, Any], image_bytes: bytes,
-    pdf_bytes: bytes | None = None,
+    pdf_bytes: bytes | None = None, page_bytes: bytes | None = None,
 ) -> tuple[BannerExtraction | None, Any]:
     """One banner (and flyer PDF, if any) in, one validated extraction out."""
     response = client.messages.parse(
@@ -169,7 +182,7 @@ def extract(
             "text": SYSTEM_PROMPT,
             "cache_control": {"type": "ephemeral"},
         }],
-        messages=build_messages(event, image_bytes, pdf_bytes=pdf_bytes),
+        messages=build_messages(event, image_bytes, pdf_bytes=pdf_bytes, page_bytes=page_bytes),
         output_format=BannerExtraction,
     )
     if response.stop_reason == "refusal":
@@ -177,11 +190,11 @@ def extract(
     return response.parsed_output, response.usage
 
 
-def extract_with_retry(client, event, image_bytes, pdf_bytes=None):
+def extract_with_retry(client, event, image_bytes, pdf_bytes=None, page_bytes=None):
     """Most specific failures first; transient ones get one more try."""
     for attempt in (1, 2):
         try:
-            return extract(client, event, image_bytes, pdf_bytes)
+            return extract(client, event, image_bytes, pdf_bytes, page_bytes)
         except anthropic.RateLimitError as error:
             if attempt == 2:
                 raise
@@ -224,6 +237,18 @@ def merge(event: dict[str, Any], extraction: BannerExtraction) -> list[str]:
     """
     filled: list[str] = []
     contact = event.setdefault("contact", {})
+
+    if extraction.flyerMatchesEvent is False:
+        # The attached PDF belongs to another event; only the banner counts.
+        note(event, "AI: attached flyer is for another event, ignored")
+        if extraction.logoBBox and extraction.logoSource != "flyer" and not event.get("logoBBox"):
+            event["logoBBox"] = extraction.logoBBox.model_dump()
+            event["logoSource"] = "banner"
+            note(event, "AI: logo located on banner")
+            filled.append("logoBBox")
+        note(event, f"AI: enriched, confidence={extraction.confidence}: {extraction.evidence}")
+        return filled
+
     found = extraction.contact
 
     if found.email and "@" in found.email and _is_default_email(contact.get("email", "")):
@@ -284,7 +309,8 @@ def merge(event: dict[str, Any], extraction: BannerExtraction) -> list[str]:
 
     if extraction.logoBBox and not event.get("logoBBox"):
         event["logoBBox"] = extraction.logoBBox.model_dump()
-        note(event, "AI: logo located on banner")
+        event["logoSource"] = extraction.logoSource or "banner"
+        note(event, f"AI: logo located on {event['logoSource']}")
         filled.append("logoBBox")
 
     note(event, f"AI: enriched, confidence={extraction.confidence}: {extraction.evidence}")

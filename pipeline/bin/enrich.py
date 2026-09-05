@@ -76,6 +76,10 @@ def main() -> int:
         pdf_bytes = source_pdf.read_bytes() if source_pdf.exists() else None
         pdf_hash = enrich.banner_hash(pdf_bytes) if pdf_bytes else ""
         key = enrich.cache_key(event, image_hash, pdf_hash)
+        page_bytes = None
+        if pdf_bytes:
+            page = assets.render_pdf_page(source_pdf, source_pdf.parent / "flyer-page1.png")
+            page_bytes = page.read_bytes() if page else None
 
         if args.dry_run:
             state = "cached" if key in cache else "would send"
@@ -92,7 +96,7 @@ def main() -> int:
 
         if extraction is None:
             try:
-                extraction, usage = enrich.extract_with_retry(client, event, image_bytes, pdf_bytes)
+                extraction, usage = enrich.extract_with_retry(client, event, image_bytes, pdf_bytes, page_bytes)
             except anthropic.RateLimitError:
                 schema.note(event, "AI: rate limited, try again later")
                 counts["failed"] += 1
@@ -130,6 +134,7 @@ def main() -> int:
 
         if args.no_logo:
             event.pop("logoBBox", None)
+            event.pop("logoSource", None)
         filled = enrich.merge(event, extraction)
         enrich.record_provenance(event, image_hash, extraction)
         if any(f in filled for f in ("email", "phone", "contactName")):

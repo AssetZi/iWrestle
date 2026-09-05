@@ -110,7 +110,7 @@ def test_detail_page_jotform_becomes_registration():
             return Response()
 
     event = blank_event("pywrestling")
-    event["sourceUrl"] = "https://www.pywrestling.com/x-9-19.html"
+    event["pages"] = {"info": "https://www.pywrestling.com/x-9-19.html", "signup": None, "external": None}
     pywrestling._enrich_from_detail(_FakeGetSession(Response()), event)
     assert event["registration"] == "https://form.jotform.com/262174666443159"
     assert "See you" in event["detailText"]
@@ -142,7 +142,7 @@ def test_site_wide_webmaster_email_is_not_an_organizer_contact():
                "<iframe src='https://form.jotform.com/1'></iframe></body></html>"
 
     event = blank_event("pywrestling")
-    event["sourceUrl"] = "https://www.pywrestling.com/x-9-19.html"
+    event["pages"] = {"info": "https://www.pywrestling.com/x-9-19.html", "signup": None, "external": None}
     site = pywrestling._site_emails("<a>pywrestlingadam@gmail.com</a>")
     pywrestling._enrich_from_detail(_FakeGetSession(Response()), event, site)
     assert event["contact"]["email"] == ""
@@ -165,3 +165,73 @@ def test_flyer_pdf_is_found_in_jotform_widget_settings():
         "https://www.jotform.com/uploads/pywrestlingadam/form_files/26sepa-abc.pdf?serveInlineWithCache=1"
     )
     assert pdf_from_jotform("<form></form>") == ""
+
+
+def test_sign_up_pages_are_followed_and_never_the_root(events):
+    """`slug-M-D-or.html` is the sign-up page; an event with only that page
+    still gets a real link, and no event ever links to the site root."""
+    falcon = next(e for e in events if "Falcon Frenzy" in e["name"])
+    assert falcon["sourceUrl"].endswith("-9-26-or.html")
+    assert falcon["pages"]["signup"] and not falcon["pages"]["info"]
+    assert all(e["sourceUrl"].rstrip("/") != "https://www.pywrestling.com" for e in events)
+
+
+def test_offsite_events_link_to_the_organizer(events):
+    burg = next(e for e in events if "Battle In The Burg" in e["name"])
+    assert "breakthechainswrestling.com" in burg["sourceUrl"]
+    assert burg["organizerWebsite"] == burg["sourceUrl"]
+
+
+def test_pages_precedence():
+    from bs4 import BeautifulSoup
+
+    from iwpipe.collectors.pywrestling import _pages
+
+    html = """<div>
+      <a href="x-9-26-or.html">sign up</a>
+      <a href="https://club.org/event">CLUB EVENT</a>
+      <a href="x-9-26.html">info</a>
+      <a href="https://www.trackwrestling.com/reg">Register</a>
+    </div>"""
+    pages = _pages(BeautifulSoup(html, "html.parser"))
+    assert pages["info"].endswith("x-9-26.html")
+    assert pages["signup"].endswith("x-9-26-or.html")
+    assert pages["external"] == "https://club.org/event"
+
+
+def test_form_owner_emails_are_ignored():
+    """A JotForm page prints its owner's address; that is not the organizer."""
+    from urllib.parse import quote
+
+    from iwpipe.collectors import pywrestling
+    from iwpipe.schema import blank_event
+
+    settings = quote('[{"name":"link","value":{"path":"/uploads/o/form_files/f.pdf"}}]')
+    pages = {
+        "https://www.pywrestling.com/x-9-26-or.html":
+            '<iframe src="https://pci.jotform.com/form/1"></iframe>',
+        "https://pci.jotform.com/form/1":
+            f'<input class="form-widget-settings" value="{settings}"> owner@yahoo.com',
+    }
+
+    class Response:
+        def __init__(self, text):
+            self.text = text
+            self.status_code = 200
+            self.headers = {"Content-Type": "text/html; charset=utf-8"}
+            self.encoding = "utf-8"
+        def raise_for_status(self):
+            pass
+
+    class Session:
+        headers = {}
+        def get(self, url, **kw):
+            return Response(pages[url])
+
+    event = blank_event("pywrestling")
+    event["pages"] = {"info": None, "signup": "https://www.pywrestling.com/x-9-26-or.html", "external": None}
+    pywrestling._enrich_from_detail(Session(), event)
+    assert event["registration"] == "https://pci.jotform.com/form/1"
+    assert event["flyer"]["url"].endswith("/uploads/o/form_files/f.pdf?serveInlineWithCache=1")
+    assert "owner@yahoo.com" in event["ignoreEmails"]
+    assert event["contact"]["email"] == ""

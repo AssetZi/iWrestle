@@ -119,11 +119,11 @@ def test_message_carries_image_first_then_context():
     event = base_event(detailText="See you there.")
     messages = enrich.build_messages(event, b"\xff\xd8fake")
     content = messages[0]["content"]
-    assert content[0]["type"] == "image"
-    assert content[0]["source"]["media_type"] == "image/jpeg"
-    assert "Interstate Classic" in content[1]["text"]
-    assert "See you there." in content[1]["text"]
-    assert '"contactEmailIsDefault": true' in content[1]["text"]
+    assert [b["type"] for b in content] == ["text", "image", "text"]
+    assert content[1]["source"]["media_type"] == "image/jpeg"
+    assert "Interstate Classic" in content[2]["text"]
+    assert "See you there." in content[2]["text"]
+    assert '"contactEmailIsDefault": true' in content[2]["text"]
 
 
 def test_usage_totals_price_cached_tokens_cheaply():
@@ -148,8 +148,25 @@ def test_flyer_pdf_travels_with_the_banner():
     event = base_event()
     messages = enrich.build_messages(event, b"\xff\xd8fake", pdf_bytes=b"%PDF-1.4 fake")
     types = [block["type"] for block in messages[0]["content"]]
-    assert types == ["image", "document", "text"]
-    assert messages[0]["content"][1]["source"]["media_type"] == "application/pdf"
+    assert types == ["text", "image", "document", "text"]
+    assert messages[0]["content"][2]["source"]["media_type"] == "application/pdf"
+
+
+def test_flyer_page_image_is_labeled_for_logo_source():
+    event = base_event()
+    messages = enrich.build_messages(event, b"img", pdf_bytes=b"%PDF", page_bytes=b"\x89PNG")
+    types = [block["type"] for block in messages[0]["content"]]
+    assert types == ["text", "image", "document", "text", "image", "text"]
+    assert "logoSource = flyer" in messages[0]["content"][3]["text"]
+
+
+def test_flyer_for_another_event_contributes_nothing_but_the_banner_logo():
+    event = base_event()
+    wrong = extraction(flyerMatchesEvent=False, logoSource="banner")
+    filled = enrich.merge(event, wrong)
+    assert filled == ["logoBBox"]
+    assert event["contact"]["email"] == DEFAULT
+    assert any("another event" in n for n in event["review"]["notes"])
 
 
 def test_cache_key_includes_the_pdf():

@@ -102,7 +102,11 @@ roughly a dollar or two.
 `review.status` to `approved` or `skip`. Only approved events are pushed.
 
 **push** builds a cktool fields file per event and runs `create-record`,
-recording each success in `data/pushed.json`.
+recording each success in `data/pushed.json` along with a hash of what was
+sent. cktool cannot update a record, so `push --replace` (what the routine
+uses) deletes and recreates an event whose content changed since it was
+pushed; unchanged events are left alone. Plain `push` never touches an
+existing record.
 
 **reconcile** lists what is actually in CloudKit and can delete a record the
 pipeline created, by its natural key.
@@ -115,8 +119,9 @@ contact fields. Such a record is dropped from every fetch, so it exists in the
 database but never appears in the app. The pipeline therefore guarantees all
 of them:
 
-- **Logo**: cropped from the banner when Claude locates one, else a source
-  logo URL, else a slate-and-gold monogram tile matching the app's own fallback.
+- **Logo**: cropped from the banner when Claude locates one there, else from
+  the flyer PDF's first page, else a source logo URL, else a slate-and-gold
+  monogram tile matching the app's own fallback.
 - **Flyer**: the source's real PDF if it has one; else the organizer's banner
   graphic laid onto a page with the essentials and links under it; else a
   one-page PDF rendered from the event's text. Every link on a flyer is a PDF
@@ -153,9 +158,10 @@ are now the only shapes in `iwpipe/cktool.py`:
 
 | Source | State | Notes |
 | --- | --- | --- |
-| pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Each block carries a 2:1 banner graphic that feeds enrich (logo location). Detail pages hold only a JotForm iframe, captured as the registration link; the organizer's real flyer PDF sits inside that form as a PDF Embedder widget, whose file path is parsed out of the widget settings and downloaded. Email and phone are read off the PDF text, and the PDF becomes the flyer and is attached to the enrich request. Emails obfuscated with the site's `emN()` shift are decoded; the site's own webmaster address is excluded. Needs geocoding. |
+| pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Each block carries a 2:1 banner graphic that feeds enrich (logo location). Every event has up to three pages: an info page (`slug-M-D.html`), a sign-up page (`slug-M-D-or.html`), and sometimes only the organizer's own site; the event link prefers them in that order and is never the site root. Both pages are followed; a JotForm on either is the registration link, and the organizer's real flyer PDF sits inside that form as a PDF Embedder widget, parsed out of the widget settings and downloaded. Email and phone are read off the PDF text, the PDF becomes the flyer, and it is attached to the enrich request. Two events sometimes share one form, so a PDF that names a different event is dropped and noted. Webmaster and form-owner addresses are excluded from contacts. Needs geocoding. |
+| FloWrestling detail | Working | `GET /api/event-hub/{coreId}` per event supplies the organizer contact (`eventContact`), the full street address, and the organizer's website. |
 | FloWrestling | Working | Uses the site's own schedule API, which returns coordinates and needs no geocoding or browser. Publishes no age divisions, so every event is flagged for review. |
-| Trackwrestling | Not built | Returns 406 to plain HTTP clients. Would need the headless browser. |
+| Trackwrestling | Not built | Returns 406 to plain HTTP clients. Would need the headless browser; PYW events that register through Trackwrestling still get that link. |
 | USA Wrestling | Blocked | Event listings sit behind a login. |
 
 ### FloWrestling API

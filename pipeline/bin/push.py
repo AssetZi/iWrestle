@@ -21,32 +21,41 @@ import _bootstrap  # noqa: F401
 from iwpipe import cktool, ledger, schema
 from iwpipe.assets import event_asset_dir
 
-BOLD, GREEN, YELLOW, RED, RESET = (
-    "\033[1m", "\033[32m", "\033[33m", "\033[31m", "\033[0m"
+BOLD, DIM, GREEN, YELLOW, RED, RESET = (
+    "\033[1m", "\033[2m", "\033[32m", "\033[33m", "\033[31m", "\033[0m"
 )
 
 
-def push_one(event, environment, *, dry_run):
-    """Create one record; returns its CloudKit record name."""
+def prepare(event):
+    """Fields file, asset paths and content hash for one event."""
     folder = event_asset_dir(event["sourceKey"])
+    fields = cktool.build_fields(event)
     fields_path = folder / "fields.json"
+    fields_path.write_text(json.dumps(fields, indent=2) + "\n")
     logo = Path(event["logo"])
     flyer = Path(event["flyer"]["path"])
+    return fields_path, logo, flyer, cktool.content_hash(fields, logo, flyer)
 
-    fields_path.write_text(
-        json.dumps(cktool.build_fields(event), indent=2) + "\n"
-    )
+
+def push_one(event, environment, *, dry_run, replace_record=None):
+    """Create one record (deleting the previous one when replacing).
+
+    Returns (record name, content hash). cktool has no update, so a changed
+    event is deleted and created again under a new record name.
+    """
+    fields_path, logo, flyer, digest = prepare(event)
     if dry_run:
-        print("    would run cktool create-record")
+        verb = "replace" if replace_record else "create"
+        print(f"    would {verb} via cktool")
         print(f"      --fields-file {fields_path}")
         print(f"      --asset-files LOGO={logo} FLYER={flyer}")
-        return None
+        return None, digest
 
+    if replace_record:
+        cktool.delete_record(replace_record, environment)
     response = cktool.create_record(fields_path, logo, flyer, environment)
-    return (
-        response.get("recordName")
-        or response.get("record", {}).get("recordName", "")
-    )
+    name = response.get("recordName") or response.get("record", {}).get("recordName", "")
+    return name, digest
 
 
 def main() -> int:
@@ -57,6 +66,10 @@ def main() -> int:
     parser.add_argument("--key", help="push only this sourceKey")
     parser.add_argument(
         "--force", action="store_true", help="push even if the ledger has it"
+    )
+    parser.add_argument(
+        "--replace", action="store_true",
+        help="re-push events already in this environment whose content changed",
     )
     args = parser.parse_args()
 
@@ -73,9 +86,16 @@ def main() -> int:
         if problems:
             print(f"{RED}skip{RESET} {event['name'][:50]}: {problems[0]}")
             continue
-        if not args.force and ledger.contains(event["sourceKey"], environment):
-            print(f"{YELLOW}skip{RESET} {event['name'][:50]}: already in ledger")
-            continue
+        existing = ledger.get(event["sourceKey"], environment)
+        if existing and not args.force:
+            if not args.replace:
+                print(f"{YELLOW}skip{RESET} {event['name'][:50]}: already in ledger")
+                continue
+            _, _, _, digest = prepare(event)
+            if digest == existing.get("contentHash"):
+                print(f"{DIM}same{RESET} {event['name'][:50]}: unchanged since push")
+                continue
+            event["_replace"] = existing["recordName"]
         queue.append(event)
 
     if not queue:
@@ -94,9 +114,13 @@ def main() -> int:
 
     pushed = 0
     for event in queue:
-        print(f"{BOLD}push{RESET} {event['date'][:10]}  {event['name'][:50]}")
+        replacing = event.pop("_replace", None)
+        verb = "replace" if replacing else "push"
+        print(f"{BOLD}{verb}{RESET} {event['date'][:10]}  {event['name'][:50]}")
         try:
-            record_name = push_one(event, environment, dry_run=args.dry_run)
+            record_name, digest = push_one(
+                event, environment, dry_run=args.dry_run, replace_record=replacing
+            )
         except cktool.CKToolError as error:
             print(f"  {RED}failed{RESET}: {error}")
             break
@@ -105,9 +129,10 @@ def main() -> int:
         ledger.record(
             event["sourceKey"], environment, record_name, event["name"],
             day=event["date"][:10], location=event.get("location"),
+            content_hash=digest,
         )
         pushed += 1
-        print(f"  {GREEN}created{RESET} {record_name}")
+        print(f"  {GREEN}{'replaced' if replacing else 'created'}{RESET} {record_name}")
 
     if args.dry_run:
         print(f"\ndry run: {len(queue)} events would be pushed to {environment}")

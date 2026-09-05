@@ -1,9 +1,10 @@
 """Pennsylvania Youth Wrestling (pywrestling.com).
 
 The index page is static HTML whose class names are generated, so blocks are
-found by grouping the links that point at each event's own page rather than
-by selector. Divisions are icon images, not text, so they are read from the
-image filenames.
+found by content rather than by selector. Each event has up to three pages:
+an info page (`slug-M-D.html`), a sign-up page (`slug-M-D-or.html`), and
+sometimes only an organizer's own site. The organizer's flyer PDF lives
+inside a JotForm on either page, as a PDF Embedder widget.
 """
 from __future__ import annotations
 
@@ -23,7 +24,9 @@ from ..schema import blank_event, note
 BASE_URL = "https://www.pywrestling.com/"
 SOURCE = "pywrestling"
 
-EVENT_HREF = re.compile(r"^(?!https?:)[a-z0-9-]+-\d{1,2}-\d{1,2}\.html$")
+# slug-9-12.html is the info page; slug-9-12-or.html is online registration.
+EVENT_HREF = re.compile(r"^(?!https?:)[a-z0-9-]+-\d{1,2}-\d{1,2}(-or)?\.html$")
+SIGNUP_HREF = re.compile(r"-or\.html$")
 
 # Division icons: images/<letter>/<division>-160.jpg
 DIVISION_ICONS = {
@@ -57,10 +60,34 @@ BANNER_IMG = re.compile(r"images/[a-z0-9]+/[a-z0-9-]+-(640|1280)\.jpe?g$", re.IG
 # Emails are hidden behind `function emN(){var c="..."}` where every
 # character is shifted up by one.
 EMN_SCRIPT = re.compile(r'function\s+em\d+\s*\(\)\s*\{\s*var\s+c\s*=\s*"([^"]+)"')
-EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
-PHONE = re.compile(r"\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b")
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+\w")
+PHONE = re.compile(r"\(?\b\d{3}\)?[-.\s]?\d{3}[-.\s]\d{4}\b")
 DETAIL_TEXT_LIMIT = 3000
 
+REGISTRATION_HOSTS = re.compile(
+    r"(trackwrestling|flowrestling|floarena|wrestlereg|register|signup|sign-up)", re.I
+)
+JOTFORM_HOST = "https://www.jotform.com"
+
+# Filled by collect(): webmaster addresses that must not become contacts.
+SITE_EMAILS: set[str] = set()
+
+STREET_SUFFIX = re.compile(
+    r"\b(street|st|road|rd|avenue|ave|boulevard|blvd|drive|dr|lane|ln|way|pike|"
+    r"highway|hwy|route|rt|circle|cir|court|ct|place|pl|parkway|pkwy|terrace|"
+    r"trail|turnpike|square|sq|park|extension)\b\.?",
+    re.IGNORECASE,
+)
+
+# Names are set in all caps; title() would flatten these to "Usa" / "Mswa".
+ACRONYMS = {
+    "USA", "PA", "OH", "NY", "NJ", "MD", "WV", "DE", "VA",
+    "PJW", "PYW", "MSWA", "SEPA", "NHSCA", "AAU", "YMCA", "JV", "HS",
+    "MAC", "NCAA", "II", "III", "IV", "LLC", "TBD", "DV", "BTC", "GTE",
+}
+
+
+# --- Small parsers -----------------------------------------------------------
 
 def _decode_emn(html: str) -> list[str]:
     """Recover the obfuscated addresses a page's emN() functions would open."""
@@ -72,31 +99,11 @@ def _decode_emn(html: str) -> list[str]:
     return found
 
 
-def _banner_url(block) -> str:
-    """The block's event graphic, preferring the larger rendition."""
-    candidates = [
-        img.get("src", "") for img in block.find_all("img") if BANNER_IMG.search(img.get("src", ""))
-    ]
-    if not candidates:
-        return ""
-    candidates.sort(key=lambda src: "-1280." in src, reverse=True)
-    return requests.compat.urljoin(BASE_URL, candidates[0])
-
-
-STREET_SUFFIX = re.compile(
-    r"\b(street|st|road|rd|avenue|ave|boulevard|blvd|drive|dr|lane|ln|way|pike|"
-    r"highway|hwy|route|rt|circle|cir|court|ct|place|pl|parkway|pkwy|terrace|"
-    r"trail|turnpike|square|sq|park|extension)\b\.?",
-    re.IGNORECASE,
-)
-
-
-# Names are set in all caps; title() would flatten these to "Usa" / "Mswa".
-ACRONYMS = {
-    "USA", "PA", "OH", "NY", "NJ", "MD", "WV", "DE", "VA",
-    "PJW", "PYW", "MSWA", "SEPA", "NHSCA", "AAU", "YMCA", "JV", "HS",
-    "MAC", "NCAA", "II", "III", "IV", "LLC", "TBD", "DV", "BTC",
-}
+def _site_emails(html: str) -> set[str]:
+    """Addresses that belong to the site itself, printed on every page."""
+    found = {m.lower() for m in EMAIL.findall(html)}
+    found.update(e.lower() for e in _decode_emn(html))
+    return found
 
 
 def _title_case(text: str) -> str:
@@ -121,7 +128,6 @@ def _split_street_city(address_line: str) -> str:
         cut = matches[-1].end()
         street, city = head[:cut].strip(), head[cut:].strip(" ,")
     else:
-        # No street type (a venue-only line): the last word is the city.
         words = head.split()
         if len(words) < 2:
             return address_line
@@ -138,6 +144,68 @@ def _split_street_city(address_line: str) -> str:
         return f"{street},{tail}"
     return f"{street}, {city},{tail}"
 
+
+def _banner_url(block) -> str:
+    """The block's event graphic, preferring the larger rendition."""
+    candidates = [
+        img.get("src", "") for img in block.find_all("img") if BANNER_IMG.search(img.get("src", ""))
+    ]
+    if not candidates:
+        return ""
+    candidates.sort(key=lambda src: "-1280." in src, reverse=True)
+    return requests.compat.urljoin(BASE_URL, candidates[0])
+
+
+def _divisions_from_icons(block) -> str:
+    found = []
+    for img in block.find_all("img"):
+        src = img.get("src", "")
+        if IGNORED_ICONS.search(src):
+            continue
+        stem = Path(src).stem.rsplit("-", 1)[0].lower()
+        if stem in DIVISION_ICONS:
+            found.append(DIVISION_ICONS[stem])
+    return ", ".join(dict.fromkeys(found))
+
+
+def _pages(block) -> dict[str, str | None]:
+    """The event's info page, sign-up page and organizer's own site, if any."""
+    info = signup = external = None
+    for anchor in block.find_all("a", href=True):
+        href = anchor["href"]
+        if EVENT_HREF.match(href):
+            url = requests.compat.urljoin(BASE_URL, href)
+            if SIGNUP_HREF.search(href):
+                signup = signup or url
+            else:
+                info = info or url
+        elif href.startswith("http") and "pywrestling.com" not in href and "maps" not in href:
+            if not REGISTRATION_HOSTS.search(href):
+                external = external or href
+    return {"info": info, "signup": signup, "external": external}
+
+
+def pdf_from_jotform(form_html: str) -> str:
+    """The flyer PDF a JotForm shows through its PDF Embedder widget.
+
+    The widget's settings sit in a hidden input as URL-encoded JSON with the
+    uploaded file's path; the form's HTML never links the PDF directly.
+    """
+    soup = BeautifulSoup(form_html, "html.parser")
+    for field in soup.select("input.form-widget-settings"):
+        try:
+            settings = json.loads(unquote(field.get("value", "")))
+        except (ValueError, TypeError):
+            continue
+        for item in settings if isinstance(settings, list) else []:
+            value = item.get("value") if isinstance(item, dict) else None
+            path = str(value.get("path", "")) if isinstance(value, dict) else ""
+            if path.lower().endswith(".pdf"):
+                return f"{JOTFORM_HOST}{path}?serveInlineWithCache=1"
+    return ""
+
+
+# --- Blocks ------------------------------------------------------------------
 
 def _event_blocks(soup):
     """Every element holding exactly one event.
@@ -163,18 +231,6 @@ def _event_blocks(soup):
     return list(smallest.values())
 
 
-def _divisions_from_icons(block) -> str:
-    found = []
-    for img in block.find_all("img"):
-        src = img.get("src", "")
-        if IGNORED_ICONS.search(src):
-            continue
-        stem = Path(src).stem.rsplit("-", 1)[0].lower()
-        if stem in DIVISION_ICONS:
-            found.append(DIVISION_ICONS[stem])
-    return ", ".join(dict.fromkeys(found))
-
-
 def _parse_block(block) -> dict[str, Any] | None:
     lines = [
         line.replace("\xa0", " ").strip()
@@ -187,15 +243,12 @@ def _parse_block(block) -> dict[str, Any] | None:
     event = blank_event(SOURCE)
     event["rawText"] = " | ".join(lines)
 
-    detail = next(
-        (
-            a["href"]
-            for a in block.find_all("a", href=True)
-            if EVENT_HREF.match(a["href"])
-        ),
-        "",
-    )
-    event["sourceUrl"] = BASE_URL + detail if detail else BASE_URL
+    pages = _pages(block)
+    event["pages"] = pages
+    # Never the site root: an event with no page of its own gets no link.
+    event["sourceUrl"] = pages["info"] or pages["signup"] or pages["external"] or ""
+    if pages["external"]:
+        event["organizerWebsite"] = pages["external"]
 
     date_line = next((line for line in lines if DATE_LINE.search(line)), "")
     event["dateText"] = date_line
@@ -235,9 +288,7 @@ def _parse_block(block) -> dict[str, Any] | None:
             if line != name and not DATE_LINE.search(line)
         ).strip()
     # The app's AddressParts splits on commas, so the pushed address has to
-    # read "Venue, Street, City, ST ZIP". The source writes street and city
-    # as one run ("275 Swamp Road Newtown, PA 18940"), so the boundary is
-    # found at the last street-type word.
+    # read "Venue, Street, City, ST ZIP".
     event["address"] = ", ".join(
         part for part in (venue, _split_street_city(address_line)) if part
     )
@@ -252,9 +303,8 @@ def _parse_block(block) -> dict[str, Any] | None:
     )
 
     for link in block.find_all("a", href=True):
-        target = link["href"]
-        if re.search(r"(register|signup|sign-up|trackwrestling|flowrestling)", target, re.I):
-            event["registration"] = target
+        if link["href"].startswith("http") and REGISTRATION_HOSTS.search(link["href"]):
+            event["registration"] = link["href"]
             break
 
     event["bannerUrl"] = _banner_url(block)
@@ -264,105 +314,90 @@ def _parse_block(block) -> dict[str, Any] | None:
     return event
 
 
-JOTFORM_HOST = "https://www.jotform.com"
+# --- Detail pages ------------------------------------------------------------
 
-# Filled by collect(): webmaster addresses that must not become contacts.
-SITE_EMAILS: set[str] = set()
-
-
-def pdf_from_jotform(form_html: str) -> str:
-    """The flyer PDF a JotForm shows through its PDF Embedder widget.
-
-    The widget's settings sit in a hidden input as URL-encoded JSON with the
-    uploaded file's path; the form's HTML never links the PDF directly.
-    """
-    soup = BeautifulSoup(form_html, "html.parser")
-    for field in soup.select("input.form-widget-settings"):
-        try:
-            settings = json.loads(unquote(field.get("value", "")))
-        except (ValueError, TypeError):
-            continue
-        for item in settings if isinstance(settings, list) else []:
-            value = item.get("value") if isinstance(item, dict) else None
-            path = str(value.get("path", "")) if isinstance(value, dict) else ""
-            if path.lower().endswith(".pdf"):
-                return f"{JOTFORM_HOST}{path}?serveInlineWithCache=1"
-    return ""
-
-
-def _site_emails(html: str) -> set[str]:
-    """Addresses that belong to the site itself, printed on every page."""
-    found = {m.lower() for m in EMAIL.findall(html)}
-    found.update(e.lower() for e in _decode_emn(html))
-    return found
+def _fetch(session, url: str) -> str | None:
+    try:
+        return get(session, url).text
+    except Exception:
+        return None
 
 
 def _enrich_from_detail(session, event, site_emails: set[str] = frozenset()) -> None:
-    """Follow the event's own page for a flyer PDF and a contact.
+    """Follow the event's own pages for its flyer PDF, registration and contact.
 
     site_emails are the webmaster addresses that appear on every page; a
-    match there is not the organizer and is ignored.
+    match there is not the organizer and is ignored. Addresses printed in a
+    JotForm's own HTML (the form owner) are ignored the same way.
     """
-    try:
-        response = get(session, event["sourceUrl"])
-    except Exception:
-        note(event, "detail page unreachable")
-        return
+    pages = event.get("pages") or {}
+    ignore = {e.lower() for e in site_emails} | {"example@example.com"}
+    texts: list[str] = []
+    jotforms: dict[str, str] = {}
+    pdf_url = ""
+    external_registration = ""
 
-    soup = BeautifulSoup(response.text, "html.parser")
+    for kind in ("info", "signup"):
+        url = pages.get(kind)
+        if not url:
+            continue
+        html = _fetch(session, url)
+        if html is None:
+            note(event, f"{kind} page unreachable")
+            continue
+        soup = BeautifulSoup(html, "html.parser")
+        texts.append(soup.get_text(" ", strip=True))
 
-    for link in soup.find_all("a", href=True):
-        href = link["href"]
-        if href.lower().endswith(".pdf"):
-            event.setdefault("flyer", {})["url"] = requests.compat.urljoin(
-                event["sourceUrl"], href
-            )
-            break
-    for tag in soup.find_all(["embed", "iframe"]):
-        source = tag.get("src", "")
-        if source.lower().endswith(".pdf") and not event.get("flyer", {}).get("url"):
-            event.setdefault("flyer", {})["url"] = requests.compat.urljoin(
-                event["sourceUrl"], source
-            )
+        for link in soup.find_all("a", href=True):
+            href = link["href"]
+            if href.lower().endswith(".pdf") and not pdf_url:
+                pdf_url = requests.compat.urljoin(url, href)
+            elif href.startswith("http") and REGISTRATION_HOSTS.search(href) and not external_registration:
+                external_registration = href
+        for tag in soup.find_all(["embed", "iframe"]):
+            source = tag.get("src", "")
+            if source.lower().endswith(".pdf") and not pdf_url:
+                pdf_url = requests.compat.urljoin(url, source)
+            elif "jotform.com" in source and kind not in jotforms:
+                jotforms[kind] = requests.compat.urljoin(url, source)
 
-    text = soup.get_text(" ", strip=True)
+        for hidden in _decode_emn(html):
+            texts.append(hidden)
+
+    # Registration: an explicit outside link beats the sign-up form, which
+    # beats a form embedded on the info page.
+    if not event.get("registration"):
+        event["registration"] = (
+            external_registration or jotforms.get("signup") or jotforms.get("info") or ""
+        )
+
+    # The organizer's real flyer usually lives inside the form as a PDF widget.
+    flyer = event.setdefault("flyer", {"url": None, "path": None})
+    for kind in ("signup", "info"):
+        form_url = jotforms.get(kind)
+        if pdf_url or not form_url:
+            continue
+        form_html = _fetch(session, form_url)
+        if form_html is None:
+            continue
+        ignore.update(m.lower() for m in EMAIL.findall(form_html))
+        pdf_url = pdf_from_jotform(form_html)
+    if pdf_url and not flyer.get("url"):
+        flyer["url"] = pdf_url
+
+    text = " ".join(texts)
     event["detailText"] = text[:DETAIL_TEXT_LIMIT]
+    event["ignoreEmails"] = sorted(ignore)
 
-    candidates = [m for m in EMAIL.findall(text) if m.lower() not in site_emails]
-    candidates += [m for m in _decode_emn(response.text) if m.lower() not in site_emails]
-    if candidates:
-        event["contact"]["email"] = candidates[0]
+    email = next((m for m in EMAIL.findall(text) if m.lower() not in ignore), "")
+    if email and not event["contact"].get("email"):
+        event["contact"]["email"] = email
     phone = PHONE.search(text)
-    if phone:
+    if phone and not event["contact"].get("phone"):
         event["contact"]["phone"] = phone.group(0)
 
-    if not event.get("registration"):
-        for link in soup.find_all("a", href=True):
-            if re.search(r"(register|signup|trackwrestling|flowrestling)", link["href"], re.I):
-                event["registration"] = link["href"]
-                break
-    if not event.get("registration"):
-        # Most PYW events register through an embedded JotForm.
-        for frame in soup.find_all("iframe", src=True):
-            if "jotform.com" in frame["src"]:
-                event["registration"] = requests.compat.urljoin(
-                    event["sourceUrl"], frame["src"]
-                )
-                break
 
-    # The organizer's real flyer usually lives inside that form, as a PDF
-    # widget, and it is where the contact email is printed.
-    flyer = event.setdefault("flyer", {"url": None, "path": None})
-    if not flyer.get("url") and "jotform.com" in (event.get("registration") or ""):
-        try:
-            form_html = get(session, event["registration"]).text
-        except Exception:
-            note(event, "registration form unreachable")
-        else:
-            pdf_url = pdf_from_jotform(form_html)
-            if pdf_url:
-                flyer["url"] = pdf_url
-
+# --- Entry point -------------------------------------------------------------
 
 def collect(
     session: requests.Session,

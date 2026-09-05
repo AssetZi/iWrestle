@@ -184,6 +184,21 @@ def ensure_banner(session: requests.Session, event: dict[str, Any]) -> Path | No
     return path
 
 
+def render_pdf_page(pdf_path: Path, destination: Path, scale: float = 1.5) -> Path | None:
+    """First page of a flyer PDF as a PNG, so the vision pass can see it."""
+    if destination.exists():
+        return destination
+    try:
+        import pypdfium2
+
+        document = pypdfium2.PdfDocument(str(pdf_path))
+        image = document[0].render(scale=scale).to_pil()
+        image.convert("RGB").save(destination, "PNG")
+        return destination
+    except Exception:
+        return None
+
+
 # --- Flyers -----------------------------------------------------------------
 
 def _wrap(text: str, width: int) -> list[str]:
@@ -366,10 +381,19 @@ def ensure_assets(
     logo_path = folder / "logo.png"
     if force or not logo_path.exists():
         made = None
-        if banner and event.get("logoBBox"):
-            made = crop_logo_from_banner(banner, event["logoBBox"], logo_path)
+        bbox = event.get("logoBBox")
+        source_image = None
+        if bbox and event.get("logoSource") == "flyer":
+            source_image = folder / "flyer-page1.png"
+            if not source_image.exists() and (folder / "source-flyer.pdf").exists():
+                source_image = render_pdf_page(folder / "source-flyer.pdf", source_image)
+        elif bbox and banner:
+            source_image = banner
+        if bbox and source_image and Path(source_image).exists():
+            made = crop_logo_from_banner(Path(source_image), bbox, logo_path)
             if made:
-                notes.append("logo cropped from banner, verify")
+                where = "flyer" if event.get("logoSource") == "flyer" else "banner"
+                notes.append(f"logo cropped from {where}, verify")
         if made is None and event.get("logoUrl"):
             try:
                 response = get(session, event["logoUrl"])

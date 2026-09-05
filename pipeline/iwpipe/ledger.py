@@ -45,6 +45,7 @@ def contains(source_key: str, environment: str) -> bool:
 def record(
     source_key: str, environment: str, record_name: str, name: str,
     *, day: str = "", location: dict[str, float] | None = None,
+    content_hash: str = "",
 ) -> None:
     entries = load()
     entries[entry_key(source_key, environment)] = {
@@ -54,9 +55,14 @@ def record(
         "name": name,
         "date": day,
         "location": location,
+        "contentHash": content_hash,
         "pushedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     save(entries)
+
+
+def get(source_key: str, environment: str) -> dict[str, Any] | None:
+    return load().get(entry_key(source_key, environment))
 
 
 def forget(source_key: str, environment: str) -> dict[str, Any] | None:

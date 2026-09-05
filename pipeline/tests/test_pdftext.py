@@ -27,3 +27,15 @@ def test_unreadable_pdf_yields_empty_text(tmp_path):
     path = tmp_path / "bad.pdf"
     path.write_bytes(b"%PDF-1.4 not really")
     assert extract_text(path) == ""
+
+
+def test_pdf_match_guard():
+    from iwpipe.pdftext import pdf_matches_event
+
+    event = {"name": "Palmerton Turkey Throwdown",
+             "address": "Palmerton Area HS, 1 Blue Bomber Ln, Palmerton, PA 18071"}
+    other = "GTE Group Turkey Classic at Elizabeth High School, Elizabeth NJ. Weigh-ins 7am."
+    own = "Palmerton Youth Wrestling presents the Turkey Throwdown, a K-6 tournament."
+    assert pdf_matches_event(other, event) is False
+    assert pdf_matches_event(own, event) is True
+    assert pdf_matches_event("", event) is None
