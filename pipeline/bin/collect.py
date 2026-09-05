@@ -168,12 +168,12 @@ def main() -> int:
             skip_geocode=args.skip_geocode, refresh_assets=args.refresh_assets,
             site_emails=site_emails,
         )
-        if ledger.contains(event["sourceKey"], "production") or ledger.contains(
-            event["sourceKey"], "development"
-        ):
-            event["review"]["status"] = schema.STATUS_SKIP
-            schema.note(event, "already pushed")
-        else:
+        # Being in one environment's ledger must not block the other: push
+        # refuses repeats per environment on its own. Just say where it is.
+        for environment in ("development", "production"):
+            if ledger.contains(event["sourceKey"], environment):
+                schema.note(event, f"already in {environment}")
+        if True:
             duplicates = ledger.find_similar(
                 event["sourceKey"], schema.slug(event.get("name", "")),
                 (event.get("date") or "")[:10], event.get("location"),

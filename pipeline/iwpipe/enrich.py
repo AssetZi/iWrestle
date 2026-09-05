@@ -227,7 +227,9 @@ def merge(event: dict[str, Any], extraction: BannerExtraction) -> list[str]:
     found = extraction.contact
 
     if found.email and "@" in found.email and _is_default_email(contact.get("email", "")):
-        contact["email"] = found.email.strip()
+        email = found.email.strip()
+        # Flyers shout; an all-caps address is the same mailbox.
+        contact["email"] = email.lower() if email.isupper() else email
         _remove_notes(event, *DEFAULT_EMAIL_NOTES)
         note(event, "AI: email from banner")
         filled.append("email")
