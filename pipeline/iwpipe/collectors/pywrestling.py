@@ -48,6 +48,38 @@ DATE_LINE = re.compile(
 ADDRESS_LINE = re.compile(r"\d.*\b[A-Z]{2}\s+\d{5}\b")
 PRESENTED_BY = re.compile(r"^presented by\s+", re.IGNORECASE)
 
+# Each block carries one real event graphic at 640 or 1280 wide (2:1). The
+# -160 files are division/region icons and the -288 files are buttons.
+BANNER_IMG = re.compile(r"images/[a-z0-9]+/[a-z0-9-]+-(640|1280)\.jpe?g$", re.IGNORECASE)
+
+# Emails are hidden behind `function emN(){var c="..."}` where every
+# character is shifted up by one.
+EMN_SCRIPT = re.compile(r'function\s+em\d+\s*\(\)\s*\{\s*var\s+c\s*=\s*"([^"]+)"')
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
+PHONE = re.compile(r"\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b")
+DETAIL_TEXT_LIMIT = 3000
+
+
+def _decode_emn(html: str) -> list[str]:
+    """Recover the obfuscated addresses a page's emN() functions would open."""
+    found = []
+    for encoded in EMN_SCRIPT.findall(html):
+        decoded = "".join(chr(ord(ch) - 1) for ch in encoded)
+        if EMAIL.fullmatch(decoded) and decoded not in found:
+            found.append(decoded)
+    return found
+
+
+def _banner_url(block) -> str:
+    """The block's event graphic, preferring the larger rendition."""
+    candidates = [
+        img.get("src", "") for img in block.find_all("img") if BANNER_IMG.search(img.get("src", ""))
+    ]
+    if not candidates:
+        return ""
+    candidates.sort(key=lambda src: "-1280." in src, reverse=True)
+    return requests.compat.urljoin(BASE_URL, candidates[0])
+
 
 STREET_SUFFIX = re.compile(
     r"\b(street|st|road|rd|avenue|ave|boulevard|blvd|drive|dr|lane|ln|way|pike|"
@@ -223,13 +255,26 @@ def _parse_block(block) -> dict[str, Any] | None:
             event["registration"] = target
             break
 
+    event["bannerUrl"] = _banner_url(block)
+
     if not event["name"] or not event["dateText"]:
         return None
     return event
 
 
-def _enrich_from_detail(session, event) -> None:
-    """Follow the event's own page for a flyer PDF and a contact."""
+def _site_emails(html: str) -> set[str]:
+    """Addresses that belong to the site itself, printed on every page."""
+    found = {m.lower() for m in EMAIL.findall(html)}
+    found.update(e.lower() for e in _decode_emn(html))
+    return found
+
+
+def _enrich_from_detail(session, event, site_emails: set[str] = frozenset()) -> None:
+    """Follow the event's own page for a flyer PDF and a contact.
+
+    site_emails are the webmaster addresses that appear on every page; a
+    match there is not the organizer and is ignored.
+    """
     try:
         response = get(session, event["sourceUrl"])
     except Exception:
@@ -253,16 +298,28 @@ def _enrich_from_detail(session, event) -> None:
             )
 
     text = soup.get_text(" ", strip=True)
-    email = re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", text)
-    if email:
-        event["contact"]["email"] = email.group(0)
-    phone = re.search(r"\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b", text)
+    event["detailText"] = text[:DETAIL_TEXT_LIMIT]
+
+    candidates = [m for m in EMAIL.findall(text) if m.lower() not in site_emails]
+    candidates += [m for m in _decode_emn(response.text) if m.lower() not in site_emails]
+    if candidates:
+        event["contact"]["email"] = candidates[0]
+    phone = PHONE.search(text)
     if phone:
         event["contact"]["phone"] = phone.group(0)
+
     if not event.get("registration"):
         for link in soup.find_all("a", href=True):
             if re.search(r"(register|signup|trackwrestling|flowrestling)", link["href"], re.I):
                 event["registration"] = link["href"]
+                break
+    if not event.get("registration"):
+        # Most PYW events register through an embedded JotForm.
+        for frame in soup.find_all("iframe", src=True):
+            if "jotform.com" in frame["src"]:
+                event["registration"] = requests.compat.urljoin(
+                    event["sourceUrl"], frame["src"]
+                )
                 break
 
 
@@ -293,8 +350,9 @@ def collect(
             break
 
     if not fixture:
+        site_emails = _site_emails(html)
         for event in events:
-            _enrich_from_detail(session, event)
+            _enrich_from_detail(session, event, site_emails)
 
     if dump_unparsed and unparsed:
         target = FIXTURE_DIR / "pywrestling-unparsed.txt"

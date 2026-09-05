@@ -88,7 +88,12 @@ def build_fields(event: dict[str, Any]) -> dict[str, Any]:
             "type": "stringType", "value": contact["lastName"],
         },
         "eventContactEmail": {"type": "stringType", "value": contact["email"]},
-        "eventContactPhone": {"type": "stringType", "value": contact["phone"]},
+        # Phone is optional in the app's UI, but the App Store build's
+        # Event.init?(safeRecord:) still requires the field to exist, so an
+        # empty string is written rather than omitting it.
+        "eventContactPhone": {
+            "type": "stringType", "value": contact.get("phone") or "",
+        },
     }
 
     if event.get("registration"):

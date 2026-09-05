@@ -33,11 +33,18 @@ def test_missing_assets_are_caught():
     assert "missing flyer" in problems
 
 
-def test_every_contact_field_is_required():
-    for field in ("firstName", "lastName", "email", "phone"):
+def test_name_and_email_are_required():
+    for field in ("firstName", "lastName", "email"):
         event = complete_event()
         event["contact"][field] = ""
         assert f"missing contact.{field}" in schema.validate(event)
+
+
+def test_phone_is_optional():
+    """The app hides an empty phone row; only email must be reachable."""
+    event = complete_event()
+    event["contact"]["phone"] = ""
+    assert schema.validate(event) == []
 
 
 def test_bad_vocabulary_is_rejected():

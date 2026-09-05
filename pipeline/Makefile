@@ -1,20 +1,23 @@
 # iWrestle events pipeline. Run these from the pipeline/ directory.
 PY := ./.venv/bin/python
 SOURCE ?= pywrestling
+DATE := $(shell date +%Y%m%d)
 FILE ?= $(shell ls -t data/events.*.json 2>/dev/null | head -1)
 
-.PHONY: help venv test token-check collect review approve push push-prod reconcile clean
+.PHONY: help venv test token-check collect collect-offline enrich enrich-dry review approve push push-dry push-prod reconcile routine clean
 
 help:
 	@echo "make venv          create .venv and install pinned deps"
 	@echo "make test          offline parser and mapping tests"
 	@echo "make token-check   is the cktool token saved and working?"
 	@echo "make collect       scrape SOURCE=$(SOURCE) into data/"
+	@echo "make enrich        read banners with Claude, fill gaps (needs ANTHROPIC_API_KEY)"
 	@echo "make review        show the newest collected file"
 	@echo "make approve       approve every complete event in it"
 	@echo "make push          write approved events to CloudKit development"
 	@echo "make push-prod     write them to production (asks first)"
 	@echo "make reconcile     compare CloudKit against the local ledger"
+	@echo "make routine       collect + enrich + approve + push (development) for every source"
 	@echo ""
 	@echo "current FILE: $(FILE)"
 
@@ -45,6 +48,12 @@ collect-offline:
 	$(PY) bin/collect.py --source $(SOURCE) \
 		--from-fixture fixtures/$(SOURCE)-index.html --skip-geocode
 
+enrich:
+	$(PY) bin/enrich.py $(FILE)
+
+enrich-dry:
+	$(PY) bin/enrich.py $(FILE) --dry-run
+
 review:
 	$(PY) bin/review.py $(FILE)
 
@@ -63,6 +72,19 @@ push-prod:
 reconcile:
 	$(PY) bin/reconcile.py
 
+# The unattended chain. Development only: production is always a person.
+# enrich exit code 2 means no API key; the chain continues without it.
+routine:
+	@set -e; for src in pywrestling flowrestling; do \
+		f=data/events.$$src.$(DATE).json; \
+		echo "== $$src"; \
+		$(PY) bin/collect.py --source $$src --out $$f; \
+		$(PY) bin/enrich.py $$f || [ $$? -eq 2 ]; \
+		$(PY) bin/review.py $$f --approve-all; \
+		$(PY) bin/push.py $$f; \
+	done; \
+	$(PY) bin/reconcile.py
+
 clean:
-	rm -rf data/events.*.json data/assets .pytest_cache
+	rm -rf data/events.*.json data/assets data/enrich-cache.json .pytest_cache
 	find . -name __pycache__ -type d -exec rm -rf {} +

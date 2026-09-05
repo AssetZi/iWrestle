@@ -6,9 +6,10 @@ app's CloudKit public database, so events do not have to be typed in by hand.
 Three stages, deliberately separated by a human gate:
 
 ```
-collect  →  review  →  push
-scrape      you edit    cktool writes
-to JSON     the JSON    to CloudKit
+collect  →  enrich  →  review  →  push
+scrape      Claude      you edit    cktool writes
+to JSON     reads the   the JSON    to CloudKit
+            banner
 ```
 
 Nothing reaches CloudKit until a person marks an event `approved`. The
@@ -27,8 +28,8 @@ Fill in `.env`:
 | Key | Why it matters |
 | --- | --- |
 | `ADMIN_RECORD_NAME` | Must equal `admin` in `iWrestle/Models/Constants.swift`. Pushed events carry it as their `userID`, which is what makes them appear under Settings → My events and stay editable in the app. |
-| `DEFAULT_CONTACT_EMAIL` | Shown on events whose source lists no contact. Leave the `example.com` placeholder and every collected event is flagged in review. |
-| `DEFAULT_CONTACT_PHONE` | Same. |
+| `DEFAULT_CONTACT_EMAIL` | Shown on events whose source lists no contact and whose banner prints none. Leave the `example.com` placeholder and every such event is flagged in review. Phone is optional and never invented. |
+| `ANTHROPIC_API_KEY` | Lets `make enrich` read banner images with Claude. Create one at console.anthropic.com → Settings → API keys. Without it the enrich step is skipped and reported. |
 | `NOMINATIM_EMAIL` | OpenStreetMap asks geocoding clients to identify themselves. |
 
 ### CloudKit token
@@ -56,14 +57,20 @@ save that one with `--type management`.
 
 ```bash
 make collect SOURCE=pywrestling   # scrape into data/events.pywrestling.<date>.json
+make enrich                       # Claude reads each banner and fills the gaps
 make review                       # read the flags
 make approve                      # or edit review.status by hand
 make push                         # writes to the development environment
 make push-prod                    # writes to production, asks first
 ```
 
+`make routine` runs collect → enrich → approve → push (development) for every
+source, then reconciles. It is what the scheduled task calls.
+
 `make collect-offline` re-runs the parser against the saved page in
-`fixtures/` with no network calls, which is how to iterate on parsing.
+`fixtures/` with no network calls, which is how to iterate on parsing. It
+skips each event's detail page, so registration links and banners only
+appear on a real run.
 
 ### Development vs production
 
@@ -78,6 +85,17 @@ about: age groups and event types become the exact raw values from
 `AgeGroupPicker.swift` and `EventTypePicker.swift`, dates become a single UTC
 timestamp, addresses are geocoded, and a logo and flyer are produced for every
 event. Anything doubtful becomes a note rather than a crash.
+
+**enrich** sends each event's banner image to Claude (`claude-opus-5`,
+structured JSON output) and fills only what is empty or defaulted: contact
+name, email, phone, organizer website, divisions, start and weigh-in times,
+entry fee, a registration URL if one is printed, and where the logo sits so
+it can be cropped. Scraped values are never overwritten. Every AI-sourced
+value carries an `AI: … from banner` note (shown in cyan by review) and the
+overall confidence is recorded, so nothing from the model reaches CloudKit
+without a person seeing it flagged. Results are cached per banner in
+`data/enrich-cache.json`; a rerun costs nothing. A full pywrestling run is
+roughly a dollar or two.
 
 **review** prints one line per event with its flags and lets you set
 `review.status` to `approved` or `skip`. Only approved events are pushed.
@@ -96,12 +114,17 @@ contact fields. Such a record is dropped from every fetch, so it exists in the
 database but never appears in the app. The pipeline therefore guarantees all
 of them:
 
-- **Logo**: a source image if one exists, otherwise a slate-and-gold monogram
-  tile matching the app's own fallback.
-- **Flyer**: the source PDF if one exists, otherwise a one-page PDF rendered
-  from the event's own text.
-- **Contact**: the source contact if parseable, otherwise the organizer's name
-  plus the defaults from `.env`, flagged in review.
+- **Logo**: cropped from the banner when Claude locates one, else a source
+  logo URL, else a slate-and-gold monogram tile matching the app's own fallback.
+- **Flyer**: the source's real PDF if it has one; else the organizer's banner
+  graphic laid onto a page with the essentials and links under it; else a
+  one-page PDF rendered from the event's text. Every link on a flyer is a PDF
+  link annotation, so it is tappable in the app's QuickLook viewer.
+- **Contact**: the source contact if parseable, else what the banner prints,
+  else the organizer's name plus the default email from `.env`, flagged in
+  review. Phone is optional: the app hides an empty row. It is still written
+  as an empty string because the App Store build's decode guard needs the
+  field to exist; the relaxed guard ships with the next app update.
 
 ## Duplicates
 
@@ -129,7 +152,7 @@ are now the only shapes in `iwpipe/cktool.py`:
 
 | Source | State | Notes |
 | --- | --- | --- |
-| pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Needs geocoding. |
+| pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Each block carries a 2:1 banner graphic, which becomes the flyer and feeds enrich. Detail pages hold no PDF or contact, only a JotForm registration iframe, which is captured as the registration link. Emails obfuscated with the site's `emN()` shift are decoded. Needs geocoding. |
 | FloWrestling | Working | Uses the site's own schedule API, which returns coordinates and needs no geocoding or browser. Publishes no age divisions, so every event is flagged for review. |
 | Trackwrestling | Not built | Returns 406 to plain HTTP clients. Would need the headless browser. |
 | USA Wrestling | Blocked | Event listings sit behind a login. |
@@ -159,6 +182,13 @@ wins and the second is surfaced for a decision rather than pushed blindly.
 
 ## Scheduling
 
-Manual for now. `cktool` only runs on macOS with Xcode installed, so an
-unattended push has to run on this Mac. Collecting and reviewing could run
-anywhere, but the push step cannot move to CI.
+A Claude desktop scheduled task named `iwrestle-events-routine` runs
+`make routine` on the 1st and 15th at 8am and reports what it did: counts of
+approved, incomplete and skipped events, which events got AI-sourced
+contacts, possible duplicates across sources, the enrich cost line, and the
+reconcile counts. It only ever writes to the **development** database.
+Production is always `make push-prod`, run by a person after `make review`.
+
+The task runs while the Claude desktop app is open; if the app was closed at
+8am it runs at the next launch. `cktool` only exists on a Mac with Xcode, so
+the push step cannot move to CI.

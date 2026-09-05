@@ -94,8 +94,10 @@ def validate(event: dict[str, Any]) -> list[str]:
         if group not in AGE_GROUPS:
             problems.append(f"bad ageGroup {group!r}")
 
+    # Phone is optional: the app hides an empty row. It is still written as ""
+    # because the shipping build's decode guard needs the field to exist.
     contact = event.get("contact") or {}
-    for field in ("firstName", "lastName", "email", "phone"):
+    for field in ("firstName", "lastName", "email"):
         if not str(contact.get(field, "")).strip():
             problems.append(f"missing contact.{field}")
 

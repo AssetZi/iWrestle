@@ -74,7 +74,7 @@ extension Event {
         self.eventContactFirstName = record[Event.Field.eventContactFirstName] as! String
         self.eventContactLastName = record[Event.Field.eventContactLastName] as! String
         self.eventContactEmail = record[Event.Field.eventContactEmail] as! String
-        self.eventContactPhone = record[Event.Field.eventContactPhone] as! String
+        self.eventContactPhone = record[Event.Field.eventContactPhone] as? String ?? ""
     }
 
     init?(safeRecord record: CKRecord) {
@@ -91,8 +91,7 @@ extension Event {
               let ageGroups = record[Event.Field.ageGroups] as? [String],
               let contactFirstName = record[Event.Field.eventContactFirstName] as? String,
               let contactLastName = record[Event.Field.eventContactLastName] as? String,
-              let contactEmail = record[Event.Field.eventContactEmail] as? String,
-              let contactPhone = record[Event.Field.eventContactPhone] as? String
+              let contactEmail = record[Event.Field.eventContactEmail] as? String
         else { return nil }
 
         self.record = record
@@ -109,6 +108,7 @@ extension Event {
         self.eventContactFirstName = contactFirstName
         self.eventContactLastName = contactLastName
         self.eventContactEmail = contactEmail
-        self.eventContactPhone = contactPhone
+        // Phone is optional; the detail screen hides an empty row.
+        self.eventContactPhone = record[Event.Field.eventContactPhone] as? String ?? ""
     }
 }

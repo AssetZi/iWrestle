@@ -68,3 +68,82 @@ def test_street_city_split(raw, expected):
 def test_acronyms_survive_title_casing():
     assert _title_case("MAT-TOWN USA FALL CLASSIC") == "Mat-Town USA Fall Classic"
     assert _title_case("HAROLD WINSHEL MEMORIAL") == "Harold Winshel Memorial"
+
+
+def test_nearly_every_event_has_a_banner(events):
+    """The banner is the real flyer. Two listings on the saved page have none."""
+    with_banner = [e for e in events if e["bannerUrl"]]
+    assert len(with_banner) >= 0.9 * len(events)
+    assert all(e["bannerUrl"].startswith("https://www.pywrestling.com/images/") for e in with_banner)
+
+
+def test_banner_prefers_the_large_rendition():
+    from bs4 import BeautifulSoup
+
+    from iwpipe.collectors.pywrestling import _banner_url
+
+    html = """<div>
+      <img src="images/j/youth-160.jpg"><img src="images/e/26x-640.jpg">
+      <img src="images/e/26x-1280.jpg"><img src="images/s/22signuplogo-288.png">
+    </div>"""
+    assert _banner_url(BeautifulSoup(html, "html.parser")).endswith("26x-1280.jpg")
+
+
+def test_obfuscated_emails_decode():
+    from iwpipe.collectors.pywrestling import _decode_emn
+
+    encoded = "".join(chr(ord(c) + 1) for c in "coach@example.com")
+    html = f'<script>function em1(){{var c="{encoded}";var a="mailto:";}}</script>'
+    assert _decode_emn(html) == ["coach@example.com"]
+
+
+def test_detail_page_jotform_becomes_registration():
+    from iwpipe.collectors import pywrestling
+    from iwpipe.schema import blank_event
+
+    class Response:
+        text = '<html><body><iframe src="https://form.jotform.com/262174666443159"></iframe>'
+        text += "<p>See you at the tournament.</p></body></html>"
+
+    class Session:
+        def get(self, *a, **k):
+            return Response()
+
+    event = blank_event("pywrestling")
+    event["sourceUrl"] = "https://www.pywrestling.com/x-9-19.html"
+    pywrestling._enrich_from_detail(_FakeGetSession(Response()), event)
+    assert event["registration"] == "https://form.jotform.com/262174666443159"
+    assert "See you" in event["detailText"]
+
+
+class _FakeGetSession:
+    """Stands in for requests.Session inside iwpipe.http.get."""
+
+    def __init__(self, response):
+        self._response = response
+        self.headers = {}
+
+    def get(self, *args, **kwargs):
+        response = self._response
+        response.status_code = 200
+        response.headers = {"Content-Type": "text/html; charset=utf-8"}
+        response.encoding = "utf-8"
+        response.raise_for_status = lambda: None
+        return response
+
+
+def test_site_wide_webmaster_email_is_not_an_organizer_contact():
+    """The site prints its own address on every page; it must not be assigned."""
+    from iwpipe.collectors import pywrestling
+    from iwpipe.schema import blank_event
+
+    class Response:
+        text = "<html><body>Questions? PYWRESTLINGADAM@GMAIL.COM " \
+               "<iframe src='https://form.jotform.com/1'></iframe></body></html>"
+
+    event = blank_event("pywrestling")
+    event["sourceUrl"] = "https://www.pywrestling.com/x-9-19.html"
+    site = pywrestling._site_emails("<a>pywrestlingadam@gmail.com</a>")
+    pywrestling._enrich_from_detail(_FakeGetSession(Response()), event, site)
+    assert event["contact"]["email"] == ""
+    assert event["registration"] == "https://form.jotform.com/1"

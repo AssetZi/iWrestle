@@ -59,3 +59,11 @@ def test_location_and_reference_use_the_confirmed_shapes():
     fields = cktool.build_fields(EVENT)
     assert fields["location"]["value"] == {"latitude": 41.2, "longitude": -79.4}
     assert fields["userID"]["value"]["action"] == "NONE"
+
+
+def test_missing_phone_is_written_as_empty_string():
+    """The shipping app's decode guard needs the field present, even empty."""
+    event = dict(EVENT, contact=dict(EVENT["contact"], phone=""))
+    assert cktool.build_fields(event)["eventContactPhone"]["value"] == ""
+    del event["contact"]["phone"]
+    assert cktool.build_fields(event)["eventContactPhone"]["value"] == ""

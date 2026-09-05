@@ -23,7 +23,7 @@ from iwpipe.config import DATA_DIR
 from iwpipe.http import make_session
 
 
-def normalize(event, session, *, source, today, skip_geocode=False):
+def normalize(event, session, *, source, today, skip_geocode=False, refresh_assets=False):
     """Raw collector output -> a pushable event, flagging anything doubtful."""
     event.setdefault("source", source)
 
@@ -54,7 +54,7 @@ def normalize(event, session, *, source, today, skip_geocode=False):
     contact = event.setdefault(
         "contact", {"firstName": "", "lastName": "", "email": "", "phone": ""}
     )
-    from iwpipe.config import DEFAULT_CONTACT_EMAIL, DEFAULT_CONTACT_PHONE
+    from iwpipe.config import DEFAULT_CONTACT_EMAIL
 
     if not contact.get("firstName"):
         organizer = event.get("organizer") or event.get("name", "Event")
@@ -72,9 +72,6 @@ def normalize(event, session, *, source, today, skip_geocode=False):
             )
         else:
             schema.note(event, "default contact email")
-    if not contact.get("phone"):
-        contact["phone"] = DEFAULT_CONTACT_PHONE
-        schema.note(event, "default contact phone")
 
     event["sourceKey"] = schema.source_key(
         source, event.get("name", ""), event.get("date") or ""
@@ -93,7 +90,7 @@ def normalize(event, session, *, source, today, skip_geocode=False):
             schema.note(event, "geocode failed")
 
     if event.get("date") and event.get("name"):
-        _, _, asset_notes = assets.ensure_assets(session, event)
+        _, _, asset_notes = assets.ensure_assets(session, event, force=refresh_assets)
         for text in asset_notes:
             schema.note(event, text)
         folder = assets.event_asset_dir(event["sourceKey"])
@@ -114,6 +111,10 @@ def main() -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--skip-geocode", action="store_true")
     parser.add_argument("--dump-unparsed", action="store_true")
+    parser.add_argument(
+        "--refresh-assets", action="store_true",
+        help="regenerate logos and flyers even if they exist (after code changes)",
+    )
     args = parser.parse_args()
 
     session = make_session()
@@ -129,7 +130,7 @@ def main() -> int:
     for item in raw:
         event = normalize(
             item, session, source=args.source, today=today,
-            skip_geocode=args.skip_geocode,
+            skip_geocode=args.skip_geocode, refresh_assets=args.refresh_assets,
         )
         if ledger.contains(event["sourceKey"], "production") or ledger.contains(
             event["sourceKey"], "development"

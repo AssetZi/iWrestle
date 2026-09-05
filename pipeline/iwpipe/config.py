@@ -33,8 +33,13 @@ ADMIN_RECORD_NAME = os.getenv(
 
 # --- Defaults for fields the app requires but sources often omit ----------
 DEFAULT_CONTACT_EMAIL = os.getenv("DEFAULT_CONTACT_EMAIL", "")
-DEFAULT_CONTACT_PHONE = os.getenv("DEFAULT_CONTACT_PHONE", "")
 NOMINATIM_EMAIL = os.getenv("NOMINATIM_EMAIL", "")
+
+# --- AI enrichment ----------------------------------------------------------
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+ENRICH_MODEL = "claude-opus-5"
+ENRICH_CACHE_PATH = DATA_DIR / "enrich-cache.json"
+BANNER_MAX_BYTES = 5 * 1024 * 1024
 
 # --- Presentation ---------------------------------------------------------
 # iWrestle/DesignSystem/Theme.swift

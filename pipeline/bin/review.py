@@ -20,8 +20,8 @@ import _bootstrap  # noqa: F401
 
 from iwpipe import schema
 
-BOLD, DIM, GREEN, YELLOW, RED, RESET = (
-    "\033[1m", "\033[2m", "\033[32m", "\033[33m", "\033[31m", "\033[0m"
+BOLD, DIM, GREEN, YELLOW, RED, CYAN, RESET = (
+    "\033[1m", "\033[2m", "\033[32m", "\033[33m", "\033[31m", "\033[36m", "\033[0m"
 )
 
 
@@ -57,7 +57,7 @@ def main() -> int:
             f"{DIM}{', '.join(event.get('ageGroups', []))}{RESET}"
         )
         for text in event["review"].get("notes", []):
-            marker = RED if text in problems else DIM
+            marker = RED if text in problems else CYAN if text.startswith("AI:") else DIM
             print(f"      {marker}- {text}{RESET}")
 
     if args.approve_all:
@@ -75,9 +75,14 @@ def main() -> int:
 
     approved = sum(1 for e in events if e["review"]["status"] == schema.STATUS_APPROVED)
     blocked = sum(1 for e in events if schema.validate(e))
+    ai_sourced = sum(
+        1 for e in events
+        if any(n.startswith("AI: ") and " from banner" in n for n in e["review"].get("notes", []))
+    )
     print(
         f"\n{approved} approved, {blocked} incomplete, "
-        f"{len(events) - approved - blocked} pending"
+        f"{len(events) - approved - blocked} pending; "
+        f"{ai_sourced} events with AI-sourced fields"
     )
     if approved:
         print(f"next: python bin/push.py {args.file}")
