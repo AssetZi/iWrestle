@@ -29,3 +29,13 @@ def test_scraped_values_win_over_the_detail():
     event["contact"]["email"] = "scraped@x.org"
     flowrestling.apply_detail(event, {"eventContact": {"name": "X", "email": "detail@x.org"}})
     assert event["contact"]["email"] == "scraped@x.org"
+
+
+def test_detail_url_is_beside_schedule_not_under_it():
+    assert flowrestling.detail_url("14479196") == "https://prod-web-api.flowrestling.org/api/event-hub/14479196"
+
+
+def test_role_names_stay_in_organizer_form():
+    event = blank_event("flowrestling")
+    flowrestling.apply_detail(event, {"eventContact": {"name": "Tournament Director", "email": "t@d.org"}})
+    assert event["contact"]["lastName"] == "(Organizer)"

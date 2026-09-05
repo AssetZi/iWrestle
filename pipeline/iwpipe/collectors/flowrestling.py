@@ -23,7 +23,8 @@ from ..config import EVENT_TZ
 from ..schema import blank_event, note
 
 SOURCE = "flowrestling"
-API = "https://prod-web-api.flowrestling.org/api/schedule"
+API_ROOT = "https://prod-web-api.flowrestling.org/api"
+API = f"{API_ROOT}/schedule"
 SITE = "https://www.flowrestling.org"
 
 # From POST /api/schedule/filters/administrative-region.
@@ -55,9 +56,14 @@ CORE_ID = re.compile(r"/events/(\d+)/")
 HREF = re.compile(r'href="([^"]+)"')
 
 
-def _get(session: requests.Session, path: str) -> dict[str, Any] | None:
+def detail_url(core_id: str) -> str:
+    # The event-hub lives beside /schedule, not under it.
+    return f"{API_ROOT}/event-hub/{core_id}"
+
+
+def _get(session: requests.Session, url: str) -> dict[str, Any] | None:
     try:
-        response = session.get(f"{API}/{path}", headers=API_HEADERS, timeout=30)
+        response = session.get(url, headers=API_HEADERS, timeout=30)
         response.raise_for_status()
         return response.json()
     except Exception:
@@ -66,7 +72,7 @@ def _get(session: requests.Session, path: str) -> dict[str, Any] | None:
 
 def fetch_detail(session: requests.Session, core_id: str) -> dict[str, Any] | None:
     """GET /api/event-hub/{coreId}: contact, full address, organizer site."""
-    payload = _get(session, f"event-hub/{core_id}")
+    payload = _get(session, detail_url(core_id))
     return (payload or {}).get("data") if payload else None
 
 
@@ -93,7 +99,11 @@ def apply_detail(event: dict[str, Any], detail: dict[str, Any]) -> None:
     name = (contact.get("name") or "").strip()
     if name and not event["contact"].get("firstName"):
         first, _, last = name.rpartition(" ")
-        if first and not re.search(r"(team|club|admin|wrestling|group|inc)", last, re.I):
+        role_word = re.search(
+            r"(team|club|admin|wrestling|group|inc|director|coordinator|staff|committee|tbd|office)",
+            name, re.I,
+        )
+        if first and not role_word:
             event["contact"]["firstName"], event["contact"]["lastName"] = first, last
         else:
             event["contact"]["firstName"], event["contact"]["lastName"] = name, "(Organizer)"
