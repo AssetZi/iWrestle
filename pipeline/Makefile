@@ -13,7 +13,7 @@ help:
 	@echo "make token-check   is the cktool token saved and working?"
 	@echo "make collect       scrape SOURCE=$(SOURCE) into data/"
 	@echo "make enrich        read banners with Claude, fill gaps (needs ANTHROPIC_API_KEY)"
-	@echo "make review        show the newest collected file"
+	@echo "make review        show the newest collected file (add ARGS=\"--flagged --state PA\")"
 	@echo "make approve       approve every complete event in it"
 	@echo "make push          write approved events to CloudKit development"
 	@echo "make push-replace  also re-push events whose content changed"
@@ -57,7 +57,7 @@ enrich-dry:
 	$(PY) bin/enrich.py $(FILE) --dry-run
 
 review:
-	$(PY) bin/review.py $(FILE)
+	$(PY) bin/review.py $(FILE) $(ARGS)
 
 approve:
 	$(PY) bin/review.py $(FILE) --approve-all
@@ -81,7 +81,7 @@ reconcile:
 # The unattended chain. Development only: production is always a person.
 # enrich exit code 2 means no API key; the chain continues without it.
 routine:
-	@set -e; for src in pywrestling flowrestling trackwrestling; do \
+	@set -e; for src in flowrestling trackwrestling pywrestling; do \
 		f=data/events.$$src.$(DATE).json; \
 		echo "== $$src"; \
 		$(PY) bin/collect.py --source $$src --out $$f; \

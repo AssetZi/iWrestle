@@ -158,27 +158,42 @@ are now the only shapes in `iwpipe/cktool.py`:
 
 | Source | State | Notes |
 | --- | --- | --- |
-| pywrestling.com | Working | Static HTML, ~34 events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Each block carries a 2:1 banner graphic that feeds enrich (logo location). Every event has up to three pages: an info page (`slug-M-D.html`), a sign-up page (`slug-M-D-or.html`), and sometimes only the organizer's own site; the event link prefers them in that order and is never the site root. Both pages are followed; a JotForm on either is the registration link, and the organizer's real flyer PDF sits inside that form as a PDF Embedder widget, parsed out of the widget settings and downloaded. Email and phone are read off the PDF text, the PDF becomes the flyer, and it is attached to the enrich request. Two events sometimes share one form, so a PDF that names a different event is dropped and noted. Webmaster and form-owner addresses are excluded from contacts. Needs geocoding. |
-| FloWrestling detail | Working | `GET /api/event-hub/{coreId}` per event supplies the organizer contact (`eventContact`), the full street address, and the organizer's website. |
-| FloWrestling | Working | Uses the site's own schedule API, which returns coordinates and needs no geocoding or browser. Publishes no age divisions, so every event is flagged for review. |
-| Trackwrestling | Working (listing) | The open-tournaments search, filtered to PA for the next twelve months, paged with the filter carried on every request. Rows give name, dates, venue and street address, the registration link and the organizer's logo. The site rejects browser-looking clients with a 406 but accepts a plain one, so this collector uses its own minimal headers. Contacts are not exposed: the event viewer behind "Enter Event" is a JavaScript app, so those events keep the default email unless another source covers them. |
-| USA Wrestling | Blocked | Event listings sit behind a login. |
+| FloWrestling | Working, national | The backbone. Flo owns Trackwrestling, and its `events/search` endpoint has no date window, so the union of a few broad queries enumerates the whole country's schedule twelve months ahead. Each event comes with coordinates (no geocoding) and its Flo information page; `GET /api/event-hub/{coreId}` adds the organizer's name and email, the street address, website and registration, cached in `data/flo-details.json` for 30 days. |
+| Trackwrestling | Working, supplement | Slow and careful: the site returns 406 to browser-looking clients, and to everyone from an address that asks too often. One bare session, three seconds between requests, and a block turns into `trackwrestling: blocked, skipped this run` rather than a failure. Every row is looked up on Flo by name and day; when Flo has it, Flo's version wins. Track-only events link to their registration or to the same gateway the site's own Enter Event button opens, never the landing page. |
+| pywrestling.com | Working | Static HTML, ~34 PA events. Blocks are found by content, not CSS class, because class names are generated. Divisions come from icon filenames. Each block carries a 2:1 banner graphic that feeds enrich (logo location). Every event has up to three pages: an info page (`slug-M-D.html`), a sign-up page (`slug-M-D-or.html`), and sometimes only the organizer's own site; the event link prefers them in that order and is never the site root. The organizer's real flyer PDF sits inside the JotForm on either page as a PDF Embedder widget, parsed out of the widget settings and downloaded. Email and phone are read off the PDF text, the PDF becomes the flyer, and it is attached to the enrich request. Two events sometimes share one form, so a PDF that names a different event is dropped and noted. Webmaster and form-owner addresses are excluded. Needs geocoding. |
+
+### College-level events
+
+Neither Flo nor Trackwrestling says what level an event is, so it is
+inferred (`iwpipe/level.py`): a university or college venue, a name in the
+open/invitational/duals family, and no youth marker anywhere. Those events
+become `Open` and are skipped with the note `college-level event`. Set
+`INCLUDE_COLLEGE=1` in `.env` to keep them.
+
+### Scale
+
+A national run collects several hundred events. The first one is slow
+(one detail request per event, then one cktool create per event, roughly
+30–60 minutes); later runs only touch new or changed events. `make review
+ARGS="--flagged"` shows only the events that need a decision, and
+`ARGS="--state PA"` narrows to one state.
 
 ### FloWrestling API
 
 The public pages return 406 to scripts, but the API host does not:
 
 ```
-POST https://prod-web-api.flowrestling.org/api/schedule/events
-{"tz": "America/New_York", "limit": 100,
- "filters": [{"id": "administrative-region", "value": "29USPA00000000000"}],
- "cursor": "<meta.nextCursor from the previous page>"}
+POST https://prod-web-api.flowrestling.org/api/schedule/events/search
+{"tz": "America/New_York", "query": "a", "limit": 100, "offset": 0}
+GET  https://prod-web-api.flowrestling.org/api/event-hub/{coreId}
 ```
 
-State codes come from `POST /api/schedule/filters/administrative-region`.
-Multi-day events are returned once per day under the same id and are
-collapsed to one record. Events with no logo of their own carry a
-FloWrestling-branded still, which is rejected in favor of the monogram tile.
+`events/search` needs a non-empty query and pages by `offset` against
+`meta.total`; the plain `events` listing is stuck to about a week and
+ignores its cursor, so it is only used by tests. Multi-day events are
+returned once per day under the same id and are collapsed to one record.
+Events with no logo of their own carry a FloWrestling-branded still (or a
+Track governing-body badge), which is rejected in favor of the monogram.
 
 ### Overlapping sources
 

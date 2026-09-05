@@ -49,4 +49,10 @@ INK = (0x0A, 0x0B, 0x0C)
 SLATE_200 = (0xAE, 0xB6, 0xBD)
 
 EVENT_TZ = "America/New_York"
+
+# Directory scope: every event the sources list, this far ahead.
+MONTHS_AHEAD = 12
+# College opens are not youth wrestling; they are classified as "Open" and
+# skipped unless this is true.
+INCLUDE_COLLEGE = os.getenv("INCLUDE_COLLEGE", "").lower() in ("1", "true", "yes")
 SCHEMA_VERSION = 1

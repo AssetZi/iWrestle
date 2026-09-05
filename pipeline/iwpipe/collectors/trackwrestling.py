@@ -1,14 +1,17 @@
-"""Trackwrestling open tournaments.
+"""Trackwrestling open tournaments, as a supplement to FloWrestling.
 
-The site answers 406 to anything that looks like a browser, but is happy to
-talk to a plain client, so this uses its own minimal headers rather than the
-shared browser-shaped ones. Each visit gets a session (TIM + twSessionId)
-from the landing page; the search is a GET with the filters in the query,
-and paging only keeps the filter if those same parameters ride along.
+Flo owns Trackwrestling and its search already lists most Track events
+with a contact and a real page, so a Track row is only kept when Flo does
+not know the event. The site also blocks aggressively: anything that
+looks like a browser gets a 406, and too many requests from one address
+gets every client a 406 for a while. This collector therefore uses a bare
+client, one session with cookies, a three-second gap between requests,
+and reports a block as a skipped run rather than a failure.
 """
 from __future__ import annotations
 
 import re
+import time
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
@@ -16,16 +19,34 @@ from typing import Any
 import requests
 from bs4 import BeautifulSoup
 
+from ..config import MONTHS_AHEAD
 from ..schema import blank_event, note
+from . import flowrestling
 
 SOURCE = "trackwrestling"
 BASE = "https://www.trackwrestling.com/tw/"
 LANDING = BASE + "Login.jsp?TIM=1&PageType=OpenTournaments"
 REGISTER = "https://www.trackwrestling.com/registration/TW_Register.jsp?tournamentGroupId="
+# What the site's own "Enter Event" button opens, minus the session.
+GATEWAY = BASE + "opentournaments/VerifyPassword.jsp?tournamentId={tid}&userType=viewer_ngw"
 
 # Anything more browser-like than this (an Accept for HTML, sec-ch-ua,
 # Upgrade-Insecure-Requests) earns a 406, so the shared session is not used.
 HEADERS = {"User-Agent": "iWrestle-pipeline/1.0"}
+PAUSE_SECONDS = 3.0
+MAX_PAGES = 40
+
+# stateBox option values on the landing page; the national run sends none.
+STATES = {"PA": "39"}
+
+SESSION = re.compile(r"TIM=(\d+)&twSessionId=(\w+)")
+SELECTED = re.compile(r"eventSelected\((\d+),'(.*?)',(\d+),\s*'([^']*)'")
+GROUP_ID = re.compile(r"tournamentGroupId=(\d+)")
+CITY_LINE = re.compile(r"^(.*),\s*([A-Z]{2})\s+(\d{5})")
+
+
+class Blocked(RuntimeError):
+    """The site answered 406; stop for this run and try again next time."""
 
 
 def _plain_session() -> requests.Session:
@@ -34,27 +55,21 @@ def _plain_session() -> requests.Session:
     session.headers.update(HEADERS)
     return session
 
-# stateBox option values on the landing page.
-STATES = {"PA": "39"}
-DEFAULT_STATES = ["PA"]
-MONTHS_AHEAD = 12
-MAX_PAGES = 20
 
-SESSION = re.compile(r"TIM=(\d+)&twSessionId=(\w+)")
-SELECTED = re.compile(r"eventSelected\((\d+),'(.*?)',(\d+),\s*'([^']*)'")
-GROUP_ID = re.compile(r"tournamentGroupId=(\d+)")
-CITY_LINE = re.compile(r"^(.*),\s*([A-Z]{2})\s+(\d{5})")
-
-# eventSelected's third argument is kept for reference only: on the saved
-# page code 3 covered duals and code 1 an individual tournament, so it is
-# not a type. The event's name decides, as it does for every source.
+def _fetch(session: requests.Session, url: str) -> str:
+    time.sleep(PAUSE_SECONDS)
+    response = session.get(url, headers=HEADERS, timeout=30)
+    if response.status_code == 406:
+        raise Blocked("HTTP 406")
+    response.raise_for_status()
+    return response.text
 
 
 def _session(session: requests.Session) -> tuple[str, str]:
-    html = session.get(LANDING, headers=HEADERS, timeout=30).text
+    html = _fetch(session, LANDING)
     match = SESSION.search(html)
     if not match:
-        raise RuntimeError("Trackwrestling landing page carried no session id")
+        raise Blocked("landing page carried no session id")
     return match.group(1), match.group(2)
 
 
@@ -68,7 +83,8 @@ def search_url(tim: str, sid: str, state_code: str, start: str, end: str, index:
     base = f"{BASE}Login.jsp?TIM={tim}&twSessionId={sid}"
     if index:
         base += f"&tournamentIndex={index}"
-    return f"{base}&tName=&state={state_code}&sDate={start}&eDate={end}&lastName=&firstName=&teamName=&sfvString=&city=&gbId=&camps=false"
+    state = f"&state={state_code}" if state_code else ""
+    return f"{base}&tName={state}&sDate={start}&eDate={end}&lastName=&firstName=&teamName=&sfvString=&city=&gbId=&camps=false"
 
 
 def parse_rows(html: str) -> list[dict[str, Any]]:
@@ -89,7 +105,7 @@ def parse_rows(html: str) -> list[dict[str, Any]]:
         event["name"] = match.group(2).replace("\\'", "'")
         event["typeCode"] = match.group(3)
         logo = match.group(4)
-        if logo and logo != "null":
+        if logo and logo != "null" and "/images/gb_" not in logo:
             event["logoUrl"] = logo
         event["dateText"] = lines[1]
 
@@ -112,12 +128,22 @@ def parse_rows(html: str) -> list[dict[str, Any]]:
         if website and website.startswith("http"):
             event["organizerWebsite"] = website
 
-        event["sourceUrl"] = LANDING
+        # Never the landing page: the registration if any, else the same
+        # gateway the site's own Enter Event button opens.
+        event["sourceUrl"] = event["registration"] or GATEWAY.format(tid=event["trackId"])
         event["formatText"] = ""
         event["divisionsText"] = ""
         note(event, "divisions not published by the source, verify")
         rows.append(event)
     return rows
+
+
+def _first_day(date_text: str) -> str:
+    """"10/17 - 10/18/2026" or "09/19/2026" -> "2026-10-17"."""
+    match = re.search(r"(\d{2})/(\d{2})(?:\s*-\s*\d{2}/\d{2})?/(\d{4})", date_text)
+    if not match:
+        return ""
+    return f"{match.group(3)}-{match.group(1)}-{match.group(2)}"
 
 
 def collect(
@@ -127,32 +153,38 @@ def collect(
     limit: int | None = None,
     dump_unparsed: bool = False,
     states: list[str] | None = None,
+    flo_session: requests.Session | None = None,
 ) -> list[dict[str, Any]]:
     if fixture:
         rows = parse_rows(Path(fixture).read_text())
     else:
-        session = _plain_session()
-        tim, sid = _session(session)
-        start, end = _window()
+        own = _plain_session()
         rows = []
-        seen: set[str] = set()
-        for state in states or DEFAULT_STATES:
-            code = STATES[state]
-            for index in range(MAX_PAGES):
-                html = session.get(
-                    search_url(tim, sid, code, start, end, index), headers=HEADERS, timeout=30
-                ).text
-                page = [r for r in parse_rows(html) if r["trackId"] not in seen]
-                if not page:
-                    break
-                seen.update(r["trackId"] for r in page)
-                rows.extend(page)
+        try:
+            tim, sid = _session(own)
+            start, end = _window()
+            seen: set[str] = set()
+            for code in ([STATES[s] for s in states] if states else [""]):
+                for index in range(MAX_PAGES):
+                    page = [r for r in parse_rows(_fetch(own, search_url(tim, sid, code, start, end, index)))
+                            if r["trackId"] not in seen]
+                    if not page:
+                        break
+                    seen.update(r["trackId"] for r in page)
+                    rows.extend(page)
+        except Blocked as error:
+            print(f"trackwrestling: blocked ({error}), skipped this run")
+            return []
 
     events = []
     for event in rows:
-        # The filter is by state; anything else that slips through is noise.
-        if event.get("region") and states and event["region"] not in (states or DEFAULT_STATES):
+        if states and event.get("region") and event["region"] not in states:
             continue
+        if not fixture and flo_session is not None:
+            # Flo's version has the contact and a real page; let it win.
+            if flowrestling.search_by_name(flo_session, event["name"], _first_day(event["dateText"])):
+                continue
+            note(event, "Track-only event, no organizer contact available")
         events.append(event)
         if limit and len(events) >= limit:
             break

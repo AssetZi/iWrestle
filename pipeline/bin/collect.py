@@ -18,9 +18,9 @@ from pathlib import Path
 
 import _bootstrap  # noqa: F401
 
-from iwpipe import assets, geocode, ledger, mapping, pdftext, schema
+from iwpipe import assets, geocode, ledger, level, mapping, pdftext, schema
 from iwpipe.collectors import COLLECTORS
-from iwpipe.config import DATA_DIR, DEFAULT_CONTACT_EMAIL
+from iwpipe.config import DATA_DIR, DEFAULT_CONTACT_EMAIL, INCLUDE_COLLEGE
 from iwpipe.http import make_session
 
 
@@ -65,6 +65,15 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
         event["ageGroups"] = groups
     if unknown:
         schema.note(event, "unmapped division tokens: " + ", ".join(unknown))
+
+    # A college open is not youth wrestling: mark it Open and, by default,
+    # keep it out of the directory.
+    if level.classify_level(event.get("name", ""), event.get("venue", ""), event.get("detailText", "")) == "college":
+        event["ageGroups"] = ["Open"]
+        schema.note(event, "college-level event")
+        if not INCLUDE_COLLEGE:
+            event["review"]["status"] = schema.STATUS_SKIP
+
     if not event.get("ageGroups"):
         schema.note(event, "no divisions found, defaulted")
         event["ageGroups"] = ["Youth", "Jr High", "High School"]
@@ -164,9 +173,10 @@ def main() -> int:
     session = make_session()
     collector = COLLECTORS[args.source]
     site_emails = getattr(collector, "SITE_EMAILS", frozenset())
+    extra = {"flo_session": session} if args.source == "trackwrestling" else {}
     raw = collector.collect(
         session, fixture=args.from_fixture, limit=args.limit,
-        dump_unparsed=args.dump_unparsed,
+        dump_unparsed=args.dump_unparsed, **extra,
     )
     print(f"collected {len(raw)} raw listings from {args.source}")
 
