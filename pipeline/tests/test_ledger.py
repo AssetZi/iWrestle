@@ -53,3 +53,12 @@ def test_sibling_events_from_the_same_source_are_not_duplicates(monkeypatch, tmp
         "pywrestling:west-penn-duals:2026-09-12", "west-penn-duals", "2026-09-12",
         {"latitude": 40.2394, "longitude": -74.9658},
     ) == []
+
+
+def test_a_city_level_geocode_a_few_km_off_is_flagged_not_skipped(monkeypatch, tmp_path):
+    _seed(monkeypatch, tmp_path)
+    near = {"latitude": 40.2394 + 0.03, "longitude": -74.9658}   # ~3.3 km north
+    assert ledger.find_similar("trackwrestling:x:2026-09-12", "x", "2026-09-12", near) == []
+    assert ledger.find_nearby("trackwrestling:x:2026-09-12", "2026-09-12", near) == [
+        "pywrestling:harold-winshel-memorial-round-robin:2026-09-12"
+    ]

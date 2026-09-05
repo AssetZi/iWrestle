@@ -193,6 +193,12 @@ def main() -> int:
                 schema.note(
                     event, "possible duplicate of " + ", ".join(duplicates)
                 )
+            else:
+                nearby = ledger.find_nearby(
+                    event["sourceKey"], (event.get("date") or "")[:10], event.get("location")
+                )
+                if nearby:
+                    schema.note(event, "same day a few km from " + ", ".join(nearby) + ", check for duplicate")
         events.append(event)
 
     # Two events sharing one registration form is how one of them ends up

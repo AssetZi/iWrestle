@@ -17,6 +17,9 @@ from .config import LEDGER_PATH
 # do share a gym and a weekend.
 NEAR_KM = 2.0
 NEAR_DAYS = 2
+# A city-level geocode can sit a few kilometres from the real gym; within
+# this radius on the same day the listing is worth a look, not a skip.
+MAYBE_KM = 6.0
 
 
 def load() -> dict[str, Any]:
@@ -86,6 +89,21 @@ def _days_apart(a: str, b: str) -> int | None:
         return abs((date.fromisoformat(a[:10]) - date.fromisoformat(b[:10])).days)
     except ValueError:
         return None
+
+
+def find_nearby(source_key: str, day: str, location: dict[str, float] | None) -> list[str]:
+    """Same-day listings from another source a few kilometres away."""
+    if not location:
+        return []
+    source = source_key.split(":", 1)[0]
+    found = []
+    for entry in load().values():
+        other = entry["sourceKey"]
+        if other.split(":", 1)[0] == source or not entry.get("location") or not entry.get("date"):
+            continue
+        if _days_apart(day, entry["date"]) == 0 and NEAR_KM < _km(location, entry["location"]) <= MAYBE_KM:
+            found.append(other)
+    return found
 
 
 def find_similar(source_key: str, name_slug: str, day: str, location: dict[str, float] | None) -> list[str]:
