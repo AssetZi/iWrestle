@@ -7,10 +7,16 @@ rerun of a collector does not create duplicates.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+import math
+from datetime import date, datetime, timezone
 from typing import Any
 
 from .config import LEDGER_PATH
+
+# Two listings of one tournament rarely share a name across sites, but they
+# do share a gym and a weekend.
+NEAR_KM = 2.0
+NEAR_DAYS = 2
 
 
 def load() -> dict[str, Any]:
@@ -37,7 +43,8 @@ def contains(source_key: str, environment: str) -> bool:
 
 
 def record(
-    source_key: str, environment: str, record_name: str, name: str
+    source_key: str, environment: str, record_name: str, name: str,
+    *, day: str = "", location: dict[str, float] | None = None,
 ) -> None:
     entries = load()
     entries[entry_key(source_key, environment)] = {
@@ -45,6 +52,8 @@ def record(
         "sourceKey": source_key,
         "environment": environment,
         "name": name,
+        "date": day,
+        "location": location,
         "pushedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     save(entries)
@@ -58,16 +67,39 @@ def forget(source_key: str, environment: str) -> dict[str, Any] | None:
     return removed
 
 
-def find_cross_source(name_slug: str, day: str) -> list[str]:
-    """Keys already pushed for the same event name and day from another source.
+def _km(a: dict[str, float], b: dict[str, float]) -> float:
+    lat1, lon1 = math.radians(a["latitude"]), math.radians(a["longitude"])
+    lat2, lon2 = math.radians(b["latitude"]), math.radians(b["longitude"])
+    h = (math.sin((lat2 - lat1) / 2) ** 2
+         + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2)
+    return 6371 * 2 * math.asin(math.sqrt(h))
 
-    The natural key is source-prefixed, so the same tournament listed by two
-    sites would otherwise be pushed twice. This cannot be resolved
+
+def _days_apart(a: str, b: str) -> int | None:
+    try:
+        return abs((date.fromisoformat(a[:10]) - date.fromisoformat(b[:10])).days)
+    except ValueError:
+        return None
+
+
+def find_similar(source_key: str, name_slug: str, day: str, location: dict[str, float] | None) -> list[str]:
+    """Keys already pushed that look like the same event from another source.
+
+    A match is the same name slug on the same day, or a listing within a
+    couple of kilometres and a couple of days. This cannot be resolved
     automatically (the two listings may differ), so it is surfaced in review.
     """
-    suffix = f":{name_slug}:{day}"
-    return [
-        entry["sourceKey"]
-        for entry in load().values()
-        if entry["sourceKey"].endswith(suffix)
-    ]
+    matches: list[str] = []
+    for entry in load().values():
+        other = entry["sourceKey"]
+        if other == source_key or other in matches:
+            continue
+        if other.endswith(f":{name_slug}:{day}"):
+            matches.append(other)
+            continue
+        if not location or not entry.get("location") or not entry.get("date"):
+            continue
+        gap = _days_apart(day, entry["date"])
+        if gap is not None and gap <= NEAR_DAYS and _km(location, entry["location"]) <= NEAR_KM:
+            matches.append(other)
+    return matches

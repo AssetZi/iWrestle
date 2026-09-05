@@ -142,8 +142,8 @@ def query_records(
             "--record-type", RECORD_TYPE,
             "--limit", str(limit),
         ]
-        for field in fields or []:
-            args += ["--requested-fields", field]
+        if fields:
+            args += ["--requested-fields", *fields]
         if continuation:
             args += ["--continuation-token", continuation]
 

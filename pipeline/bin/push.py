@@ -102,7 +102,10 @@ def main() -> int:
             break
         if args.dry_run:
             continue
-        ledger.record(event["sourceKey"], environment, record_name, event["name"])
+        ledger.record(
+            event["sourceKey"], environment, record_name, event["name"],
+            day=event["date"][:10], location=event.get("location"),
+        )
         pushed += 1
         print(f"  {GREEN}created{RESET} {record_name}")
 

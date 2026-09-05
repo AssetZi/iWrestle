@@ -11,6 +11,7 @@ in one place.
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -97,6 +98,11 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
         event["logo"] = str(folder / "logo.png")
         event.setdefault("flyer", {})["path"] = str(folder / "flyer.pdf")
 
+    # "2027 Battle in the Burgh" dated 2026 is a placeholder listing.
+    year_in_name = re.search(r"\b(20\d\d)\b", event.get("name", ""))
+    if year_in_name and event.get("date") and year_in_name.group(1) != event["date"][:4]:
+        schema.note(event, f"name says {year_in_name.group(1)} but date is {event['date'][:4]}, verify")
+
     for problem in schema.validate(event):
         schema.note(event, problem)
 
@@ -138,13 +144,10 @@ def main() -> int:
             event["review"]["status"] = schema.STATUS_SKIP
             schema.note(event, "already pushed")
         else:
-            duplicates = [
-                key
-                for key in ledger.find_cross_source(
-                    schema.slug(event.get("name", "")), (event.get("date") or "")[:10]
-                )
-                if key != event["sourceKey"]
-            ]
+            duplicates = ledger.find_similar(
+                event["sourceKey"], schema.slug(event.get("name", "")),
+                (event.get("date") or "")[:10], event.get("location"),
+            )
             if duplicates:
                 event["review"]["status"] = schema.STATUS_SKIP
                 schema.note(
