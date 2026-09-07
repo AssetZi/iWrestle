@@ -123,3 +123,19 @@ def test_a_listing_gone_from_its_source_is_removed_only_with_replace(tmp_path, m
     assert calls == [("delete", "GONE")]
     assert ledger.get("pywrestling:gone:2026-11-07", "development") is None
     assert ledger.get("flowrestling:other:2026-11-07", "development")
+
+
+def test_a_pushed_event_reclassified_as_college_is_retired(tmp_path, monkeypatch):
+    import push as push_cli
+
+    monkeypatch.setattr(ledger, "LEDGER_PATH", tmp_path / "pushed.json")
+    ledger.record("pywrestling:interstate-classic:2026-10-17", "development", "REC1", "Interstate Classic")
+    event = _event(tmp_path)
+    event["review"]["status"] = schema.STATUS_SKIP
+    event["review"]["notes"] = ["college-level event"]
+    found = push_cli.retired([event], "development", set())
+    assert [f["recordName"] for f in found] == ["REC1"]
+    assert found[0]["reason"] == "college-level event"
+    # Skipped for a reason that is not permanent (a possible duplicate) stays.
+    event["review"]["notes"] = ["possible duplicate of x"]
+    assert push_cli.retired([event], "development", set()) == []

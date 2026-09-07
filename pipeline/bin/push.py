@@ -71,6 +71,25 @@ def push_one(event, environment, *, dry_run, replace_record=None, client=None):
     return name, digest
 
 
+RETIRE_NOTES = ("excluded:", "college-level event", "adult-level event")
+
+
+def retired(events, environment, already):
+    """Ledger entries for events this file has permanently set aside."""
+    found = []
+    for event in events:
+        if event["review"]["status"] != schema.STATUS_SKIP or event["sourceKey"] in already:
+            continue
+        notes = event["review"].get("notes", [])
+        reason = next((n for n in notes if n.startswith(RETIRE_NOTES)), None)
+        if not reason:
+            continue
+        entry = ledger.get(event["sourceKey"], environment)
+        if entry:
+            found.append({**entry, "missCount": 0, "reason": reason})
+    return found
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("file", type=Path)
@@ -125,6 +144,10 @@ def main() -> int:
 
     # Listings absent from the source for MISS_LIMIT runs are cancelled.
     removals = ledger.due_for_removal(payload["source"], environment) if args.replace else []
+    # And a pushed event that this file now sets aside for good (excluded by
+    # hand, or reclassified as college or adult) comes down as well.
+    if args.replace:
+        removals += retired(payload["events"], environment, {r["sourceKey"] for r in removals})
 
     if not queue and not removals:
         print("nothing to push")
@@ -182,7 +205,8 @@ def main() -> int:
 
     removed = 0
     for entry in removals:
-        print(f"{BOLD}remove{RESET} {entry['date']}  {entry['name'][:50]}  (gone from source {entry['missCount']} runs)")
+        why = entry.get("reason") or f"gone from source {entry['missCount']} runs"
+        print(f"{BOLD}remove{RESET} {entry['date']}  {entry['name'][:50]}  ({why})")
         if args.dry_run:
             print(f"    would delete {entry['recordName'][:8]} via {cktool.backend_name(environment)}")
             continue

@@ -11,7 +11,7 @@ import re
 
 COLLEGE_VENUE = re.compile(r"\b(university|college|collegiate|ncaa|naia|njcaa)\b", re.I)
 COLLEGE_NAME = re.compile(r"\b(college open|collegiate|ncaa|naia|njcaa|university open)\b", re.I)
-OPEN_FAMILY = re.compile(r"\b(open|invitational|duals?|classic|dual meet)\b", re.I)
+OPEN_FAMILY = re.compile(r"\b(open|invitational|invite|duals?|classic|dual meet)\b", re.I)
 YOUTH_MARKER = re.compile(
     r"\b(youth|kids?|elementary|k-?\d+|novice|bantam|tots?|pee\s*wee|middle school|"
     r"junior high|jr\.? high|high school|hs|jv|varsity|scholastic|takedown|girls?)\b|\b\d{1,2}u\b",

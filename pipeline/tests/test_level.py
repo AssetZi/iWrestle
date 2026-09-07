@@ -38,3 +38,7 @@ def test_tba_venue_is_a_note_not_a_skip():
 
     assert venue_is_tba("TBA, TBA, TBA, IL TBA")
     assert not venue_is_tba("Elizabethtown Area High School, 600 East High Street, Elizabethtown, PA 17022")
+
+
+def test_invite_counts_like_invitational():
+    assert classify_level("Millikin Invite", "Millikin University") == "college"
