@@ -46,7 +46,7 @@ def push_one(event, environment, *, dry_run, replace_record=None, client=None):
     fields_path, logo, flyer, digest = prepare(event)
     if dry_run:
         verb = "replace" if replace_record else "create"
-        print(f"    would {verb} via {cktool.backend_name()}")
+        print(f"    would {verb} via {cktool.backend_name(environment)}")
         print(f"      fields {fields_path}")
         print(f"      assets LOGO={logo} FLYER={flyer}")
         return None, digest
@@ -120,7 +120,7 @@ def main() -> int:
         print("nothing to push")
         return 0
 
-    print(f"{DIM}via {cktool.backend_name()}{RESET}")
+    print(f"{DIM}via {cktool.backend_name(environment)}{RESET}")
 
     if args.production and not args.dry_run:
         print(f"\n{RED}{BOLD}  PRODUCTION  {RESET}")

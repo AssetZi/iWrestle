@@ -101,3 +101,51 @@ def test_post_sends_the_three_signed_headers(key, monkeypatch):
     assert sent["headers"]["X-Apple-CloudKit-Request-KeyID"] == "KEYID"
     assert sent["headers"]["X-Apple-CloudKit-Request-SignatureV1"]
     assert json.loads(sent["data"]) == {"operations": []}
+
+
+def test_delete_quotes_the_change_tag_and_tolerates_a_missing_record(key):
+    calls = []
+
+    class Response:
+        def __init__(self, payload):
+            self.status_code = 200
+            self._payload = payload
+            self.text = json.dumps(payload)
+        def json(self):
+            return self._payload
+
+    class Session:
+        def __init__(self, lookup):
+            self.lookup = lookup
+        def post(self, url, data=None, headers=None, timeout=None):
+            body = json.loads(data)
+            calls.append((url.rsplit("/", 1)[-1], body))
+            if url.endswith("lookup"):
+                return Response({"records": [self.lookup]})
+            return Response({"records": [{"recordName": "R1"}]})
+
+    client = ckws.Client(key, "K", "iCloud.x", "development",
+                         session=Session({"recordName": "R1", "recordChangeTag": "tag7"}))
+    client.delete_record("R1")
+    assert calls[0][0] == "lookup"
+    assert calls[1][1]["operations"][0]["record"]["recordChangeTag"] == "tag7"
+
+    calls.clear()
+    gone = ckws.Client(key, "K", "iCloud.x", "development",
+                       session=Session({"serverErrorCode": "NOT_FOUND"}))
+    gone.delete_record("R9")
+    assert [c[0] for c in calls] == ["lookup"]
+
+
+def test_keys_are_chosen_per_environment(monkeypatch):
+    """A development key gets a 401 in production, so each has its own id."""
+    from iwpipe import cktool, config
+
+    monkeypatch.setattr(config, "CLOUDKIT_KEY_ID", "DEV")
+    monkeypatch.setattr(config, "CLOUDKIT_KEY_ID_PRODUCTION", "PROD")
+    assert config.cloudkit_key_id("development") == "DEV"
+    assert config.cloudkit_key_id("production") == "PROD"
+
+    monkeypatch.setattr(config, "CLOUDKIT_KEY_ID_PRODUCTION", "")
+    assert cktool.rest_client("production") is None
+    assert "cktool" in cktool.backend_name("production")

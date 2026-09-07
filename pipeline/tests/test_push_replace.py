@@ -40,6 +40,9 @@ def test_content_hash_changes_when_fields_or_assets_change(tmp_path):
 def test_replace_deletes_then_recreates_only_changed_events(tmp_path, monkeypatch, capsys):
     import push as push_cli
 
+    # This exercises the cktool backend; a configured key would otherwise
+    # send the push through CloudKit REST instead.
+    monkeypatch.setattr(cktool, "rest_client", lambda environment: None)
     monkeypatch.setattr(ledger, "LEDGER_PATH", tmp_path / "pushed.json")
     monkeypatch.setattr("iwpipe.assets.ASSET_DIR", tmp_path / "assets")
     calls = []

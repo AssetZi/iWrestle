@@ -47,7 +47,10 @@ openssl ec -in secrets/cloudkit-s2s.pem -pubout
 ```
 
 Paste that public key into CloudKit Console -> Tokens -> Server-to-Server
-Keys, and put the Key ID it returns into `.env` as `CLOUDKIT_KEY_ID`. The
+Keys. **Keys are registered per environment**: register the same public key
+in *both* development and production, and put each id it returns into
+`.env` as `CLOUDKIT_KEY_ID` and `CLOUDKIT_KEY_ID_PRODUCTION`. A development
+key used against production returns 401 AUTHENTICATION_FAILED. The
 pipeline then signs its own requests (`iwpipe/ckws.py`) and needs neither
 Xcode nor a browser login. Server-to-server keys reach the public database
 only, which is the only one iWrestle uses.

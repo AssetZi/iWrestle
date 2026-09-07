@@ -45,8 +45,18 @@ BANNER_MAX_BYTES = 5 * 1024 * 1024
 # A key that never expires, unlike cktool's browser-session token. Set
 # CLOUDKIT_KEY_ID in .env and the pipeline writes through the REST API;
 # leave it empty and it falls back to cktool.
+# Keys are registered per environment, so a development key gets a 401 in
+# production. The same public key can be registered in both; each
+# registration returns its own id.
 CLOUDKIT_KEY_ID = os.getenv("CLOUDKIT_KEY_ID", "")
+CLOUDKIT_KEY_ID_PRODUCTION = os.getenv("CLOUDKIT_KEY_ID_PRODUCTION", "")
 CLOUDKIT_KEY_PATH = PIPELINE_ROOT / "secrets" / "cloudkit-s2s.pem"
+
+
+def cloudkit_key_id(environment: str) -> str:
+    if environment == "production":
+        return CLOUDKIT_KEY_ID_PRODUCTION
+    return CLOUDKIT_KEY_ID
 
 # --- Presentation ---------------------------------------------------------
 # iWrestle/DesignSystem/Theme.swift

@@ -134,18 +134,44 @@ class Client:
             raise CKWSError(f"create failed: {json.dumps(answer)[:400]}")
         return records[0]["recordName"]
 
+    def change_tag(self, record_name: str) -> str | None:
+        """The record's current version, which a delete has to quote."""
+        answer = self.post("records/lookup", {
+            "records": [{"recordName": record_name}],
+        })
+        record = (answer.get("records") or [{}])[0]
+        if record.get("serverErrorCode"):
+            return None
+        return record.get("recordChangeTag")
+
     def delete_record(self, record_name: str) -> None:
-        payload = {"operations": [{
-            "operationType": "delete", "record": {"recordName": record_name},
-        }]}
-        answer = self.post("records/modify", payload)
+        """Delete by name. A record that is already gone is not an error."""
+        tag = self.change_tag(record_name)
+        if tag is None:
+            return
+        answer = self.post("records/modify", {"operations": [{
+            "operationType": "forceDelete",
+            "record": {"recordName": record_name, "recordChangeTag": tag},
+        }]})
         records = answer.get("records") or []
         if records and records[0].get("serverErrorCode") not in (None, "NOT_FOUND"):
             raise CKWSError(f"delete failed: {json.dumps(answer)[:300]}")
 
+    def ping(self) -> int:
+        """One page, no paging: is the key accepted? Returns records seen."""
+        answer = self.post("records/query", {
+            "query": {"recordType": "Event"}, "resultsLimit": 1,
+            "desiredKeys": ["name"],
+        })
+        return len(answer.get("records") or [])
+
     def query_records(self, record_type: str, desired: list[str] | None = None,
-                      limit: int = 200) -> list[dict[str, Any]]:
-        """Every record of a type, following continuation markers."""
+                      limit: int = 200, max_records: int | None = None) -> list[dict[str, Any]]:
+        """Records of a type, following continuation markers.
+
+        max_records stops early; without it this walks the whole database,
+        which for a national directory is thousands of round trips.
+        """
         found: list[dict[str, Any]] = []
         marker = None
         while True:
@@ -160,7 +186,7 @@ class Client:
             answer = self.post("records/query", query)
             found.extend(answer.get("records") or [])
             marker = answer.get("continuationMarker")
-            if not marker:
+            if not marker or (max_records is not None and len(found) >= max_records):
                 return found
 
 
