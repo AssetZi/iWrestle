@@ -226,6 +226,30 @@ def main() -> int:
                     schema.note(event, "same day a few km from " + ", ".join(nearby) + ", check for duplicate")
         events.append(event)
 
+    seen_keys = {e["sourceKey"] for e in events}
+    today_iso = today.isoformat()
+    for event in events:
+        if any(ledger.contains(event["sourceKey"], env) for env in ("development", "production")):
+            continue
+        moved = ledger.find_moved(
+            args.source, schema.slug(event.get("name", "")),
+            (event.get("date") or "")[:10], seen_keys, today_iso,
+        )
+        if moved:
+            # The old listing is gone from the site; push replaces its record.
+            event["movedFrom"] = moved[0]
+            schema.note(event, f"moved from {moved[0].rsplit(':', 1)[-1]}")
+
+    # An upcoming event that stopped appearing here is probably cancelled.
+    # An empty scrape (the site blocked us) says nothing about any of them.
+    if raw:
+        missing = ledger.mark_misses(args.source, seen_keys, today_iso)
+        due = sum(1 for m in missing if m["missCount"] >= ledger.MISS_LIMIT)
+        if missing:
+            print(f"{len(missing)} pushed listings gone from {args.source}, {due} due for removal")
+            for entry in missing[:15]:
+                print(f"  {entry['date']}  {entry['name'][:50]}  (missed {entry['missCount']}x, {entry['environment']})")
+
     # Two events sharing one registration form is how one of them ends up
     # with the other's flyer; say so where a person will see it.
     by_form: dict[str, list] = {}

@@ -5,7 +5,7 @@ DATE := $(shell date +%Y%m%d)
 # The newest collected file for SOURCE. Override with FILE=path.
 FILE ?= $(shell ls -t data/events.$(SOURCE).*.json 2>/dev/null | head -1)
 
-.PHONY: help venv test token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod reconcile routine clean
+.PHONY: help venv test token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod promote reconcile routine clean
 
 help:
 	@echo "make venv          create .venv and install pinned deps"
@@ -18,6 +18,7 @@ help:
 	@echo "make push          write approved events to CloudKit development"
 	@echo "make push-replace  also re-push events whose content changed"
 	@echo "make push-prod     write them to production (asks first)"
+	@echo "make promote       push-prod for the newest file of every source"
 	@echo "make reconcile     compare CloudKit against the local ledger"
 	@echo "make routine       collect + enrich + approve + push (development) for every source"
 	@echo ""
@@ -79,15 +80,27 @@ push-replace:
 	$(PY) bin/push.py $(FILE) --replace
 
 push-prod:
-	$(PY) bin/push.py $(FILE) --production
+	$(PY) bin/push.py $(FILE) --production --replace
+
+# Publish the newest file of every source to production, one confirmation
+# each. Answering n at a prompt skips that source and moves on.
+promote:
+	@for src in pywrestling flowrestling trackwrestling; do \
+		f=$$(ls -t data/events.$$src.*.json 2>/dev/null | head -1); \
+		if [ -z "$$f" ]; then echo "== $$src: nothing collected"; continue; fi; \
+		echo "== $$src ($$f)"; \
+		$(PY) bin/push.py $$f --production --replace || true; \
+	done
 
 reconcile:
 	$(PY) bin/reconcile.py
 
 # The unattended chain. Development only: production is always a person.
 # enrich exit code 2 means no API key; the chain continues without it.
+# pywrestling goes first: it has the flyer and the contact, so when Flo lists
+# the same PA tournament it is Flo's copy that is set aside as the duplicate.
 routine:
-	@set -e; for src in flowrestling trackwrestling pywrestling; do \
+	@set -e; for src in pywrestling flowrestling trackwrestling; do \
 		f=data/events.$$src.$(DATE).json; \
 		echo "== $$src"; \
 		$(PY) bin/collect.py --source $$src --out $$f; \

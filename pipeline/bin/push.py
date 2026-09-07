@@ -114,9 +114,19 @@ def main() -> int:
                 print(f"{DIM}same{RESET} {event['name'][:50]}: unchanged since push")
                 continue
             event["_replace"] = existing["recordName"]
+        elif args.replace and event.get("movedFrom"):
+            # The date changed at the source: same event, new key. Create
+            # the new record and take down the one for the old date.
+            old = ledger.get(event["movedFrom"], environment)
+            if old:
+                event["_replace"] = old["recordName"]
+                event["_forget"] = event["movedFrom"]
         queue.append(event)
 
-    if not queue:
+    # Listings absent from the source for MISS_LIMIT runs are cancelled.
+    removals = ledger.due_for_removal(payload["source"], environment) if args.replace else []
+
+    if not queue and not removals:
         print("nothing to push")
         return 0
 
@@ -130,6 +140,10 @@ def main() -> int:
             print(f"  {event['date'][:10]}  {event['name']}")
         if len(queue) > 40:
             print(f"  ... and {len(queue) - 40} more")
+        if removals:
+            print(f"\nAnd delete {len(removals)} records whose listing is gone from the source:")
+            for entry in removals[:40]:
+                print(f"  {entry['date']}  {entry['name']}")
         if args.yes:
             print(f"\n{YELLOW}--yes given, not asking.{RESET}")
         elif input("\nType y to continue: ").strip().lower() != "y":
@@ -138,9 +152,11 @@ def main() -> int:
 
     pushed = 0
     failed = 0
+    moved = 0
     for event in queue:
         replacing = event.pop("_replace", None)
-        verb = "replace" if replacing else "push"
+        forget = event.pop("_forget", None)
+        verb = "move" if forget else "replace" if replacing else "push"
         print(f"{BOLD}{verb}{RESET} {event['date'][:10]}  {event['name'][:50]}")
         try:
             record_name, digest = push_one(
@@ -158,13 +174,42 @@ def main() -> int:
             day=event["date"][:10], location=event.get("location"),
             content_hash=digest,
         )
+        if forget:
+            ledger.forget(forget, environment)
+            moved += 1
         pushed += 1
-        print(f"  {GREEN}{'replaced' if replacing else 'created'}{RESET} {record_name}")
+        print(f"  {GREEN}{'moved' if forget else 'replaced' if replacing else 'created'}{RESET} {record_name}")
 
+    removed = 0
+    for entry in removals:
+        print(f"{BOLD}remove{RESET} {entry['date']}  {entry['name'][:50]}  (gone from source {entry['missCount']} runs)")
+        if args.dry_run:
+            print(f"    would delete {entry['recordName'][:8]} via {cktool.backend_name(environment)}")
+            continue
+        try:
+            if client is not None:
+                client.delete_record(entry["recordName"])
+            else:
+                cktool.delete_record(entry["recordName"], environment)
+        except (cktool.CKToolError, ckws.CKWSError) as error:
+            print(f"  {RED}failed{RESET}: {error}")
+            failed += 1
+            continue
+        ledger.forget(entry["sourceKey"], environment)
+        removed += 1
+        print(f"  {GREEN}removed{RESET} {entry['recordName']}")
+
+    extras = ""
+    if moved:
+        extras += f", {moved} moved"
+    if removals:
+        extras += f", {len(removals) if args.dry_run else removed} removed"
+    if failed:
+        extras += f", {failed} failed"
     if args.dry_run:
-        print(f"\ndry run: {len(queue)} events would be pushed to {environment}")
+        print(f"\ndry run: {len(queue)} events would be pushed to {environment}{extras}")
     else:
-        print(f"\npushed {pushed}/{len(queue)} to {environment}" + (f", {failed} failed" if failed else ""))
+        print(f"\npushed {pushed}/{len(queue)} to {environment}{extras}")
     return 0
 
 

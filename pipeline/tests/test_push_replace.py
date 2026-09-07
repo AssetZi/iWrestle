@@ -69,3 +69,57 @@ def test_replace_deletes_then_recreates_only_changed_events(tmp_path, monkeypatc
     push_cli.main()
     assert [c[0] for c in calls] == ["create", "delete"]
     assert "same" in capsys.readouterr().out or True
+
+
+def _wire(tmp_path, monkeypatch):
+    monkeypatch.setattr(cktool, "rest_client", lambda environment: None)
+    monkeypatch.setattr(ledger, "LEDGER_PATH", tmp_path / "pushed.json")
+    monkeypatch.setattr("iwpipe.assets.ASSET_DIR", tmp_path / "assets")
+    calls = []
+    monkeypatch.setattr(cktool, "delete_record", lambda name, env: calls.append(("delete", name)))
+    monkeypatch.setattr(cktool, "create_record", lambda *a, **k: calls.append(("create",)) or {"recordName": f"REC{len(calls)}"})
+    return calls
+
+
+def test_a_moved_event_replaces_the_record_for_its_old_date(tmp_path, monkeypatch):
+    import push as push_cli
+
+    calls = _wire(tmp_path, monkeypatch)
+    ledger.record("pywrestling:interstate-classic:2026-10-10", "development", "OLD", "Interstate Classic", day="2026-10-10")
+    event = _event(tmp_path)
+    event["movedFrom"] = "pywrestling:interstate-classic:2026-10-10"
+    file = tmp_path / "events.json"
+    schema.dump(file, "pywrestling", [event])
+
+    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace"])
+    push_cli.main()
+    assert calls == [("create",), ("delete", "OLD")]
+    assert ledger.get("pywrestling:interstate-classic:2026-10-10", "development") is None
+    assert ledger.get(event["sourceKey"], "development")
+
+
+def test_a_listing_gone_from_its_source_is_removed_only_with_replace(tmp_path, monkeypatch):
+    import push as push_cli
+
+    calls = _wire(tmp_path, monkeypatch)
+    ledger.record("pywrestling:gone:2026-11-07", "development", "GONE", "Gone", day="2026-11-07")
+    ledger.record("flowrestling:other:2026-11-07", "development", "FLO", "Other", day="2026-11-07")
+    ledger.mark_misses("pywrestling", set(), "2026-09-07")
+    ledger.mark_misses("pywrestling", set(), "2026-09-14")
+    file = tmp_path / "events.json"
+    schema.dump(file, "pywrestling", [])
+
+    monkeypatch.setattr(sys, "argv", ["push", str(file)])
+    push_cli.main()
+    assert calls == []
+
+    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace", "--dry-run"])
+    push_cli.main()
+    assert calls == []
+    assert ledger.get("pywrestling:gone:2026-11-07", "development")
+
+    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace"])
+    push_cli.main()
+    assert calls == [("delete", "GONE")]
+    assert ledger.get("pywrestling:gone:2026-11-07", "development") is None
+    assert ledger.get("flowrestling:other:2026-11-07", "development")

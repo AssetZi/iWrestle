@@ -85,10 +85,14 @@ make review                       # read the flags
 make approve                      # or edit review.status by hand
 make push                         # writes to the development environment
 make push-prod                    # writes to production, asks first
+make promote                      # push-prod for the newest file of every source
 ```
 
 `make routine` runs collect → enrich → approve → push (development) for every
-source, then reconciles. It is what the scheduled task calls.
+source (pywrestling first, so its flyers and contacts win over Flo's copy of
+the same tournament), then reconciles. It is what the scheduled task calls.
+Once a week, after the routine's report, `make review ARGS="--flagged"` and
+`make promote` are the whole job of publishing.
 
 `make collect-offline` re-runs the parser against the saved page in
 `fixtures/` with no network calls, which is how to iterate on parsing. It
@@ -165,6 +169,20 @@ not create duplicates. Development and production are tracked separately.
 The same event listed by two different sources is not caught automatically.
 Resolve those in review.
 
+Two things a natural key cannot express are handled by `push --replace`:
+
+- **A date change.** The listing gets a new key, and the old one is no
+  longer on the site. Collect marks the new event `moved from <old day>`;
+  push creates it, deletes the record for the old date, and drops the old
+  key from the ledger.
+- **A listing that disappears** (cancelled, most likely). Collect counts,
+  per upcoming pushed event, the runs its source has not listed it; push
+  deletes the record once that reaches `MISS_LIMIT` (two runs in a row).
+  A run that collected nothing (Trackwrestling blocked us) counts for
+  nobody. Past events are left alone. An entry on its way out no longer
+  blocks another source's copy of the same event as a duplicate, which is
+  what happens when Flo picks up a Track-only tournament.
+
 ## Field shapes
 
 cktool names `stringType`, `int64Type`, `timestampType`, `assetType` and
@@ -228,12 +246,16 @@ wins and the second is surfaced for a decision rather than pushed blindly.
 ## Scheduling
 
 A Claude desktop scheduled task named `iwrestle-events-routine` runs
-`make routine` (pywrestling, FloWrestling, Trackwrestling) on the 1st and
-15th at 8am and reports what it did: counts of
-approved, incomplete and skipped events, which events got AI-sourced
-contacts, possible duplicates across sources, the enrich cost line, and the
-reconcile counts. It only ever writes to the **development** database.
-Production is always `make push-prod`, run by a person after `make review`.
+`make routine` (pywrestling, FloWrestling, Trackwrestling) every Monday at
+8am and reports what it did: counts of approved, incomplete and skipped
+events, which events got AI-sourced contacts, possible duplicates across
+sources, events moved or removed, the enrich cost line, and the reconcile
+counts. Weekly because organizers post late: a tournament announced ten
+days out would slip past a twice-monthly run. Later runs are cheap; Flo
+details and AI answers are cached and only new or changed events are
+pushed. It only ever writes to the **development** database. Production is
+always `make promote` (or `make push-prod` for one source), run by a person
+after `make review`.
 
 The task runs while the Claude desktop app is open; if the app was closed at
 8am it runs at the next launch. `cktool` only exists on a Mac with Xcode, so

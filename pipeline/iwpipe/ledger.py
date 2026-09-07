@@ -76,6 +76,14 @@ def forget(source_key: str, environment: str) -> dict[str, Any] | None:
     return removed
 
 
+def _leaving(entry: dict[str, Any]) -> bool:
+    """About to be removed (see MISS_LIMIT below); another source's listing
+    of the same event should take over rather than be skipped as a duplicate.
+    A Track event that Flo picks up is dropped by the Track collector and
+    would otherwise vanish from both."""
+    return entry.get("missCount", 0) >= MISS_LIMIT
+
+
 def _km(a: dict[str, float], b: dict[str, float]) -> float:
     lat1, lon1 = math.radians(a["latitude"]), math.radians(a["longitude"])
     lat2, lon2 = math.radians(b["latitude"]), math.radians(b["longitude"])
@@ -101,6 +109,8 @@ def find_nearby(source_key: str, day: str, location: dict[str, float] | None) ->
         other = entry["sourceKey"]
         if other.split(":", 1)[0] == source or not entry.get("location") or not entry.get("date"):
             continue
+        if _leaving(entry):
+            continue
         if _days_apart(day, entry["date"]) == 0 and NEAR_KM < _km(location, entry["location"]) <= MAYBE_KM:
             found.append(other)
     return found
@@ -117,7 +127,7 @@ def find_similar(source_key: str, name_slug: str, day: str, location: dict[str, 
     source = source_key.split(":", 1)[0]
     for entry in load().values():
         other = entry["sourceKey"]
-        if other == source_key or other in matches:
+        if other == source_key or other in matches or _leaving(entry):
             continue
         if other.endswith(f":{name_slug}:{day}"):
             matches.append(other)
@@ -132,3 +142,64 @@ def find_similar(source_key: str, name_slug: str, day: str, location: dict[str, 
         if gap is not None and gap <= NEAR_DAYS and _km(location, entry["location"]) <= NEAR_KM:
             matches.append(other)
     return matches
+
+
+# --- Listings that vanished from their source -----------------------------------
+# A cancelled tournament is simply gone from the next scrape. One absence
+# could be a flaky page, so a record is only removed after this many runs
+# in a row without it.
+MISS_LIMIT = 2
+
+
+def _source_of(entry: dict[str, Any]) -> str:
+    return entry["sourceKey"].split(":", 1)[0]
+
+
+def mark_misses(source: str, seen_keys: set[str], today: str) -> list[dict[str, Any]]:
+    """Count, per upcoming entry of `source`, the runs it has been absent.
+
+    Entries seen this run go back to zero. Entries already in the past are
+    left alone: the source stops listing them and that means nothing.
+    Returns the entries now missing, with their updated counts.
+    """
+    entries = load()
+    missing: list[dict[str, Any]] = []
+    for entry in entries.values():
+        if _source_of(entry) != source or not entry.get("date") or entry["date"] < today[:10]:
+            continue
+        if entry["sourceKey"] in seen_keys:
+            entry.pop("missCount", None)
+            entry.pop("lastMissedAt", None)
+            continue
+        entry["missCount"] = entry.get("missCount", 0) + 1
+        entry["lastMissedAt"] = today[:10]
+        missing.append(entry)
+    save(entries)
+    return missing
+
+
+def due_for_removal(source: str, environment: str) -> list[dict[str, Any]]:
+    """Entries of one source absent MISS_LIMIT runs running, in one environment."""
+    return [
+        entry for entry in load().values()
+        if _source_of(entry) == source and entry["environment"] == environment
+        and entry.get("missCount", 0) >= MISS_LIMIT
+    ]
+
+
+def find_moved(source: str, name_slug: str, day: str, seen_keys: set[str], today: str) -> list[str]:
+    """Keys from the same source with this name on another upcoming day.
+
+    A tournament whose date changed gets a new key; the old listing is no
+    longer on the site (it is not in `seen_keys`), so its record is stale.
+    Last season's edition, already in the past, is a different event.
+    """
+    found: list[str] = []
+    for entry in load().values():
+        key = entry["sourceKey"]
+        if key in seen_keys or key in found or _source_of(entry) != source:
+            continue
+        old_day = entry.get("date") or ""
+        if old_day and old_day != day and old_day >= today[:10] and key.endswith(f":{name_slug}:{old_day}"):
+            found.append(key)
+    return found
