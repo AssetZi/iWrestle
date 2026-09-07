@@ -564,6 +564,12 @@
     "longitude": -119.6909445,
     "matched": "13th Avenue, Hanford, Kings County, California, 93202, United States"
   },
+  "slam miami, 542 northwest 12th avenue, miami, fl 33136": {
+    "confidence": "precise",
+    "latitude": 25.7789719,
+    "longitude": -80.2150118,
+    "matched": "542, Northwest 12th Avenue, Miami, Miami-Dade County, Florida, 33136, United States"
+  },
   "sollenberger sports center - messiah university, 1 university avenue, mechanicsburg, pa 17055": {
     "confidence": "precise",
     "latitude": 40.1581468,
