@@ -35,10 +35,7 @@ test:
 # Can we reach the container? Uses the server-to-server key when one is
 # configured, else the cktool user token.
 token-check:
-	@$(PY) -c "from iwpipe import cktool, ckws; \
-	  [print(e + ':', (lambda c: 'no key configured' if not c else (c.ping(), 'OK')[1])(cktool.rest_client(e))) \
-	   if True else None for e in ('development','production')]" \
-	  2>/tmp/ckws-check.err || (echo 'server-to-server key not working:'; head -4 /tmp/ckws-check.err)
+	@$(PY) bin/keycheck.py
 	@$(PY) -c "from iwpipe.config import CLOUDKIT_KEY_ID; import sys; sys.exit(0 if CLOUDKIT_KEY_ID else 1)" \
 	  && exit 0 || $(MAKE) --no-print-directory token-check-cktool
 
