@@ -144,6 +144,32 @@ class Client:
             return None
         return record.get("recordChangeTag")
 
+    def find_record(self, record_type: str, name: str, day: str) -> str | None:
+        """The record name of an event with this name on this day, if any.
+
+        Used after a create that errored on the client: CloudKit may well
+        have committed it, and creating again would leave a duplicate.
+        """
+        from datetime import datetime, timedelta, timezone
+
+        start = datetime.fromisoformat(day).replace(tzinfo=timezone.utc)
+        end = start + timedelta(days=1)
+        answer = self.post("records/query", {
+            "query": {
+                "recordType": record_type,
+                "filterBy": [
+                    {"fieldName": "name", "comparator": "EQUALS", "fieldValue": {"value": name}},
+                    {"fieldName": "date", "comparator": "GREATER_THAN_OR_EQUALS",
+                     "fieldValue": {"value": int(start.timestamp() * 1000)}},
+                    {"fieldName": "date", "comparator": "LESS_THAN",
+                     "fieldValue": {"value": int(end.timestamp() * 1000)}},
+                ],
+            },
+            "resultsLimit": 5, "desiredKeys": ["name"],
+        })
+        records = [r for r in answer.get("records") or [] if not r.get("serverErrorCode")]
+        return records[0]["recordName"] if records else None
+
     def delete_record(self, record_name: str) -> None:
         """Delete by name. A record that is already gone is not an error."""
         tag = self.change_tag(record_name)

@@ -28,12 +28,21 @@ def main() -> int:
         if not entry:
             print(f"no ledger entry for {args.delete_key} in {environment}")
             return 1
-        cktool.delete_record(entry["recordName"], environment)
+        client = cktool.rest_client(environment)
+        if client is not None:
+            client.delete_record(entry["recordName"])
+        else:
+            cktool.delete_record(entry["recordName"], environment)
         ledger.forget(args.delete_key, environment)
         print(f"deleted {entry['recordName']} ({entry['name']})")
         return 0
 
-    records = cktool.query_records(environment, fields=["name", "date"])
+    # Prefer the server-to-server key: cktool's session token expires.
+    client = cktool.rest_client(environment)
+    if client is not None:
+        records = client.query_records("Event", ["name", "date"], max_records=10000)
+    else:
+        records = cktool.query_records(environment, fields=["name", "date"])
     entries = {
         key: value
         for key, value in ledger.load().items()

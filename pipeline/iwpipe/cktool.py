@@ -9,6 +9,8 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+
+import requests
 from pathlib import Path
 from typing import Any
 
@@ -206,4 +208,20 @@ def create_record_rest(
         "LOGO": client.upload_asset(RECORD_TYPE, "logo", logo_path),
         "FLYER": client.upload_asset(RECORD_TYPE, "flyer", flyer_path),
     }
-    return client.create_record(RECORD_TYPE, ckws.to_ckws_fields(fields, uploaded))
+    try:
+        return client.create_record(RECORD_TYPE, ckws.to_ckws_fields(fields, uploaded))
+    except (ckws.CKWSError, requests.RequestException) as error:
+        # A timeout or 5xx after the server committed the record would be
+        # reported as a failure, and the retry would create a twin. Look
+        # for the record before giving up; the first production push left
+        # 43 such twins behind.
+        name = fields.get("name", {}).get("value", "")
+        day = str(fields.get("date", {}).get("value", ""))[:10]
+        try:
+            existing = client.find_record(RECORD_TYPE, name, day) if name and day else None
+        except Exception:
+            existing = None
+        if existing:
+            print(f"    create errored but the record exists; adopting {existing[:8]}")
+            return existing
+        raise ckws.CKWSError(str(error)) from error

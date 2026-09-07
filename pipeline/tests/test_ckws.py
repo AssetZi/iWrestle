@@ -149,3 +149,28 @@ def test_keys_are_chosen_per_environment(monkeypatch):
     monkeypatch.setattr(config, "CLOUDKIT_KEY_ID_PRODUCTION", "")
     assert cktool.rest_client("production") is None
     assert "cktool" in cktool.backend_name("production")
+
+
+def test_a_create_that_errors_after_commit_is_adopted_not_duplicated(key, monkeypatch):
+    from iwpipe import cktool
+
+    class Client:
+        def __init__(self):
+            self.created = 0
+        def upload_asset(self, rt, field, path):
+            return {"receipt": field}
+        def create_record(self, rt, fields):
+            self.created += 1
+            raise ckws.CKWSError("records/modify failed (504): gateway timeout")
+        def find_record(self, rt, name, day):
+            assert (name, day) == ("Interstate Classic", "2026-10-17")
+            return "EXISTING1"
+
+    client = Client()
+    fields = {"name": {"type": "stringType", "value": "Interstate Classic"},
+              "date": {"type": "timestampType", "value": "2026-10-17T16:00:00Z"},
+              "logo": {"type": "assetType", "value": "LOGO"},
+              "flyer": {"type": "assetType", "value": "FLYER"}}
+    tmp = __import__("pathlib").Path("/tmp")
+    assert cktool.create_record_rest(client, fields, tmp / "a", tmp / "b") == "EXISTING1"
+    assert client.created == 1
