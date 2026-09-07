@@ -138,3 +138,37 @@ def load(path: Path) -> dict[str, Any]:
             f"expected {SCHEMA_VERSION}"
         )
     return payload
+
+
+def disambiguate_keys(events: list[dict[str, Any]]) -> int:
+    """Give events that collapsed to one natural key distinct, stable keys.
+
+    Flo lists a dual meet's men's and women's (or varsity and JV) matches
+    under the same name and day; with one key they replaced each other's
+    record on every push. The event with the smallest stable id keeps the
+    plain key, so existing ledger entries stay valid; the rest get the id
+    appended. Returns how many keys were changed.
+    """
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for event in events:
+        groups.setdefault(event["sourceKey"], []).append(event)
+
+    changed = 0
+    for key, members in groups.items():
+        if len(members) < 2:
+            continue
+        members.sort(key=_stable_id)
+        for event in members[1:]:
+            event["sourceKey"] = f"{key}:{_stable_id(event)}"
+            note(event, "same name and day as another listing here; kept both")
+            changed += 1
+    return changed
+
+
+def _stable_id(event: dict[str, Any]) -> str:
+    for field in ("floId", "trackId"):
+        if event.get(field):
+            return str(event[field])
+    import hashlib
+
+    return hashlib.sha1((event.get("sourceUrl") or event.get("name", "")).encode()).hexdigest()[:8]

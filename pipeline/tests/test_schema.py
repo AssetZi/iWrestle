@@ -72,3 +72,17 @@ def test_out_of_range_coordinates_do_not_validate():
     event = complete_event()
     event["location"] = {"latitude": -106.2, "longitude": 31.8}
     assert "coordinates out of range" in schema.validate(event)
+
+
+def test_colliding_keys_become_distinct_and_stable():
+    a = dict(schema.blank_event("flowrestling"), sourceKey="flowrestling:x-y:2026-11-18", floId="2S9X")
+    b = dict(schema.blank_event("flowrestling"), sourceKey="flowrestling:x-y:2026-11-18", floId="2gPX")
+    c = dict(schema.blank_event("flowrestling"), sourceKey="flowrestling:other:2026-11-18", floId="2AAA")
+    for e in (a, b, c):
+        e["review"] = {"status": "pending", "notes": []}
+    assert schema.disambiguate_keys([b, a, c]) == 1
+    # The smaller id keeps the plain key regardless of input order.
+    assert a["sourceKey"] == "flowrestling:x-y:2026-11-18"
+    assert b["sourceKey"] == "flowrestling:x-y:2026-11-18:2gPX"
+    assert c["sourceKey"] == "flowrestling:other:2026-11-18"
+    assert any("kept both" in n for n in b["review"]["notes"])

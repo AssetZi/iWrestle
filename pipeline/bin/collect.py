@@ -250,6 +250,12 @@ def main() -> int:
             for entry in missing[:15]:
                 print(f"  {entry['date']}  {entry['name'][:50]}  (missed {entry['missCount']}x, {entry['environment']})")
 
+    # Two listings with one natural key would take turns overwriting each
+    # other's record; give the later ones a stable suffix instead.
+    changed = schema.disambiguate_keys(events)
+    if changed:
+        print(f"{changed} listings share a name and day with another; keys made distinct")
+
     # Two events sharing one registration form is how one of them ends up
     # with the other's flyer; say so where a person will see it.
     by_form: dict[str, list] = {}
