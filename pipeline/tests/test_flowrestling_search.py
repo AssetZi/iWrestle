@@ -76,3 +76,14 @@ def test_search_by_name_matches_on_words_and_day():
     assert flowrestling.search_by_name(session, "Hurst Invitational", day)["id"] == "id1"
     assert flowrestling.search_by_name(session, "Hurst Invitational", "2020-01-01") is None
     assert flowrestling.search_by_name(session, "Totally Different Event", day) is None
+
+
+def test_swapped_coordinates_are_put_right_and_garbage_is_dropped():
+    from iwpipe.collectors.flowrestling import _coordinates
+
+    assert _coordinates({"latitude": -106.258236, "longitude": 31.793335}) == {
+        "latitude": 31.793335, "longitude": -106.258236,
+    }
+    assert _coordinates({"latitude": 40.1, "longitude": -79.4}) == {"latitude": 40.1, "longitude": -79.4}
+    assert _coordinates({"latitude": 500, "longitude": 500}) is None
+    assert _coordinates(None) is None

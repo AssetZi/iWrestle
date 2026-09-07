@@ -66,3 +66,9 @@ def test_only_approved_complete_events_are_pushable():
     assert not schema.is_pushable(event)
     event["review"]["status"] = schema.STATUS_APPROVED
     assert schema.is_pushable(event)
+
+
+def test_out_of_range_coordinates_do_not_validate():
+    event = complete_event()
+    event["location"] = {"latitude": -106.2, "longitude": 31.8}
+    assert "coordinates out of range" in schema.validate(event)

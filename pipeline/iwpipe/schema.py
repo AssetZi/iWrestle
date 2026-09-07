@@ -86,6 +86,9 @@ def validate(event: dict[str, Any]) -> list[str]:
     location = event.get("location")
     if not isinstance(location, dict) or location.get("latitude") is None:
         problems.append("missing location")
+    elif not (-90 <= location["latitude"] <= 90 and -180 <= location.get("longitude", 999) <= 180):
+        # CloudKit rejects these outright; Flo sometimes swaps the two.
+        problems.append("coordinates out of range")
 
     groups = event.get("ageGroups") or []
     if not groups:

@@ -231,11 +231,9 @@ def apply_detail(event: dict[str, Any], detail: dict[str, Any]) -> None:
         event["organizer"] = event.get("organizer") or name
 
     where = detail.get("location") or {}
-    coordinates = where.get("coordinates") or {}
-    if coordinates.get("latitude") is not None and not event.get("location"):
-        event["location"] = {
-            "latitude": coordinates["latitude"], "longitude": coordinates["longitude"],
-        }
+    fixed = _coordinates(where.get("coordinates"))
+    if fixed and not event.get("location"):
+        event["location"] = fixed
     address = where.get("address") or {}
     venue = where.get("name") or ""
     if address.get("state") and not event.get("region"):
@@ -256,6 +254,23 @@ def apply_detail(event: dict[str, Any], detail: dict[str, Any]) -> None:
 
     if detail.get("description"):
         event["detailText"] = (detail["description"] or "")[:3000]
+
+
+def _coordinates(raw: dict[str, Any] | None) -> dict[str, float] | None:
+    """Flo occasionally returns latitude and longitude the wrong way round.
+
+    A latitude beyond 90 with a longitude within 90 is the swapped case,
+    and 41 of the first 2,275 national events had it. Anything else out of
+    range is dropped rather than guessed.
+    """
+    if not raw or raw.get("latitude") is None or raw.get("longitude") is None:
+        return None
+    lat, lon = float(raw["latitude"]), float(raw["longitude"])
+    if abs(lat) > 90 and abs(lon) <= 90:
+        lat, lon = lon, lat
+    if abs(lat) > 90 or abs(lon) > 180:
+        return None
+    return {"latitude": lat, "longitude": lon}
 
 
 # --- Mapping to the pipeline's event -------------------------------------------
@@ -288,11 +303,9 @@ def _to_event(item: dict[str, Any]) -> dict[str, Any] | None:
     event["venue"] = location.get("venueName") or ""
     event["region"] = location.get("region") or ""
 
-    if coordinates.get("latitude") is not None:
-        event["location"] = {
-            "latitude": coordinates["latitude"],
-            "longitude": coordinates["longitude"],
-        }
+    fixed = _coordinates(coordinates)
+    if fixed:
+        event["location"] = fixed
 
     registration = item.get("registration") or {}
     if registration.get("url"):
