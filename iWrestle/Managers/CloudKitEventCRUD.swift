@@ -77,31 +77,21 @@ extension CloudKitManager {
         let database = CKContainer.default().publicCloudDatabase
         let ceiling = limit ?? FetchLimits.filtered
 
-        // CloudKit answers in pages. Without following the cursor a busy
-        // weekend silently loses every event past the first page.
-        var events: [Event] = []
-        var cursor: CKQueryOperation.Cursor?
-
-        repeat {
-            let remaining = ceiling - events.count
+        // The page-following loop lives in EventPager so it can be tested
+        // without a container; this closure is the only CloudKit-specific part.
+        return try await EventPager.collect(ceiling: ceiling) { (cursor: CKQueryOperation.Cursor?, remaining) in
             let result: (matchResults: [(CKRecord.ID, Result<CKRecord, Error>)], queryCursor: CKQueryOperation.Cursor?)
             if let cursor {
                 result = try await database.records(continuingMatchFrom: cursor, resultsLimit: remaining)
             } else {
                 result = try await database.records(matching: query, resultsLimit: remaining)
             }
-
-            for (_, matchResult) in result.matchResults {
-                if case let .success(record) = matchResult {
-                    if let event = Event(safeRecord: record) {
-                        events.append(event)
-                    }
-                }
+            let records = result.matchResults.compactMap { _, match -> CKRecord? in
+                if case let .success(record) = match { return record }
+                return nil
             }
-            cursor = result.queryCursor
-        } while cursor != nil && events.count < ceiling
-
-        return events
+            return EventPage(records: records, cursor: result.queryCursor)
+        }
     }
     
     

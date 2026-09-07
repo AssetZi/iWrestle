@@ -13,12 +13,18 @@
 /* Begin PBXFileReference section */
 		BA35EED02EF73F2600DFDE46 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		BA79726E2ED62BCF00EA37D6 /* iWrestle.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iWrestle.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA10000000000000000000A8 /* iWrestleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iWrestleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BA7972702ED62BCF00EA37D6 /* iWrestle */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = iWrestle;
+			sourceTree = "<group>";
+		};
+		AA10000000000000000000A1 /* iWrestleTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = iWrestleTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -29,6 +35,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA35EED12EF73F2600DFDE46 /* StoreKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA10000000000000000000A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,6 +61,7 @@
 			children = (
 				BA7972702ED62BCF00EA37D6 /* iWrestle */,
 				BA35EECF2EF73F2600DFDE46 /* Frameworks */,
+				AA10000000000000000000A1 /* iWrestleTests */,
 				BA79726F2ED62BCF00EA37D6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -56,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				BA79726E2ED62BCF00EA37D6 /* iWrestle.app */,
+				AA10000000000000000000A8 /* iWrestleTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,6 +100,29 @@
 			productReference = BA79726E2ED62BCF00EA37D6 /* iWrestle.app */;
 			productType = "com.apple.product-type.application";
 		};
+		AA10000000000000000000A2 /* iWrestleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA10000000000000000000A9 /* Build configuration list for PBXNativeTarget "iWrestleTests" */;
+			buildPhases = (
+				AA10000000000000000000A3 /* Sources */,
+				AA10000000000000000000A4 /* Frameworks */,
+				AA10000000000000000000A5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA10000000000000000000A6 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				AA10000000000000000000A1 /* iWrestleTests */,
+			);
+			name = iWrestleTests;
+			packageProductDependencies = (
+			);
+			productName = iWrestleTests;
+			productReference = AA10000000000000000000A8 /* iWrestleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -97,6 +135,10 @@
 				TargetAttributes = {
 					BA79726D2ED62BCF00EA37D6 = {
 						CreatedOnToolsVersion = 26.1.1;
+					};
+					AA10000000000000000000A2 = {
+						CreatedOnToolsVersion = 26.1.1;
+						TestTargetID = BA79726D2ED62BCF00EA37D6;
 					};
 				};
 			};
@@ -115,12 +157,20 @@
 			projectRoot = "";
 			targets = (
 				BA79726D2ED62BCF00EA37D6 /* iWrestle */,
+				AA10000000000000000000A2 /* iWrestleTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		BA79726C2ED62BCF00EA37D6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA10000000000000000000A5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -137,7 +187,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA10000000000000000000A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+
+/* Begin PBXContainerItemProxy section */
+		AA10000000000000000000A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BA7972662ED62BCF00EA37D6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BA79726D2ED62BCF00EA37D6;
+			remoteInfo = iWrestle;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		AA10000000000000000000A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BA79726D2ED62BCF00EA37D6 /* iWrestle */;
+			targetProxy = AA10000000000000000000A7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		BA7972772ED62BD000EA37D6 /* Debug */ = {
@@ -356,6 +432,54 @@
 			};
 			name = Release;
 		};
+		AA10000000000000000000B0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1.0.6;
+				DEVELOPMENT_TEAM = RLZG42V7Y4;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0.6;
+				PRODUCT_BUNDLE_IDENTIFIER = zacherlInvestmentsLLC.iWrestleTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iWrestle.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iWrestle";
+			};
+			name = Debug;
+		};
+		AA10000000000000000000B1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1.0.6;
+				DEVELOPMENT_TEAM = RLZG42V7Y4;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0.6;
+				PRODUCT_BUNDLE_IDENTIFIER = zacherlInvestmentsLLC.iWrestleTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iWrestle.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/iWrestle";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -373,6 +497,15 @@
 			buildConfigurations = (
 				BA79727A2ED62BD000EA37D6 /* Debug */,
 				BA79727B2ED62BD000EA37D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA10000000000000000000A9 /* Build configuration list for PBXNativeTarget "iWrestleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA10000000000000000000B0 /* Debug */,
+				AA10000000000000000000B1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
