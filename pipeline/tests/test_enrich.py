@@ -44,7 +44,7 @@ def extraction(**overrides):
 
 
 def test_fills_defaulted_and_empty_fields_with_notes(monkeypatch):
-    monkeypatch.setattr(enrich, "DEFAULT_CONTACT_EMAIL", DEFAULT)
+    monkeypatch.setattr("iwpipe.config.DEFAULT_CONTACT_EMAIL", DEFAULT)
     event = base_event()
     filled = enrich.merge(event, extraction())
     contact = event["contact"]
@@ -63,7 +63,7 @@ def test_fills_defaulted_and_empty_fields_with_notes(monkeypatch):
 
 
 def test_scraped_values_are_never_overwritten(monkeypatch):
-    monkeypatch.setattr(enrich, "DEFAULT_CONTACT_EMAIL", DEFAULT)
+    monkeypatch.setattr("iwpipe.config.DEFAULT_CONTACT_EMAIL", DEFAULT)
     event = base_event(registration="https://trackwrestling.com/reg")
     event["contact"] = {"firstName": "Bob", "lastName": "Real", "email": "bob@real.org", "phone": "111-222-3333"}
     event["review"]["notes"] = []

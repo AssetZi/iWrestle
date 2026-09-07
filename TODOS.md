@@ -42,15 +42,15 @@
 
 ## Testing
 
-### Stand up a test target
+### Cover the form validation and formatting helpers
 
-**What:** Add an XCTest target to the project; cover `missingFields()` first.
+**What:** Add tests for `missingFields()`, `AddressParts` and `String.monogram` to the `iWrestleTests` target.
 
-**Why:** The repo has zero test files today (`git ls-files` confirms), so every change is verified by hand.
+**Why:** The target exists (it covers `EventPager` and `Event(safeRecord:)`), but the pure helpers every list row and the add form depend on are still verified by hand.
 
-**Context:** `missingFields(data:logo:wantsImagesMade:)` in `iWrestle/Views/AddEvent/EventFormValidation.swift` is a pure function over plain values with no SwiftUI or CloudKit dependency — the cheapest possible first test. Table-drive it: one case per required field missing, one all-empty case asserting form order, one complete case asserting an empty result. `AddressParts` and `String.monogram` in `iWrestle/Utilities/EventFormatting.swift` are the next cheapest targets (pure string parsing that every list row depends on).
+**Context:** `missingFields(data:logo:wantsImagesMade:)` in `iWrestle/Views/AddEvent/EventFormValidation.swift` is a pure function over plain values with no SwiftUI or CloudKit dependency. Table-drive it: one case per required field missing, one all-empty case asserting form order, one complete case asserting an empty result. `AddressParts` and `String.monogram` in `iWrestle/Utilities/EventFormatting.swift` are the next cheapest (pure string parsing; the pipeline's `tests/test_assets.py` already pins the monogram cases, so mirror those). Run with `xcodebuild test -scheme iWrestle`.
 
-**Effort:** M
+**Effort:** S
 **Priority:** P3
 **Depends on:** None
 

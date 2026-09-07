@@ -7,7 +7,7 @@ Three stages, deliberately separated by a human gate:
 
 ```
 collect  →  enrich  →  review  →  push
-scrape      Claude      you edit    cktool writes
+scrape      Claude      you edit    REST writes
 to JSON     reads the   the JSON    to CloudKit
             banner
 ```
@@ -55,26 +55,17 @@ pipeline then signs its own requests (`iwpipe/ckws.py`) and needs neither
 Xcode nor a browser login. Server-to-server keys reach the public database
 only, which is the only one iWrestle uses.
 
-**cktool user token (fallback).** Used automatically when `CLOUDKIT_KEY_ID`
-is empty. It is a browser session: it lapses after 30 minutes, or two weeks
-if you tick "Keep me signed in" while generating it.
-
-1. Open the [CloudKit Console](https://icloud.developer.apple.com/dashboard/), sign in, and go to **Settings → Tokens**.
-2. Create a **user token** (create-record acts as you) and copy it.
-3. Save it to the login keychain:
+Confirm both keys are accepted:
 
 ```bash
-xcrun cktool save-token <token> --type user
+make token-check
 ```
 
-Confirm either one took:
-
-```bash
-xcrun cktool query-records --team-id RLZG42V7Y4 --container-id iCloud.zacherlInvestmentsLLC.iWrestle --environment development --database-type public --record-type Event --limit 1
-```
-
-Some operations (schema export/import) need a **management token** instead;
-save that one with `--type management`.
+The pipeline writes only through this key. `xcrun cktool` is not used for
+records any more (its user token is a browser session that lapses in
+thirty minutes); it is still the tool for schema export/import, which
+needs a **management token** saved with `xcrun cktool save-token <token>
+--type management`.
 
 ## Daily use
 
@@ -128,12 +119,33 @@ roughly a dollar or two.
 **review** prints one line per event with its flags and lets you set
 `review.status` to `approved` or `skip`. Only approved events are pushed.
 
-**push** builds a cktool fields file per event and runs `create-record`,
-recording each success in `data/pushed.json` along with a hash of what was
-sent. cktool cannot update a record, so `push --replace` (what the routine
-uses) deletes and recreates an event whose content changed since it was
-pushed; unchanged events are left alone. Plain `push` never touches an
-existing record.
+**push** uploads both assets and creates one record per event, recording
+each success in `data/pushed.json` along with a hash of what was sent.
+CloudKit's REST API cannot update a record, so `push --replace` (what the
+routine uses) deletes and recreates an event whose content changed since
+it was pushed; unchanged events are left alone. Plain `push` never touches
+an existing record. Flyers render invariantly (same event, same bytes), so
+a re-render is not a change.
+
+Guards, all of which print why and exit 1:
+
+- Two pushes cannot run at once: the ledger is locked for the life of a
+  push, collect or exclude, and a second one refuses.
+- A ledger that fails to parse stops everything (a truncated file would
+  otherwise read as "nothing pushed" and every event would be created
+  again). Restore it with `git checkout pipeline/data/pushed.json`.
+- Removals (listings gone from a source, retirements, exclusions) are
+  capped per run at 10% of the source's entries, never fewer than 5. Above
+  that, nothing is removed; check them with `make review ARGS="--flagged"`
+  and push again with `--max-removals N` to allow it.
+- Re-pushing more than 50 existing events asks first (`--yes` skips it;
+  the routine passes it for development): that many hashes moving at once
+  means rendered assets were deleted or a template changed, not fifty
+  organizers editing their listings.
+- A collect that returns under 60% of what the ledger holds for that
+  source is treated as a broken scrape: nothing is counted as missing.
+- A reclassification (college or adult) has to hold for two runs before
+  the record comes down; an exclusion takes effect at once.
 
 **reconcile** lists what is actually in CloudKit and can delete a record the
 pipeline created, by its natural key.
@@ -232,7 +244,7 @@ become `Open` and are skipped with the note `college-level event`. Set
 ### Scale
 
 A national run collects several hundred events. The first one is slow
-(one detail request per event, then one cktool create per event, roughly
+(one detail request per event, then one create per event, roughly
 30–60 minutes); later runs only touch new or changed events. `make review
 ARGS="--flagged"` shows only the events that need a decision, and
 `ARGS="--state PA"` narrows to one state.
@@ -276,5 +288,16 @@ always `make promote` (or `make push-prod` for one source), run by a person
 after `make review`.
 
 The task runs while the Claude desktop app is open; if the app was closed at
-8am it runs at the next launch. `cktool` only exists on a Mac with Xcode, so
-the push step cannot move to CI.
+8am it runs at the next launch. The routine exits 1 when any push reported
+failed events or blocked removals, so the report says so; the other sources
+still run.
+
+## Tests
+
+`make test` runs the offline suite (parsers against saved pages, merge
+rules, the REST signer, the ledger guards, each step of collect's
+normalize). `make enrich-eval` scores the enrich prompt against
+`tests/evals/enrich/` with live model calls; run it after a
+`PROMPT_VERSION` bump. The app side has an `iWrestleTests` target
+(`xcodebuild test -scheme iWrestle`) covering the page-following fetch and
+record decoding.

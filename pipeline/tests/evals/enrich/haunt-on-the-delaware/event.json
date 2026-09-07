@@ -1,0 +1,27 @@
+{
+  "sourceKey": "pywrestling:haunt-on-the-delaware:2026-10-03",
+  "name": "Haunt On The Delaware",
+  "date": "2026-10-03T16:00:00Z",
+  "address": "Delaware Valley High School, 256 US-6 E, Milford, PA 18337",
+  "organizer": "DV Warrior Wrestling",
+  "ageGroups": [
+    "Youth",
+    "Jr High",
+    "High School"
+  ],
+  "registration": "",
+  "contact": {
+    "firstName": "DV Warrior Wrestling",
+    "lastName": "(Organizer)",
+    "email": "support@example.com",
+    "phone": ""
+  },
+  "review": {
+    "status": "pending",
+    "notes": [
+      "organizer used as contact name",
+      "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
+      "no divisions found, defaulted"
+    ]
+  }
+}

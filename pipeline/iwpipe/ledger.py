@@ -1,17 +1,33 @@
 """What has already been pushed, by natural key.
 
-cktool has no upsert, so the pipeline remembers its own writes. The ledger is
-committed to git: it is the record of what exists in CloudKit and the reason a
-rerun of a collector does not create duplicates.
+CloudKit has no upsert, so the pipeline remembers its own writes. The
+ledger is committed to git: it is the record of what exists in CloudKit and
+the reason a rerun of a collector does not create duplicates.
+
+Lifecycle of one entry, and the function that drives each edge:
+
+    collect  ──seen──▶ mark_misses clears missCount
+             ──gone──▶ mark_misses  missCount+1 ──(MISS_LIMIT)──▶ due_for_removal ──▶ push deletes
+             ──moved─▶ find_moved: new key created, old record deleted (push)
+    push     ──college/adult/excluded──▶ mark_retiring retireCount+1 ──(RETIRE_LIMIT)──▶ push deletes
+
+Every write goes through `lock()`: two pushes sharing this file would
+otherwise overwrite each other's entries and the next run would create
+twins. A ledger that fails to parse is an error, never an empty ledger,
+for the same reason.
 """
 from __future__ import annotations
 
+import fcntl
 import json
 import math
+import os
+from contextlib import contextmanager
 from datetime import date, datetime, timezone
-from typing import Any
+from typing import Any, Iterator
 
 from .config import LEDGER_PATH
+from .schema import base_key
 
 # Two listings of one tournament rarely share a name across sites, but they
 # do share a gym and a weekend.
@@ -22,18 +38,64 @@ NEAR_DAYS = 2
 MAYBE_KM = 6.0
 
 
+class LedgerError(RuntimeError):
+    """The ledger cannot be trusted; nothing should be pushed until it can."""
+
+
+class LedgerLocked(LedgerError):
+    """Another push, collect or exclude is running."""
+
+
 def load() -> dict[str, Any]:
-    if LEDGER_PATH.exists():
-        try:
-            return json.loads(LEDGER_PATH.read_text())
-        except json.JSONDecodeError:
-            return {}
-    return {}
+    if not LEDGER_PATH.exists():
+        return {}
+    text = LEDGER_PATH.read_text()
+    if not text.strip():
+        raise LedgerError(f"{LEDGER_PATH} is empty; restore it with git checkout before pushing")
+    try:
+        entries = json.loads(text)
+    except json.JSONDecodeError as error:
+        raise LedgerError(
+            f"{LEDGER_PATH} is not valid JSON ({error}); restore it with git checkout before pushing"
+        ) from error
+    if not isinstance(entries, dict):
+        raise LedgerError(f"{LEDGER_PATH} is not a JSON object")
+    return entries
 
 
 def save(entries: dict[str, Any]) -> None:
+    """Write the whole file, or none of it: a crash mid-write must not
+    leave a half file behind that the next run would read as empty."""
     LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
-    LEDGER_PATH.write_text(json.dumps(entries, indent=2, sort_keys=True) + "\n")
+    tmp = LEDGER_PATH.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(entries, indent=2, sort_keys=True) + "\n")
+    os.replace(tmp, LEDGER_PATH)
+
+
+@contextmanager
+def lock() -> Iterator[None]:
+    """Hold the ledger for the life of a process that writes it.
+
+    Refuses rather than waits: a second push started by mistake should say
+    so and stop, not queue up behind the first and then re-push.
+    """
+    LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
+    path = LEDGER_PATH.with_suffix(".json.lock")
+    handle = open(path, "w")
+    try:
+        fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        handle.close()
+        raise LedgerLocked(
+            f"{path} is held by another run (a push, collect or exclude); wait for it to finish"
+        )
+    try:
+        handle.write(str(os.getpid()))
+        handle.flush()
+        yield
+    finally:
+        fcntl.flock(handle, fcntl.LOCK_UN)
+        handle.close()
 
 
 def entry_key(source_key: str, environment: str) -> str:
@@ -129,7 +191,8 @@ def find_similar(source_key: str, name_slug: str, day: str, location: dict[str, 
         other = entry["sourceKey"]
         if other == source_key or other in matches or _leaving(entry):
             continue
-        if other.endswith(f":{name_slug}:{day}"):
+        # base_key drops the ":<id>" a disambiguated twin carries.
+        if base_key(other).endswith(f":{name_slug}:{day}"):
             matches.append(other)
             continue
         # A site listing two events at one gym on one day means two events
@@ -149,10 +212,30 @@ def find_similar(source_key: str, name_slug: str, day: str, location: dict[str, 
 # could be a flaky page, so a record is only removed after this many runs
 # in a row without it.
 MISS_LIMIT = 2
+# A scrape that returns fewer than this share of what the ledger holds for
+# the source is a broken scrape, not a wave of cancellations.
+PARTIAL_SCRAPE_FRACTION = 0.6
 
 
 def _source_of(entry: dict[str, Any]) -> str:
     return entry["sourceKey"].split(":", 1)[0]
+
+
+def upcoming_keys(source: str, today: str) -> set[str]:
+    """Distinct source keys this source has pushed for days not yet past."""
+    return {
+        entry["sourceKey"] for entry in load().values()
+        if _source_of(entry) == source and entry.get("date") and entry["date"] >= today[:10]
+    }
+
+
+def looks_partial(source: str, seen_count: int, today: str) -> tuple[bool, int]:
+    """(True, expected) when this run saw far fewer listings than the ledger
+    expects. Counting misses on such a run would cancel real events."""
+    expected = len(upcoming_keys(source, today))
+    if expected == 0:
+        return False, 0
+    return seen_count < PARTIAL_SCRAPE_FRACTION * expected, expected
 
 
 def mark_misses(source: str, seen_keys: set[str], today: str) -> list[dict[str, Any]]:
@@ -187,6 +270,43 @@ def due_for_removal(source: str, environment: str) -> list[dict[str, Any]]:
     ]
 
 
+# --- Pushed events a later run sets aside for good ------------------------------
+# Reclassified as college or adult, or excluded by hand. One classification
+# can be a fluke (the detail text that carried the youth marker failed to
+# load), so like a miss it has to happen twice running. An exclusion is a
+# person's decision and takes effect at once.
+RETIRE_LIMIT = 2
+
+
+def mark_retiring(source_key: str, environment: str, reason: str) -> int:
+    """Count one more run that wants this entry gone. Returns the count."""
+    entries = load()
+    entry = entries.get(entry_key(source_key, environment))
+    if entry is None:
+        return 0
+    if reason.startswith("excluded:"):
+        entry["retireCount"] = RETIRE_LIMIT
+    else:
+        entry["retireCount"] = entry.get("retireCount", 0) + 1
+    entry["retireReason"] = reason
+    save(entries)
+    return entry["retireCount"]
+
+
+def clear_retiring(source_keys: set[str], environment: str) -> None:
+    """An event pushed again as a youth event is no longer on its way out."""
+    entries = load()
+    changed = False
+    for key in source_keys:
+        entry = entries.get(entry_key(key, environment))
+        if entry and "retireCount" in entry:
+            entry.pop("retireCount", None)
+            entry.pop("retireReason", None)
+            changed = True
+    if changed:
+        save(entries)
+
+
 def find_moved(source: str, name_slug: str, day: str, seen_keys: set[str], today: str) -> list[str]:
     """Keys from the same source with this name on another upcoming day.
 
@@ -200,6 +320,6 @@ def find_moved(source: str, name_slug: str, day: str, seen_keys: set[str], today
         if key in seen_keys or key in found or _source_of(entry) != source:
             continue
         old_day = entry.get("date") or ""
-        if old_day and old_day != day and old_day >= today[:10] and key.endswith(f":{name_slug}:{old_day}"):
+        if old_day and old_day != day and old_day >= today[:10] and base_key(key).endswith(f":{name_slug}:{old_day}"):
             found.append(key)
     return found

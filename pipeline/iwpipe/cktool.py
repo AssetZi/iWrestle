@@ -1,18 +1,19 @@
-"""Apple's cktool, wrapped.
+"""The CloudKit record an event becomes, and the client that writes it.
 
-`xcrun cktool` is the supported way to write CloudKit records from outside an
-app. It ships with Xcode, so this only runs on this Mac. Authorization comes
-from a token saved once with `xcrun cktool save-token --type user`.
+The fields file format is cktool's (`xcrun cktool create-record`), kept
+because it is the documented, typed shape and the tests pin it against
+Event.Field in the app. Writes go through the REST client in ckws.py with
+a server-to-server key; cktool's own write path needed a browser-session
+token that lapsed in thirty minutes, and was removed.
 """
 from __future__ import annotations
 
 import hashlib
 import json
-import subprocess
-
-import requests
 from pathlib import Path
 from typing import Any
+
+import requests
 
 from . import ckws
 from .config import (
@@ -20,31 +21,15 @@ from .config import (
     CLOUDKIT_KEY_PATH,
     cloudkit_key_id,
     CONTAINER_ID,
-    DATABASE_TYPE,
     RECORD_TYPE,
-    TEAM_ID,
 )
 
 DEVELOPMENT = "development"
 PRODUCTION = "production"
 
 
-class CKToolError(RuntimeError):
-    """A cktool invocation failed; stderr is carried in the message."""
-
-
-def _run(args: list[str]) -> str:
-    process = subprocess.run(
-        ["xcrun", "cktool", *args],
-        capture_output=True,
-        text=True,
-    )
-    if process.returncode != 0:
-        raise CKToolError(
-            f"cktool {' '.join(args[:2])} failed ({process.returncode}):\n"
-            f"{process.stderr.strip() or process.stdout.strip()}"
-        )
-    return process.stdout
+class NoWriteAccess(RuntimeError):
+    """No server-to-server key is configured for this environment."""
 
 
 # cktool names stringType, int64Type, timestampType, assetType and
@@ -61,7 +46,7 @@ def _location_value(latitude: float, longitude: float) -> Any:
 
 
 def build_fields(event: dict[str, Any]) -> dict[str, Any]:
-    """The fields file cktool consumes, mirroring createEvent in the app.
+    """The typed fields, mirroring createEvent in the app.
 
     Keys match Event.Field in iWrestle/Models/Event.swift. `registration` is
     omitted when empty, exactly as CloudKitEventCRUD.createEvent does.
@@ -109,70 +94,12 @@ def build_fields(event: dict[str, Any]) -> dict[str, Any]:
     return fields
 
 
-def create_record(
-    fields_path: Path,
-    logo_path: Path,
-    flyer_path: Path,
-    environment: str = DEVELOPMENT,
-) -> dict[str, Any]:
-    """Create one Event record and return cktool's parsed response."""
-    output = _run([
-        "create-record",
-        "--team-id", TEAM_ID,
-        "--container-id", CONTAINER_ID,
-        "--environment", environment,
-        "--database-type", DATABASE_TYPE,
-        "--record-type", RECORD_TYPE,
-        "--fields-file", str(fields_path),
-        "--asset-files", f"LOGO={logo_path}", f"FLYER={flyer_path}",
-    ])
-    return json.loads(output)
-
-
-def query_records(
-    environment: str = DEVELOPMENT,
-    fields: list[str] | None = None,
-    limit: int = 200,
-) -> list[dict[str, Any]]:
-    """Every Event record in the database, following continuation tokens."""
-    records: list[dict[str, Any]] = []
-    continuation: str | None = None
-
-    while True:
-        args = [
-            "query-records",
-            "--team-id", TEAM_ID,
-            "--container-id", CONTAINER_ID,
-            "--environment", environment,
-            "--database-type", DATABASE_TYPE,
-            "--record-type", RECORD_TYPE,
-            "--limit", str(limit),
-        ]
-        if fields:
-            args += ["--requested-fields", *fields]
-        if continuation:
-            args += ["--continuation-token", continuation]
-
-        payload = json.loads(_run(args))
-        records.extend(payload.get("records", []))
-        continuation = payload.get("continuationToken")
-        if not continuation:
-            return records
-
-
-def delete_record(record_name: str, environment: str = DEVELOPMENT) -> None:
-    _run([
-        "delete-record",
-        "--container-id", CONTAINER_ID,
-        "--environment", environment,
-        "--database-type", DATABASE_TYPE,
-        "--record-name", record_name,
-        "--yes",
-    ])
-
-
 def content_hash(fields: dict[str, Any], logo_path: Path, flyer_path: Path) -> str:
-    """What was pushed, in one string, so a later run can tell if it changed."""
+    """What was pushed, in one string, so a later run can tell if it changed.
+
+    The flyer bytes are part of it, which only works because the renderer
+    is invariant (assets.py): the same event renders to the same bytes.
+    """
     digest = hashlib.sha256()
     digest.update(json.dumps(fields, sort_keys=True).encode())
     for path in (logo_path, flyer_path):
@@ -180,27 +107,32 @@ def content_hash(fields: dict[str, Any], logo_path: Path, flyer_path: Path) -> s
     return digest.hexdigest()[:16]
 
 
-# --- Backend selection ---------------------------------------------------------
+# --- Backend ------------------------------------------------------------------
 
 def rest_client(environment: str) -> ckws.Client | None:
-    """The REST client when a server-to-server key is configured, else None.
-
-    cktool needs a user token that expires within hours; the key behind this
-    client never does, which is what lets the routine run unattended.
-    """
+    """The REST client when a server-to-server key is configured, else None."""
     key_id = cloudkit_key_id(environment)
     if not key_id or not CLOUDKIT_KEY_PATH.exists():
         return None
     return ckws.Client(CLOUDKIT_KEY_PATH, key_id, CONTAINER_ID, environment)
 
 
+def require_client(environment: str) -> ckws.Client:
+    client = rest_client(environment)
+    if client is None:
+        which = "CLOUDKIT_KEY_ID_PRODUCTION" if environment == PRODUCTION else "CLOUDKIT_KEY_ID"
+        raise NoWriteAccess(
+            f"no server-to-server key for {environment}: set {which} in pipeline/.env "
+            f"and put the key at {CLOUDKIT_KEY_PATH}"
+        )
+    return client
+
+
 def backend_name(environment: str = DEVELOPMENT) -> str:
-    if cloudkit_key_id(environment):
-        return f"CloudKit REST (server-to-server key, {environment})"
-    return "cktool (user token)"
+    return f"CloudKit REST (server-to-server key, {environment})"
 
 
-def create_record_rest(
+def create_record(
     client: ckws.Client, fields: dict[str, Any], logo_path: Path, flyer_path: Path
 ) -> str:
     """Upload both assets, then create the record that points at them."""
@@ -217,10 +149,12 @@ def create_record_rest(
         # 43 such twins behind.
         name = fields.get("name", {}).get("value", "")
         day = str(fields.get("date", {}).get("value", ""))[:10]
-        try:
-            existing = client.find_record(RECORD_TYPE, name, day) if name and day else None
-        except Exception:
-            existing = None
+        existing = None
+        if name and day:
+            try:
+                existing = client.find_record(RECORD_TYPE, name, day)
+            except (ckws.CKWSError, requests.RequestException) as lookup_error:
+                print(f"    could not check for an existing record: {str(lookup_error)[:80]}")
         if existing:
             print(f"    create errored but the record exists; adopting {existing[:8]}")
             return existing

@@ -23,11 +23,12 @@ import anthropic
 from iwpipe import assets, enrich, schema
 from iwpipe.config import ANTHROPIC_API_KEY
 from iwpipe.http import make_session
+from iwpipe.term import BOLD, DIM, GREEN, RED, RESET, YELLOW
 
-BOLD, DIM, GREEN, YELLOW, RED, RESET = (
-    "\033[1m", "\033[2m", "\033[32m", "\033[33m", "\033[31m", "\033[0m"
-)
-EXIT_NO_KEY = 2
+# Enrichment is optional. Anything that means "cannot enrich right now" (no
+# key, a rejected key, a bad request) exits with this so the routine goes
+# on to review and push without it.
+EXIT_UNAVAILABLE = 2
 
 
 def main() -> int:
@@ -42,7 +43,7 @@ def main() -> int:
 
     if not ANTHROPIC_API_KEY:
         print(f"{RED}ANTHROPIC_API_KEY is not set in pipeline/.env; enrichment skipped.{RESET}")
-        return EXIT_NO_KEY
+        return EXIT_UNAVAILABLE
 
     payload = schema.load(args.file)
     events = payload["events"]
@@ -109,8 +110,9 @@ def main() -> int:
                     print(f"{YELLOW}server error{RESET} {label}")
                     continue
                 print(f"{RED}request rejected ({error.status_code}): {error.message}{RESET}")
+                print("enrichment unavailable; the rest of the pipeline continues without it")
                 schema.dump(args.file, payload["source"], events)
-                return 1
+                return EXIT_UNAVAILABLE
             except anthropic.APIConnectionError:
                 schema.note(event, "AI: network error")
                 counts["failed"] += 1

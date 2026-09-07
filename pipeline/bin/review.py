@@ -20,9 +20,7 @@ import _bootstrap  # noqa: F401
 
 from iwpipe import schema
 
-BOLD, DIM, GREEN, YELLOW, RED, CYAN, RESET = (
-    "\033[1m", "\033[2m", "\033[32m", "\033[33m", "\033[31m", "\033[36m", "\033[0m"
-)
+from iwpipe.term import BOLD, CYAN, DIM, GREEN, RED, RESET, YELLOW
 
 
 DECISION_NOTES = (

@@ -40,6 +40,36 @@ def source_key(source: str, name: str, iso_date: str) -> str:
     return f"{source}:{slug(name)}:{day}"
 
 
+def base_key(key: str) -> str:
+    """The natural key without the ":<id>" suffix disambiguate_keys adds.
+
+    "flowrestling:x-y:2026-11-18:2gPX" -> "flowrestling:x-y:2026-11-18".
+    """
+    parts = key.split(":")
+    return ":".join(parts[:3]) if len(parts) > 3 else key
+
+
+# Notes collect leaves when no source gave a contact email. Enrichment and
+# the flyer reader remove them when they find a real one.
+DEFAULT_EMAIL_NOTES = (
+    "default contact email",
+    "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
+    "no contact email: set DEFAULT_CONTACT_EMAIL in .env",
+)
+
+
+def is_default_email(email: str) -> bool:
+    """Empty, the .env fallback, or an example.com placeholder."""
+    from . import config
+
+    return not email or email == config.DEFAULT_CONTACT_EMAIL or email.endswith("example.com")
+
+
+def drop_notes(event: dict[str, Any], texts) -> None:
+    notes = event.setdefault("review", {}).setdefault("notes", [])
+    event["review"]["notes"] = [n for n in notes if n not in texts]
+
+
 def blank_event(source: str) -> dict[str, Any]:
     return {
         "sourceKey": "",

@@ -116,3 +116,79 @@ def test_a_date_change_is_the_same_event_moved(monkeypatch, tmp_path):
     assert ledger.find_moved("pywrestling", "old", "2027-08-07", seen, "2026-09-07") == []
     # Another source's copy is a duplicate, handled elsewhere.
     assert ledger.find_moved("pywrestling", "c", "2026-10-10", seen, "2026-09-07") == []
+
+
+# --- The file itself -------------------------------------------------------------
+
+def test_a_corrupt_ledger_is_an_error_not_an_empty_ledger(monkeypatch, tmp_path):
+    """Reading {} from a truncated file would re-create every event as a twin."""
+    import pytest
+
+    path = tmp_path / "pushed.json"
+    monkeypatch.setattr(ledger, "LEDGER_PATH", path)
+    path.write_text('{"development:x": {"recordName": "R"')
+    with pytest.raises(ledger.LedgerError):
+        ledger.load()
+    path.write_text("")
+    with pytest.raises(ledger.LedgerError):
+        ledger.load()
+
+
+def test_save_replaces_the_file_whole(monkeypatch, tmp_path):
+    path = tmp_path / "pushed.json"
+    monkeypatch.setattr(ledger, "LEDGER_PATH", path)
+    ledger.record("pywrestling:a:2026-09-12", "development", "RA", "A", day="2026-09-12")
+    assert not path.with_suffix(".json.tmp").exists()
+    assert ledger.get("pywrestling:a:2026-09-12", "development")["recordName"] == "RA"
+
+
+def test_a_second_writer_is_refused_while_the_ledger_is_held(monkeypatch, tmp_path):
+    import pytest
+
+    monkeypatch.setattr(ledger, "LEDGER_PATH", tmp_path / "pushed.json")
+    with ledger.lock():
+        with pytest.raises(ledger.LedgerLocked):
+            with ledger.lock():
+                pass
+    # Released on exit.
+    with ledger.lock():
+        pass
+
+
+# --- Guards against taking real events down ----------------------------------------
+
+def test_a_scrape_far_below_the_ledger_looks_partial(monkeypatch, tmp_path):
+    _seed_upcoming(monkeypatch, tmp_path)   # pywrestling has 2 upcoming entries
+    assert ledger.looks_partial("pywrestling", 2, "2026-09-07") == (False, 2)
+    assert ledger.looks_partial("pywrestling", 1, "2026-09-07") == (True, 2)
+    ledger.record("pywrestling:c:2026-10-03", "development", "RC2", "C", day="2026-10-03")
+    ledger.record("pywrestling:d:2026-10-03", "development", "RD", "D", day="2026-10-03")
+    ledger.record("pywrestling:e:2026-10-03", "development", "RE", "E", day="2026-10-03")
+    assert ledger.looks_partial("pywrestling", 2, "2026-09-07") == (True, 5)
+    # A source that has never been pushed cannot be partial.
+    assert ledger.looks_partial("trackwrestling", 0, "2026-09-07") == (False, 0)
+
+
+def test_a_reclassification_has_to_hold_for_two_runs(monkeypatch, tmp_path):
+    _seed_upcoming(monkeypatch, tmp_path)
+    key = "pywrestling:a:2026-09-12"
+    assert ledger.mark_retiring(key, "development", "college-level event") == 1
+    assert ledger.mark_retiring(key, "development", "college-level event") == 2
+    ledger.clear_retiring({key}, "development")
+    assert "retireCount" not in ledger.get(key, "development")
+    # An exclusion is a person's decision: it counts at once.
+    assert ledger.mark_retiring(key, "development", "excluded: college open") >= ledger.RETIRE_LIMIT
+    assert ledger.mark_retiring("pywrestling:nope:2026-01-01", "development", "college-level event") == 0
+
+
+# --- Suffixed keys ------------------------------------------------------------------
+
+def test_a_disambiguated_twin_still_matches_by_name_and_day(monkeypatch, tmp_path):
+    monkeypatch.setattr(ledger, "LEDGER_PATH", tmp_path / "pushed.json")
+    ledger.record("flowrestling:x-y:2026-11-18:2gPX", "production", "R2", "X Y", day="2026-11-18")
+    assert ledger.find_similar("trackwrestling:x-y:2026-11-18", "x-y", "2026-11-18", None) == [
+        "flowrestling:x-y:2026-11-18:2gPX"
+    ]
+    assert ledger.find_moved("flowrestling", "x-y", "2026-11-25", set(), "2026-09-07") == [
+        "flowrestling:x-y:2026-11-18:2gPX"
+    ]

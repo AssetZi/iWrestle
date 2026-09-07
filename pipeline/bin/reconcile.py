@@ -23,26 +23,28 @@ def main() -> int:
 
     environment = cktool.PRODUCTION if args.production else cktool.DEVELOPMENT
 
+    try:
+        client = cktool.require_client(environment)
+    except cktool.NoWriteAccess as error:
+        print(error)
+        return 1
+
     if args.delete_key:
-        entry = ledger.load().get(ledger.entry_key(args.delete_key, environment))
-        if not entry:
-            print(f"no ledger entry for {args.delete_key} in {environment}")
+        try:
+            with ledger.lock():
+                entry = ledger.get(args.delete_key, environment)
+                if not entry:
+                    print(f"no ledger entry for {args.delete_key} in {environment}")
+                    return 1
+                client.delete_record(entry["recordName"])
+                ledger.forget(args.delete_key, environment)
+        except ledger.LedgerError as error:
+            print(error)
             return 1
-        client = cktool.rest_client(environment)
-        if client is not None:
-            client.delete_record(entry["recordName"])
-        else:
-            cktool.delete_record(entry["recordName"], environment)
-        ledger.forget(args.delete_key, environment)
         print(f"deleted {entry['recordName']} ({entry['name']})")
         return 0
 
-    # Prefer the server-to-server key: cktool's session token expires.
-    client = cktool.rest_client(environment)
-    if client is not None:
-        records = client.query_records("Event", ["name", "date"], max_records=10000)
-    else:
-        records = cktool.query_records(environment, fields=["name", "date"])
+    records = client.query_records("Event", ["name", "date"], max_records=10000)
     entries = {
         key: value
         for key, value in ledger.load().items()

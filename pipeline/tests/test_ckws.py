@@ -148,7 +148,8 @@ def test_keys_are_chosen_per_environment(monkeypatch):
 
     monkeypatch.setattr(config, "CLOUDKIT_KEY_ID_PRODUCTION", "")
     assert cktool.rest_client("production") is None
-    assert "cktool" in cktool.backend_name("production")
+    with pytest.raises(cktool.NoWriteAccess):
+        cktool.require_client("production")
 
 
 def test_a_create_that_errors_after_commit_is_adopted_not_duplicated(key, monkeypatch):
@@ -172,5 +173,5 @@ def test_a_create_that_errors_after_commit_is_adopted_not_duplicated(key, monkey
               "logo": {"type": "assetType", "value": "LOGO"},
               "flyer": {"type": "assetType", "value": "FLYER"}}
     tmp = __import__("pathlib").Path("/tmp")
-    assert cktool.create_record_rest(client, fields, tmp / "a", tmp / "b") == "EXISTING1"
+    assert cktool.create_record(client, fields, tmp / "a", tmp / "b") == "EXISTING1"
     assert client.created == 1

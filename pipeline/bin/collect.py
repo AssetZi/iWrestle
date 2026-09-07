@@ -6,7 +6,13 @@
 
 Collectors only extract raw text. Everything that must match the app exactly
 (age groups, event type, timestamps, coordinates, assets) is normalized here,
-in one place.
+in one place, as a sequence of named steps that each do one thing:
+
+    normalize      type, date, divisions, level, placeholders, contact, key, geocode
+    attach_assets  logo and flyer on disk, contact read off the flyer PDF, final checks
+
+Keys are made distinct between the two, so two listings that share a name
+and day each get their own asset folder and their own ledger entry.
 """
 from __future__ import annotations
 
@@ -22,33 +28,17 @@ from iwpipe import assets, exclusions, geocode, ledger, level, mapping, pdftext,
 from iwpipe.collectors import COLLECTORS
 from iwpipe.config import DATA_DIR, DEFAULT_CONTACT_EMAIL, INCLUDE_COLLEGE
 from iwpipe.http import make_session
+from iwpipe.term import BOLD, RED, RESET, YELLOW
+
+DEFAULT_AGE_GROUPS = ["Youth", "Jr High", "High School"]
 
 
-DEFAULT_EMAIL_NOTES = (
-    "default contact email",
-    "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
-    "no contact email: set DEFAULT_CONTACT_EMAIL in .env",
-)
+# --- normalize: one step per concern ------------------------------------------
 
-
-def _is_default_email(email):
-    return not email or email == DEFAULT_CONTACT_EMAIL or email.endswith("example.com")
-
-
-def _drop_notes(event, texts):
-    notes = event.setdefault("review", {}).setdefault("notes", [])
-    event["review"]["notes"] = [n for n in notes if n not in texts]
-
-
-def normalize(event, session, *, source, today, skip_geocode=False, refresh_assets=False,
-              site_emails=frozenset()):
-    """Raw collector output -> a pushable event, flagging anything doubtful."""
-    event.setdefault("source", source)
-
+def classify_type_and_date(event, today) -> None:
     event["eventType"] = mapping.normalize_event_type(
         event.get("name", ""), event.get("formatText", ""), event.get("rawText", "")
     )
-
     if not event.get("date"):
         from iwpipe.dates import to_utc_iso
 
@@ -58,6 +48,8 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
     if not event.get("date"):
         schema.note(event, f"unparsed date: {event.get('dateText', '')!r}")
 
+
+def classify_divisions_and_level(event) -> None:
     groups, unknown = mapping.normalize_age_groups(
         " ".join(filter(None, [event.get("divisionsText", ""), event.get("name", "")]))
     )
@@ -75,19 +67,25 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
         if not INCLUDE_COLLEGE:
             event["review"]["status"] = schema.STATUS_SKIP
 
-    # Cancelled listings are not events; a "TBA" venue is real but unfinished.
+    if not event.get("ageGroups"):
+        schema.note(event, "no divisions found, defaulted")
+        event["ageGroups"] = list(DEFAULT_AGE_GROUPS)
+
+
+def flag_placeholders(event) -> bool:
+    """Cancelled listings are not events; a "TBA" venue is real but unfinished.
+    Returns True when there is nothing worth geocoding."""
     if level.is_placeholder(event.get("name", "")):
         schema.note(event, "cancelled or placeholder listing")
         event["review"]["status"] = schema.STATUS_SKIP
-        skip_geocode = True
-    elif level.venue_is_tba(event.get("address", "")):
+        return True
+    if level.venue_is_tba(event.get("address", "")):
         schema.note(event, "venue still TBA at the source")
-        skip_geocode = True
+        return True
+    return False
 
-    if not event.get("ageGroups"):
-        schema.note(event, "no divisions found, defaulted")
-        event["ageGroups"] = ["Youth", "Jr High", "High School"]
 
+def default_contact(event) -> None:
     contact = event.setdefault(
         "contact", {"firstName": "", "lastName": "", "email": "", "phone": ""}
     )
@@ -108,53 +106,69 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
         else:
             schema.note(event, "default contact email")
 
+
+def locate(event, session) -> None:
+    if event.get("location") or not event.get("address"):
+        return
+    hit = geocode.lookup(session, event["address"])
+    if hit:
+        event["location"] = {"latitude": hit["latitude"], "longitude": hit["longitude"]}
+        if hit.get("confidence") == "city":
+            schema.note(event, "city-level geocode, verify address")
+    else:
+        schema.note(event, "geocode failed")
+
+
+def normalize(event, session, *, source, today, skip_geocode=False):
+    """Raw collector output -> an event with a key, flagged where doubtful.
+
+    No files are written here; attach_assets does that once keys are final.
+    """
+    event.setdefault("source", source)
+    event.setdefault("review", {"status": schema.STATUS_PENDING, "notes": []})
+    classify_type_and_date(event, today)
+    classify_divisions_and_level(event)
+    if flag_placeholders(event):
+        skip_geocode = True
+    default_contact(event)
     event["sourceKey"] = schema.source_key(
         source, event.get("name", ""), event.get("date") or ""
     )
+    if not skip_geocode:
+        locate(event, session)
+    return event
 
-    if not skip_geocode and not event.get("location") and event.get("address"):
-        hit = geocode.lookup(session, event["address"])
-        if hit:
-            event["location"] = {
-                "latitude": hit["latitude"],
-                "longitude": hit["longitude"],
-            }
-            if hit.get("confidence") == "city":
-                schema.note(event, "city-level geocode, verify address")
-        else:
-            schema.note(event, "geocode failed")
 
-    if event.get("date") and event.get("name"):
-        _, _, asset_notes = assets.ensure_assets(session, event, force=refresh_assets)
-        for text in asset_notes:
-            schema.note(event, text)
-        folder = assets.event_asset_dir(event["sourceKey"])
-        event["logo"] = str(folder / "logo.png")
-        event.setdefault("flyer", {})["path"] = str(folder / "flyer.pdf")
+# --- attach_assets: files on disk, then what they tell us -----------------------
 
-        # A real flyer PDF beats every default: read the contact off it,
-        # unless it turns out to be another event's flyer.
-        source_pdf = folder / "source-flyer.pdf"
-        if source_pdf.exists():
-            event["flyerText"] = pdftext.extract_text(source_pdf)
-            match = pdftext.pdf_matches_event(event["flyerText"], event)
-            event["flyerMatch"] = match
-            if match is False:
-                source_pdf.unlink()
-                event["flyer"]["url"] = None
-                event["flyerText"] = ""
-                _, _, regen_notes = assets.ensure_assets(session, event, force=True)
-                schema.note(event, "flyer PDF names a different event, dropped")
-            ignore = set(site_emails) | {e.lower() for e in event.get("ignoreEmails", [])}
-            email, phone = pdftext.contacts_from_text(event["flyerText"], ignore)
-            if email and _is_default_email(contact.get("email", "")):
-                contact["email"] = email
-                _drop_notes(event, DEFAULT_EMAIL_NOTES)
-                schema.note(event, "email from flyer PDF")
-            if phone and not contact.get("phone"):
-                contact["phone"] = phone
-                schema.note(event, "phone from flyer PDF")
+def read_flyer_contact(event, folder, site_emails, session) -> None:
+    """A real flyer PDF beats every default: read the contact off it,
+    unless it turns out to be another event's flyer."""
+    source_pdf = folder / "source-flyer.pdf"
+    if not source_pdf.exists():
+        return
+    event["flyerText"] = pdftext.extract_text(source_pdf)
+    match = pdftext.pdf_matches_event(event["flyerText"], event)
+    event["flyerMatch"] = match
+    if match is False:
+        source_pdf.unlink()
+        event["flyer"]["url"] = None
+        event["flyerText"] = ""
+        assets.ensure_assets(session, event, force=True)
+        schema.note(event, "flyer PDF names a different event, dropped")
+    ignore = set(site_emails) | {e.lower() for e in event.get("ignoreEmails", [])}
+    email, phone = pdftext.contacts_from_text(event["flyerText"], ignore)
+    contact = event["contact"]
+    if email and schema.is_default_email(contact.get("email", "")):
+        contact["email"] = email
+        schema.drop_notes(event, schema.DEFAULT_EMAIL_NOTES)
+        schema.note(event, "email from flyer PDF")
+    if phone and not contact.get("phone"):
+        contact["phone"] = phone
+        schema.note(event, "phone from flyer PDF")
 
+
+def flag_oddities(event) -> None:
     # "2027 Battle in the Burgh" dated 2026 is a placeholder listing.
     year_in_name = re.search(r"\b(20\d\d)\b", event.get("name", ""))
     if year_in_name and event.get("date") and year_in_name.group(1) != event["date"][:4]:
@@ -165,10 +179,49 @@ def normalize(event, session, *, source, today, skip_geocode=False, refresh_asse
     if level.venue_is_tba(event.get("address", "")) and not event.get("location"):
         event["review"]["status"] = schema.STATUS_SKIP
 
+
+def attach_assets(event, session, *, site_emails=frozenset(), refresh_assets=False):
+    if event.get("date") and event.get("name"):
+        _, _, asset_notes = assets.ensure_assets(session, event, force=refresh_assets)
+        for text in asset_notes:
+            schema.note(event, text)
+        folder = assets.event_asset_dir(event["sourceKey"])
+        event["logo"] = str(folder / "logo.png")
+        event.setdefault("flyer", {})["path"] = str(folder / "flyer.pdf")
+        read_flyer_contact(event, folder, site_emails, session)
+
+    flag_oddities(event)
     for problem in schema.validate(event):
         schema.note(event, problem)
-
     return event
+
+
+# --- Against the ledger --------------------------------------------------------
+
+def annotate_from_ledger(event) -> None:
+    """Exclusions, where it already is, and look-alikes from other sources."""
+    excluded = exclusions.reason_for(event["sourceKey"])
+    if excluded:
+        event["review"]["status"] = schema.STATUS_SKIP
+        schema.note(event, f"excluded: {excluded}")
+
+    # Being in one environment's ledger must not block the other: push
+    # refuses repeats per environment on its own. Just say where it is.
+    for environment in ("development", "production"):
+        if ledger.contains(event["sourceKey"], environment):
+            schema.note(event, f"already in {environment}")
+
+    day = (event.get("date") or "")[:10]
+    duplicates = ledger.find_similar(
+        event["sourceKey"], schema.slug(event.get("name", "")), day, event.get("location"),
+    )
+    if duplicates:
+        event["review"]["status"] = schema.STATUS_SKIP
+        schema.note(event, "possible duplicate of " + ", ".join(duplicates))
+        return
+    nearby = ledger.find_nearby(event["sourceKey"], day, event.get("location"))
+    if nearby:
+        schema.note(event, "same day a few km from " + ", ".join(nearby) + ", check for duplicate")
 
 
 def main() -> int:
@@ -196,71 +249,62 @@ def main() -> int:
     print(f"collected {len(raw)} raw listings from {args.source}")
 
     today = date.today()
-    events = []
-    for item in raw:
-        event = normalize(
-            item, session, source=args.source, today=today,
-            skip_geocode=args.skip_geocode, refresh_assets=args.refresh_assets,
-            site_emails=site_emails,
-        )
-        # A person took this one out; it stays out until they undo that.
-        excluded = exclusions.reason_for(event["sourceKey"])
-        if excluded:
-            event["review"]["status"] = schema.STATUS_SKIP
-            schema.note(event, f"excluded: {excluded}")
-
-        # Being in one environment's ledger must not block the other: push
-        # refuses repeats per environment on its own. Just say where it is.
-        for environment in ("development", "production"):
-            if ledger.contains(event["sourceKey"], environment):
-                schema.note(event, f"already in {environment}")
-        if True:
-            duplicates = ledger.find_similar(
-                event["sourceKey"], schema.slug(event.get("name", "")),
-                (event.get("date") or "")[:10], event.get("location"),
-            )
-            if duplicates:
-                event["review"]["status"] = schema.STATUS_SKIP
-                schema.note(
-                    event, "possible duplicate of " + ", ".join(duplicates)
-                )
-            else:
-                nearby = ledger.find_nearby(
-                    event["sourceKey"], (event.get("date") or "")[:10], event.get("location")
-                )
-                if nearby:
-                    schema.note(event, "same day a few km from " + ", ".join(nearby) + ", check for duplicate")
-        events.append(event)
-
-    seen_keys = {e["sourceKey"] for e in events}
     today_iso = today.isoformat()
-    for event in events:
-        if any(ledger.contains(event["sourceKey"], env) for env in ("development", "production")):
-            continue
-        moved = ledger.find_moved(
-            args.source, schema.slug(event.get("name", "")),
-            (event.get("date") or "")[:10], seen_keys, today_iso,
-        )
-        if moved:
-            # The old listing is gone from the site; push replaces its record.
-            event["movedFrom"] = moved[0]
-            schema.note(event, f"moved from {moved[0].rsplit(':', 1)[-1]}")
-
-    # An upcoming event that stopped appearing here is probably cancelled.
-    # An empty scrape (the site blocked us) says nothing about any of them.
-    if raw:
-        missing = ledger.mark_misses(args.source, seen_keys, today_iso)
-        due = sum(1 for m in missing if m["missCount"] >= ledger.MISS_LIMIT)
-        if missing:
-            print(f"{len(missing)} pushed listings gone from {args.source}, {due} due for removal")
-            for entry in missing[:15]:
-                print(f"  {entry['date']}  {entry['name'][:50]}  (missed {entry['missCount']}x, {entry['environment']})")
+    events = [
+        normalize(item, session, source=args.source, today=today, skip_geocode=args.skip_geocode)
+        for item in raw
+    ]
 
     # Two listings with one natural key would take turns overwriting each
-    # other's record; give the later ones a stable suffix instead.
+    # other's record; give the later ones a stable suffix before anything
+    # (asset folders, ledger checks) is keyed on it.
     changed = schema.disambiguate_keys(events)
     if changed:
         print(f"{changed} listings share a name and day with another; keys made distinct")
+
+    for event in events:
+        attach_assets(event, session, site_emails=site_emails, refresh_assets=args.refresh_assets)
+
+    try:
+        with ledger.lock():
+            for event in events:
+                annotate_from_ledger(event)
+
+            seen_keys = {e["sourceKey"] for e in events}
+            for event in events:
+                if any(ledger.contains(event["sourceKey"], env) for env in ("development", "production")):
+                    continue
+                moved = ledger.find_moved(
+                    args.source, schema.slug(event.get("name", "")),
+                    (event.get("date") or "")[:10], seen_keys, today_iso,
+                )
+                if moved:
+                    # The old listing is gone from the site; push replaces its record.
+                    event["movedFrom"] = moved[0]
+                    schema.note(event, f"moved from {moved[0].rsplit(':', 1)[-1]}")
+
+            # An upcoming event that stopped appearing here is probably cancelled.
+            # An empty or badly short scrape (the site blocked us, the markup
+            # changed) says nothing about any of them.
+            partial, expected = ledger.looks_partial(args.source, len(seen_keys), today_iso)
+            if not raw:
+                print(f"{YELLOW}nothing collected; not counting anything as missing{RESET}")
+            elif partial:
+                print(
+                    f"{RED}{BOLD}scrape looks partial{RESET}: {len(seen_keys)} listings where the "
+                    f"ledger expects about {expected}; not counting anything as missing. "
+                    f"Check the {args.source} parser before the next run."
+                )
+            else:
+                missing = ledger.mark_misses(args.source, seen_keys, today_iso)
+                due = sum(1 for m in missing if m["missCount"] >= ledger.MISS_LIMIT)
+                if missing:
+                    print(f"{len(missing)} pushed listings gone from {args.source}, {due} due for removal")
+                    for entry in missing[:15]:
+                        print(f"  {entry['date']}  {entry['name'][:50]}  (missed {entry['missCount']}x, {entry['environment']})")
+    except ledger.LedgerError as error:
+        print(f"{RED}{error}{RESET}")
+        return 1
 
     # Two events sharing one registration form is how one of them ends up
     # with the other's flyer; say so where a person will see it.

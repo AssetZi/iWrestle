@@ -20,18 +20,13 @@ import anthropic
 from pydantic import BaseModel, ValidationError
 
 from . import mapping
-from .config import DEFAULT_CONTACT_EMAIL, ENRICH_CACHE_PATH, ENRICH_MODEL
-from .schema import note
+from .config import ENRICH_CACHE_PATH, ENRICH_MODEL
+from .schema import DEFAULT_EMAIL_NOTES, is_default_email, note
 
 # Bump when the prompt or schema changes so cached answers are re-asked.
 PROMPT_VERSION = 3
 
 DEFAULTED_DIVISIONS_NOTE = "no divisions found, defaulted"
-DEFAULT_EMAIL_NOTES = (
-    "default contact email",
-    "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
-    "no contact email: set DEFAULT_CONTACT_EMAIL in .env",
-)
 
 # Claude Opus 5 list price per million tokens, for the summary line only.
 PRICE_INPUT_PER_MTOK = 5.00
@@ -111,10 +106,6 @@ def save_cache(cache: dict[str, Any]) -> None:
 
 # --- Request -------------------------------------------------------------------
 
-def _is_default_email(email: str) -> bool:
-    return not email or email == DEFAULT_CONTACT_EMAIL or email.endswith("example.com")
-
-
 def build_messages(
     event: dict[str, Any], image_bytes: bytes, media_type: str = "image/jpeg",
     pdf_bytes: bytes | None = None, page_bytes: bytes | None = None,
@@ -130,7 +121,7 @@ def build_messages(
         "ageGroupsWereDefaulted": DEFAULTED_DIVISIONS_NOTE in notes,
         "registration": event.get("registration") or None,
         "contactEmail": contact.get("email") or None,
-        "contactEmailIsDefault": _is_default_email(contact.get("email", "")),
+        "contactEmailIsDefault": is_default_email(contact.get("email", "")),
     }
     text = "Known fields (context only):\n" + json.dumps(known, indent=1)
     if event.get("detailText"):
@@ -251,7 +242,7 @@ def merge(event: dict[str, Any], extraction: BannerExtraction) -> list[str]:
 
     found = extraction.contact
 
-    if found.email and "@" in found.email and _is_default_email(contact.get("email", "")):
+    if found.email and "@" in found.email and is_default_email(contact.get("email", "")):
         email = found.email.strip()
         # Flyers shout; an all-caps address is the same mailbox.
         contact["email"] = email.lower() if email.isupper() else email

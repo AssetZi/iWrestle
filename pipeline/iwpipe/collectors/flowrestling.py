@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -76,12 +77,19 @@ def _post(session: requests.Session, path: str, body: dict[str, Any]) -> dict[st
     return response.json()
 
 
+# Between detail requests. The first national run is ~2,000 of them, and
+# Track blocked this IP for firing that many as fast as it could.
+DETAIL_PAUSE_SECONDS = 0.3
+
+
 def _get(session: requests.Session, url: str) -> dict[str, Any] | None:
+    time.sleep(DETAIL_PAUSE_SECONDS)
     try:
         response = session.get(url, headers=API_HEADERS, timeout=30)
         response.raise_for_status()
         return response.json()
-    except Exception:
+    except (requests.RequestException, ValueError) as error:
+        print(f"  flowrestling: {url.rsplit('/', 1)[-1]} detail failed: {str(error)[:80]}")
         return None
 
 

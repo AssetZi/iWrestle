@@ -42,3 +42,14 @@ def test_tba_venue_is_a_note_not_a_skip():
 
 def test_invite_counts_like_invitational():
     assert classify_level("Millikin Invite", "Millikin University") == "college"
+
+
+def test_school_and_youth_associations_are_youth_even_at_a_college():
+    """The routine once flagged these as college or adult on venue and name alone."""
+    assert classify_level("CVYWA Bill Musick Jr. Invite 26(TOCQ)", "Fresno City College") is None
+    assert classify_level("NCHSAA Women`s 6A East Regional", "TBA") is None
+    assert classify_level("GHSA Traditional State Championships", "Macon Coliseum") is None
+    assert classify_level("PIAA Interscholastic Duals", "Giant Center") is None
+    # Still college and adult.
+    assert classify_level("Millikin Invite", "Millikin University") == "college"
+    assert classify_level("Falcon Open Men- Amateur", "Park City Arena") == "adult"

@@ -14,7 +14,11 @@ COLLEGE_NAME = re.compile(r"\b(college open|collegiate|ncaa|naia|njcaa|universit
 OPEN_FAMILY = re.compile(r"\b(open|invitational|invite|duals?|classic|dual meet)\b", re.I)
 YOUTH_MARKER = re.compile(
     r"\b(youth|kids?|elementary|k-?\d+|novice|bantam|tots?|pee\s*wee|middle school|"
-    r"junior high|jr\.? high|high school|hs|jv|varsity|scholastic|takedown|girls?)\b|\b\d{1,2}u\b",
+    r"junior high|jr\.? high|high school|hs|jv|varsity|scholastic|interscholastic|takedown|girls?|"
+    # State high school associations (NCHSAA, GHSA), youth associations
+    # (CVYWA), and Tournament of Champions qualifiers are youth wrestling
+    # even when they meet at a college.
+    r"\w*hsaa?|\w*ywa|tocq?)\b|\b\d{1,2}u\b",
     re.I,
 )
 

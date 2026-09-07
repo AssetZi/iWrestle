@@ -8,6 +8,10 @@ missing, so the pipeline always produces both. Preference order:
 
 Every link on a flyer is a real PDF link annotation, so it is tappable in
 the app's QuickLook viewer.
+
+Rendering is invariant (no creation date, no random document id): the
+same event renders to the same bytes, so the content hash push keeps does
+not change just because the flyer was rendered again.
 """
 from __future__ import annotations
 
@@ -286,7 +290,7 @@ def _footer(page, height: float) -> None:
 
 def render_flyer(event: dict[str, Any], destination: Path) -> Path:
     """One-page flyer built from the event's own text, for sources with none."""
-    page = pdf_canvas.Canvas(str(destination), pagesize=LETTER)
+    page = pdf_canvas.Canvas(str(destination), pagesize=LETTER, invariant=1)
     width, height = LETTER
     x = 1 * inch
 
@@ -322,7 +326,7 @@ def render_image_flyer(
     event: dict[str, Any], banner_path: Path, destination: Path
 ) -> Path:
     """The organizer's own banner graphic, with the essentials and links under it."""
-    page = pdf_canvas.Canvas(str(destination), pagesize=LETTER)
+    page = pdf_canvas.Canvas(str(destination), pagesize=LETTER, invariant=1)
     width, height = LETTER
     x = 0.6 * inch
     content_width = width - 2 * x

@@ -104,3 +104,18 @@ def test_banner_flyer_embeds_the_image_and_links(tmp_path):
     assert b"/Image" in data
     assert b"/URI" in data
     assert b"form.jotform.com/262174666443159" in data
+
+
+def test_rendering_the_same_event_twice_gives_identical_bytes(tmp_path):
+    """push hashes the flyer bytes; a re-render must not look like a change."""
+    event = _linked_event()
+    first = render_flyer(event, tmp_path / "a.pdf").read_bytes()
+    second = render_flyer(event, tmp_path / "b.pdf").read_bytes()
+    assert first == second
+
+    from iwpipe.assets import render_image_flyer
+
+    banner = _synthetic_banner(tmp_path / "banner.jpg")
+    first = render_image_flyer(event, banner, tmp_path / "c.pdf").read_bytes()
+    second = render_image_flyer(event, banner, tmp_path / "d.pdf").read_bytes()
+    assert first == second

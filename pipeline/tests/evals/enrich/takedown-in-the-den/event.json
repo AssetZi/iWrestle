@@ -1,0 +1,27 @@
+{
+  "sourceKey": "pywrestling:takedown-in-the-den:2026-09-19",
+  "name": "Takedown In The Den",
+  "date": "2026-09-19T16:00:00Z",
+  "address": "Elizabethtown Area School District, 600 East High Street, Elizabethtown, PA 17022",
+  "organizer": "Elizabethtown Mat Club",
+  "ageGroups": [
+    "Youth",
+    "Jr High",
+    "High School"
+  ],
+  "registration": "",
+  "contact": {
+    "firstName": "Elizabethtown Mat Club",
+    "lastName": "(Organizer)",
+    "email": "support@example.com",
+    "phone": ""
+  },
+  "review": {
+    "status": "pending",
+    "notes": [
+      "organizer used as contact name",
+      "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
+      "no divisions found, defaulted"
+    ]
+  }
+}

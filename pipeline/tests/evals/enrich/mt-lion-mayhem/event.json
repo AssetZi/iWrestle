@@ -1,0 +1,27 @@
+{
+  "sourceKey": "pywrestling:mt-lion-mayhem:2026-11-22",
+  "name": "Mt. Lion Mayhem",
+  "date": "2026-11-22T17:00:00Z",
+  "address": "Wrestling Altoona Area High School Field House, 1404 6th Avenue, Altoona, PA 16602",
+  "organizer": "Overtime Club & Altoona Youth",
+  "ageGroups": [
+    "Youth",
+    "Jr High",
+    "High School"
+  ],
+  "registration": "",
+  "contact": {
+    "firstName": "Overtime Club & Altoona Youth",
+    "lastName": "(Organizer)",
+    "email": "support@example.com",
+    "phone": ""
+  },
+  "review": {
+    "status": "pending",
+    "notes": [
+      "organizer used as contact name",
+      "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
+      "no divisions found, defaulted"
+    ]
+  }
+}

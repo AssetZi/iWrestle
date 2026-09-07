@@ -20,12 +20,11 @@ import sys
 
 import _bootstrap  # noqa: F401
 
+import requests
+
 from iwpipe import cktool, ckws, exclusions, ledger
 from iwpipe.config import DATA_DIR
-
-BOLD, DIM, GREEN, YELLOW, RED, RESET = (
-    "\033[1m", "\033[2m", "\033[32m", "\033[33m", "\033[31m", "\033[0m"
-)
+from iwpipe.term import BOLD, DIM, GREEN, RED, RESET, YELLOW
 
 
 def newest_events():
@@ -95,23 +94,26 @@ def main() -> int:
     exclusions.add(key, args.reason, event.get("name", ""))
     print(f"{BOLD}excluded{RESET} {key}  ({args.reason})")
 
-    for environment in ("development", "production"):
-        entry = ledger.get(key, environment)
-        if not entry:
-            continue
-        client = cktool.rest_client(environment)
-        try:
-            if client is not None:
-                client.delete_record(entry["recordName"])
-            else:
-                cktool.delete_record(entry["recordName"], environment)
-        except (cktool.CKToolError, ckws.CKWSError) as error:
-            print(f"  {RED}{environment}: delete failed{RESET}: {str(error)[:120]}")
-            continue
-        ledger.forget(key, environment)
-        print(f"  {GREEN}{environment}{RESET}: record {entry['recordName'][:8]} deleted")
+    status = 0
+    try:
+        with ledger.lock():
+            for environment in ("development", "production"):
+                entry = ledger.get(key, environment)
+                if not entry:
+                    continue
+                try:
+                    cktool.require_client(environment).delete_record(entry["recordName"])
+                except (cktool.NoWriteAccess, ckws.CKWSError, requests.RequestException) as error:
+                    print(f"  {RED}{environment}: delete failed{RESET}: {str(error)[:120]}")
+                    status = 1
+                    continue
+                ledger.forget(key, environment)
+                print(f"  {GREEN}{environment}{RESET}: record {entry['recordName'][:8]} deleted")
+    except ledger.LedgerError as error:
+        print(f"{RED}{error}{RESET}")
+        return 1
     print(f"{DIM}Every future collect will skip it. Undo with: python bin/exclude.py --undo {key}{RESET}")
-    return 0
+    return status
 
 
 if __name__ == "__main__":
