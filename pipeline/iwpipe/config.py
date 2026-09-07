@@ -41,6 +41,13 @@ ENRICH_MODEL = "claude-opus-5"
 ENRICH_CACHE_PATH = DATA_DIR / "enrich-cache.json"
 BANNER_MAX_BYTES = 5 * 1024 * 1024
 
+# --- CloudKit Web Services (server-to-server) -------------------------------
+# A key that never expires, unlike cktool's browser-session token. Set
+# CLOUDKIT_KEY_ID in .env and the pipeline writes through the REST API;
+# leave it empty and it falls back to cktool.
+CLOUDKIT_KEY_ID = os.getenv("CLOUDKIT_KEY_ID", "")
+CLOUDKIT_KEY_PATH = PIPELINE_ROOT / "secrets" / "cloudkit-s2s.pem"
+
 # --- Presentation ---------------------------------------------------------
 # iWrestle/DesignSystem/Theme.swift
 SLATE_800 = (0x2F, 0x36, 0x3D)

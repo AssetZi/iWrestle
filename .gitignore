@@ -15,3 +15,6 @@ xcuserdata/
 *.xcuserstate
 DerivedData/
 build/
+
+# CloudKit server-to-server private key
+pipeline/secrets/

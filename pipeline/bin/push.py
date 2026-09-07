@@ -18,7 +18,7 @@ from pathlib import Path
 
 import _bootstrap  # noqa: F401
 
-from iwpipe import cktool, ledger, schema
+from iwpipe import cktool, ckws, ledger, schema
 from iwpipe.assets import event_asset_dir
 
 BOLD, DIM, GREEN, YELLOW, RED, RESET = (
@@ -37,28 +37,36 @@ def prepare(event):
     return fields_path, logo, flyer, cktool.content_hash(fields, logo, flyer)
 
 
-def push_one(event, environment, *, dry_run, replace_record=None):
+def push_one(event, environment, *, dry_run, replace_record=None, client=None):
     """Create one record (deleting the previous one when replacing).
 
-    Returns (record name, content hash). cktool has no update, so a changed
-    event is deleted and created again under a new record name.
+    Returns (record name, content hash). Neither backend can update a
+    record, so a changed event is created again and the old one removed.
     """
     fields_path, logo, flyer, digest = prepare(event)
     if dry_run:
         verb = "replace" if replace_record else "create"
-        print(f"    would {verb} via cktool")
-        print(f"      --fields-file {fields_path}")
-        print(f"      --asset-files LOGO={logo} FLYER={flyer}")
+        print(f"    would {verb} via {cktool.backend_name()}")
+        print(f"      fields {fields_path}")
+        print(f"      assets LOGO={logo} FLYER={flyer}")
         return None, digest
 
     # Create first, delete second: a failed create must never leave the
     # event missing from the database.
-    response = cktool.create_record(fields_path, logo, flyer, environment)
-    name = response.get("recordName") or response.get("record", {}).get("recordName", "")
+    if client is not None:
+        fields = json.loads(fields_path.read_text())
+        name = cktool.create_record_rest(client, fields, logo, flyer)
+    else:
+        response = cktool.create_record(fields_path, logo, flyer, environment)
+        name = response.get("recordName") or response.get("record", {}).get("recordName", "")
+
     if replace_record:
         try:
-            cktool.delete_record(replace_record, environment)
-        except cktool.CKToolError as error:
+            if client is not None:
+                client.delete_record(replace_record)
+            else:
+                cktool.delete_record(replace_record, environment)
+        except (cktool.CKToolError, ckws.CKWSError) as error:
             print(f"    {YELLOW}old record {replace_record[:8]} not deleted: {str(error).splitlines()[-1][:80]}{RESET}")
     return name, digest
 
@@ -83,6 +91,7 @@ def main() -> int:
     args = parser.parse_args()
 
     environment = cktool.PRODUCTION if args.production else cktool.DEVELOPMENT
+    client = cktool.rest_client(environment)
     payload = schema.load(args.file)
 
     queue = []
@@ -111,6 +120,8 @@ def main() -> int:
         print("nothing to push")
         return 0
 
+    print(f"{DIM}via {cktool.backend_name()}{RESET}")
+
     if args.production and not args.dry_run:
         print(f"\n{RED}{BOLD}  PRODUCTION  {RESET}")
         print(f"About to create {len(queue)} Event records visible to every")
@@ -133,9 +144,10 @@ def main() -> int:
         print(f"{BOLD}{verb}{RESET} {event['date'][:10]}  {event['name'][:50]}")
         try:
             record_name, digest = push_one(
-                event, environment, dry_run=args.dry_run, replace_record=replacing
+                event, environment, dry_run=args.dry_run,
+                replace_record=replacing, client=client,
             )
-        except cktool.CKToolError as error:
+        except (cktool.CKToolError, ckws.CKWSError) as error:
             print(f"  {RED}failed{RESET}: {error}")
             failed += 1
             continue

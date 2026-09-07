@@ -32,9 +32,29 @@ Fill in `.env`:
 | `ANTHROPIC_API_KEY` | Lets `make enrich` read banner images with Claude. Create one at console.anthropic.com → Settings → API keys. Without it the enrich step is skipped and reported. |
 | `NOMINATIM_EMAIL` | OpenStreetMap asks geocoding clients to identify themselves. |
 
-### CloudKit token
+### CloudKit access
 
-`cktool` needs a token, which only you can create:
+There are two ways to write to CloudKit. **Prefer the server-to-server key**:
+it never expires, which is what lets the scheduled routine run unattended.
+
+**Server-to-server key (recommended).** The private key lives in
+`pipeline/secrets/cloudkit-s2s.pem` (gitignored, mode 600). To create one:
+
+```bash
+openssl ecparam -name prime256v1 -genkey -noout -out secrets/cloudkit-s2s.pem
+chmod 600 secrets/cloudkit-s2s.pem
+openssl ec -in secrets/cloudkit-s2s.pem -pubout
+```
+
+Paste that public key into CloudKit Console -> Tokens -> Server-to-Server
+Keys, and put the Key ID it returns into `.env` as `CLOUDKIT_KEY_ID`. The
+pipeline then signs its own requests (`iwpipe/ckws.py`) and needs neither
+Xcode nor a browser login. Server-to-server keys reach the public database
+only, which is the only one iWrestle uses.
+
+**cktool user token (fallback).** Used automatically when `CLOUDKIT_KEY_ID`
+is empty. It is a browser session: it lapses after 30 minutes, or two weeks
+if you tick "Keep me signed in" while generating it.
 
 1. Open the [CloudKit Console](https://icloud.developer.apple.com/dashboard/), sign in, and go to **Settings → Tokens**.
 2. Create a **user token** (create-record acts as you) and copy it.
@@ -44,7 +64,7 @@ Fill in `.env`:
 xcrun cktool save-token <token> --type user
 ```
 
-Confirm it took:
+Confirm either one took:
 
 ```bash
 xcrun cktool query-records --team-id RLZG42V7Y4 --container-id iCloud.zacherlInvestmentsLLC.iWrestle --environment development --database-type public --record-type Event --limit 1

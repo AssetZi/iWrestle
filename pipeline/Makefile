@@ -5,7 +5,7 @@ DATE := $(shell date +%Y%m%d)
 # The newest collected file for SOURCE. Override with FILE=path.
 FILE ?= $(shell ls -t data/events.$(SOURCE).*.json 2>/dev/null | head -1)
 
-.PHONY: help venv test token-check collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod reconcile routine clean
+.PHONY: help venv test token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod reconcile routine clean
 
 help:
 	@echo "make venv          create .venv and install pinned deps"
@@ -32,8 +32,18 @@ venv:
 test:
 	$(PY) -m pytest tests -q
 
-# Is the cktool token saved and does it reach our container?
+# Can we reach the container? Uses the server-to-server key when one is
+# configured, else the cktool user token.
 token-check:
+	@$(PY) -c "from iwpipe import cktool; \
+	  c = cktool.rest_client('development'); \
+	  print('backend:', cktool.backend_name()); \
+	  (c and (c.query_records('Event', ['name'], 1), print('key OK: reached the development database'))) or None" \
+	  2>/tmp/ckws-check.err || (echo "server-to-server key not working:"; head -3 /tmp/ckws-check.err)
+	@$(PY) -c "from iwpipe.config import CLOUDKIT_KEY_ID; import sys; sys.exit(0 if CLOUDKIT_KEY_ID else 1)" \
+	  && exit 0 || $(MAKE) --no-print-directory token-check-cktool
+
+token-check-cktool:
 	@xcrun cktool query-records \
 		--team-id RLZG42V7Y4 \
 		--container-id iCloud.zacherlInvestmentsLLC.iWrestle \

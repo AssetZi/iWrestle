@@ -12,8 +12,11 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from . import ckws
 from .config import (
     ADMIN_RECORD_NAME,
+    CLOUDKIT_KEY_ID,
+    CLOUDKIT_KEY_PATH,
     CONTAINER_ID,
     DATABASE_TYPE,
     RECORD_TYPE,
@@ -173,3 +176,31 @@ def content_hash(fields: dict[str, Any], logo_path: Path, flyer_path: Path) -> s
     for path in (logo_path, flyer_path):
         digest.update(hashlib.sha256(path.read_bytes()).digest() if path.exists() else b"-")
     return digest.hexdigest()[:16]
+
+
+# --- Backend selection ---------------------------------------------------------
+
+def rest_client(environment: str) -> ckws.Client | None:
+    """The REST client when a server-to-server key is configured, else None.
+
+    cktool needs a user token that expires within hours; the key behind this
+    client never does, which is what lets the routine run unattended.
+    """
+    if not CLOUDKIT_KEY_ID or not CLOUDKIT_KEY_PATH.exists():
+        return None
+    return ckws.Client(CLOUDKIT_KEY_PATH, CLOUDKIT_KEY_ID, CONTAINER_ID, environment)
+
+
+def backend_name() -> str:
+    return "CloudKit REST (server-to-server key)" if CLOUDKIT_KEY_ID else "cktool (user token)"
+
+
+def create_record_rest(
+    client: ckws.Client, fields: dict[str, Any], logo_path: Path, flyer_path: Path
+) -> str:
+    """Upload both assets, then create the record that points at them."""
+    uploaded = {
+        "LOGO": client.upload_asset(RECORD_TYPE, "logo", logo_path),
+        "FLYER": client.upload_asset(RECORD_TYPE, "flyer", flyer_path),
+    }
+    return client.create_record(RECORD_TYPE, ckws.to_ckws_fields(fields, uploaded))
