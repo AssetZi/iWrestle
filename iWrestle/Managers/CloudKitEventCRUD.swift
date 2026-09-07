@@ -9,10 +9,23 @@ import Foundation
 import CloudKit
 import CoreLocation
 
+/// How many events a screen is willing to load at once.
+///
+/// The directory is national, so these are about what a phone can render
+/// and download comfortably, not about CloudKit quota. An event costs
+/// roughly 25 KB with its logo and flyer.
+enum FetchLimits {
+    /// Home: a month within 250 miles. Dense in the Northeast, never near
+    /// this on a normal weekend.
+    static let home = 150
+    /// A filtered search can span the country and a whole season.
+    static let filtered = 300
+}
+
 extension CloudKitManager {
-    
-    
-    
+
+
+
     func createEvent(data: EventData) async -> Event? {
         let userRef = await getUserReference()
         let newEvent = CKRecord(recordType: "Event")
@@ -62,16 +75,32 @@ extension CloudKitManager {
         query.sortDescriptors = [NSSortDescriptor(key: Event.Field.date, ascending: true)]
 
         let database = CKContainer.default().publicCloudDatabase
-        let result = try await database.records(matching: query, resultsLimit: limit ?? CKQueryOperation.maximumResults)
+        let ceiling = limit ?? FetchLimits.filtered
 
+        // CloudKit answers in pages. Without following the cursor a busy
+        // weekend silently loses every event past the first page.
         var events: [Event] = []
-        for (_, matchResult) in result.matchResults {
-            if case let .success(record) = matchResult {
-                if let event = Event(safeRecord: record) {
-                    events.append(event)
+        var cursor: CKQueryOperation.Cursor?
+
+        repeat {
+            let remaining = ceiling - events.count
+            let result: (matchResults: [(CKRecord.ID, Result<CKRecord, Error>)], queryCursor: CKQueryOperation.Cursor?)
+            if let cursor {
+                result = try await database.records(continuingMatchFrom: cursor, resultsLimit: remaining)
+            } else {
+                result = try await database.records(matching: query, resultsLimit: remaining)
+            }
+
+            for (_, matchResult) in result.matchResults {
+                if case let .success(record) = matchResult {
+                    if let event = Event(safeRecord: record) {
+                        events.append(event)
+                    }
                 }
             }
-        }
+            cursor = result.queryCursor
+        } while cursor != nil && events.count < ceiling
+
         return events
     }
     

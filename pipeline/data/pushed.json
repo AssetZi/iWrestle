@@ -1702,6 +1702,19 @@
     "recordName": "6CF235A9-BA9C-4B15-AB07-DE7FA8F64E15",
     "sourceKey": "flowrestling:2026-southeastern-duals:2026-11-14"
   },
+  "development:flowrestling:2026-southside-dale-brodmerkel-memorial:2026-12-19": {
+    "contentHash": "3fd19ee11b3563c8",
+    "date": "2026-12-19",
+    "environment": "development",
+    "location": {
+      "latitude": 40.5681269,
+      "longitude": -80.4378038
+    },
+    "name": "2026 Southside Dale Brodmerkel Memorial",
+    "pushedAt": "2026-09-05T12:18:18+00:00",
+    "recordName": "86530BD5-5E57-413A-B4E8-F21BBCD9E1EB",
+    "sourceKey": "flowrestling:2026-southside-dale-brodmerkel-memorial:2026-12-19"
+  },
   "development:flowrestling:2026-spartan-invitational:2026-12-11": {
     "contentHash": "37475c43022547fb",
     "date": "2026-12-11",
@@ -6187,6 +6200,19 @@
     "recordName": "29FFDD6F-4FC9-4113-84BD-7B7CAA908418",
     "sourceKey": "flowrestling:bluefield-st-mount-olive:2027-01-28"
   },
+  "development:flowrestling:boy-s-bear-brawl-2026:2026-12-18": {
+    "contentHash": "c8dc5c553b8f1c94",
+    "date": "2026-12-18",
+    "environment": "development",
+    "location": {
+      "latitude": 30.5403684,
+      "longitude": -87.7070713
+    },
+    "name": "Boy`s Bear Brawl 2026",
+    "pushedAt": "2026-09-05T12:18:13+00:00",
+    "recordName": "EB89BCDC-D107-4C2A-B4EE-4CE9006CE3C9",
+    "sourceKey": "flowrestling:boy-s-bear-brawl-2026:2026-12-18"
+  },
   "development:flowrestling:boy-s-gulf-coast-clash-presented-by-msa-2026:2026-11-20": {
     "contentHash": "e795cbe1b00aa34c",
     "date": "2026-11-20",
@@ -9371,6 +9397,19 @@
     "pushedAt": "2026-09-05T11:24:28+00:00",
     "recordName": "FDE57ED6-2CD5-4708-A636-79DE3D6ACCC4",
     "sourceKey": "flowrestling:ghsa-girls-division-2-section-a:2027-02-05"
+  },
+  "development:flowrestling:girl-s-bear-brawl-2026:2026-12-18": {
+    "contentHash": "ba207c6d542109c9",
+    "date": "2026-12-18",
+    "environment": "development",
+    "location": {
+      "latitude": 30.5403684,
+      "longitude": -87.7070713
+    },
+    "name": "Girl`s Bear Brawl 2026",
+    "pushedAt": "2026-09-05T12:18:15+00:00",
+    "recordName": "8F4A7DD4-37D0-4161-BC67-BCA09CD03DCD",
+    "sourceKey": "flowrestling:girl-s-bear-brawl-2026:2026-12-18"
   },
   "development:flowrestling:girl-s-gulf-coast-clash-presented-by-msa-2026:2026-11-20": {
     "contentHash": "14d0aef27b8d853a",
@@ -15001,6 +15040,19 @@
     "recordName": "28788332-BBFD-468C-AABB-E78CDAA7B24E",
     "sourceKey": "flowrestling:reinhardt-university-ga-montevallo:2026-11-13"
   },
+  "development:flowrestling:reno-toc:2026-12-18": {
+    "contentHash": "b10728a496eb1af1",
+    "date": "2026-12-18",
+    "environment": "development",
+    "location": {
+      "latitude": 39.531044,
+      "longitude": -119.8124923
+    },
+    "name": "Reno TOC",
+    "pushedAt": "2026-09-05T12:18:11+00:00",
+    "recordName": "892037E5-BAF9-4CF7-ACC5-FBB3A74A4FF4",
+    "sourceKey": "flowrestling:reno-toc:2026-12-18"
+  },
   "development:flowrestling:rhode-island-col-jwu-providence:2027-01-07": {
     "contentHash": "63218184b7f263cd",
     "date": "2027-01-07",
@@ -18432,6 +18484,19 @@
     "pushedAt": "2026-09-05T11:10:24+00:00",
     "recordName": "D2A7393F-8BBC-4864-B8CE-9F68A6050851",
     "sourceKey": "flowrestling:warren-county-middle-school-robert-e-aylor-middle-school:2026-11-12"
+  },
+  "development:flowrestling:warrior-classic-2026:2026-12-18": {
+    "contentHash": "7e424c4f99fe6a02",
+    "date": "2026-12-18",
+    "environment": "development",
+    "location": {
+      "latitude": 39.0872383,
+      "longitude": -108.4725112
+    },
+    "name": "Warrior Classic 2026",
+    "pushedAt": "2026-09-05T12:18:08+00:00",
+    "recordName": "7DF77C60-A878-4219-A576-B6FDED7E4C42",
+    "sourceKey": "flowrestling:warrior-classic-2026:2026-12-18"
   },
   "development:flowrestling:warrior-invitational:2026-11-07": {
     "contentHash": "a853d50887c6d30c",

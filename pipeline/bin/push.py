@@ -76,6 +76,10 @@ def main() -> int:
         "--replace", action="store_true",
         help="re-push events already in this environment whose content changed",
     )
+    parser.add_argument(
+        "--yes", action="store_true",
+        help="skip the production prompt; only for a caller that already confirmed",
+    )
     args = parser.parse_args()
 
     environment = cktool.PRODUCTION if args.production else cktool.DEVELOPMENT
@@ -111,9 +115,13 @@ def main() -> int:
         print(f"\n{RED}{BOLD}  PRODUCTION  {RESET}")
         print(f"About to create {len(queue)} Event records visible to every")
         print("iWrestle user on the App Store. This cannot be undone in bulk.\n")
-        for event in queue:
+        for event in queue[:40]:
             print(f"  {event['date'][:10]}  {event['name']}")
-        if input("\nType y to continue: ").strip().lower() != "y":
+        if len(queue) > 40:
+            print(f"  ... and {len(queue) - 40} more")
+        if args.yes:
+            print(f"\n{YELLOW}--yes given, not asking.{RESET}")
+        elif input("\nType y to continue: ").strip().lower() != "y":
             print("aborted")
             return 1
 

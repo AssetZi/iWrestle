@@ -155,7 +155,7 @@ struct HomeView: View {
                     interval.end as CVarArg
                 ))
             }
-            let events = try await ck.fetchEvents(predicates: predicates, limit: 20)
+            let events = try await ck.fetchEvents(predicates: predicates, limit: FetchLimits.home)
             if !events.isEmpty { return events }
         }
         return []
