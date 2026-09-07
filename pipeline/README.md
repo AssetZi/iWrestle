@@ -159,6 +159,24 @@ of them:
   as an empty string because the App Store build's decode guard needs the
   field to exist; the relaxed guard ships with the next app update.
 
+## Removing an event
+
+Review marks an event `skip` for one file, but the next collect brings it
+back. When you decide an event does not belong (a college open the
+classifier missed, a listing that is really a practice), take it out for
+good:
+
+```bash
+make exclude KEY="Hurst Invitational" REASON="college open"
+```
+
+The key can be part of the name (a name matching several events lists them
+instead of guessing) or the full source key. The event is deleted from
+every environment it was pushed to, and every future collect skips it with
+the note `excluded: <reason>`. `python bin/exclude.py --list` shows the
+list, `--undo <key>` lets one back in. The list lives in
+`data/excluded.json` and is committed.
+
 ## Duplicates
 
 Each event gets a natural key: `source:name-slug:YYYY-MM-DD`. Successful

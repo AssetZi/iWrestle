@@ -86,3 +86,14 @@ def test_colliding_keys_become_distinct_and_stable():
     assert b["sourceKey"] == "flowrestling:x-y:2026-11-18:2gPX"
     assert c["sourceKey"] == "flowrestling:other:2026-11-18"
     assert any("kept both" in n for n in b["review"]["notes"])
+
+
+def test_exclusions_round_trip(monkeypatch, tmp_path):
+    from iwpipe import exclusions
+
+    monkeypatch.setattr(exclusions, "EXCLUDED_PATH", tmp_path / "excluded.json")
+    assert exclusions.reason_for("flowrestling:x:2026-11-01") is None
+    exclusions.add("flowrestling:x:2026-11-01", "college open", "X Open")
+    assert exclusions.reason_for("flowrestling:x:2026-11-01") == "college open"
+    assert exclusions.remove("flowrestling:x:2026-11-01")
+    assert exclusions.reason_for("flowrestling:x:2026-11-01") is None

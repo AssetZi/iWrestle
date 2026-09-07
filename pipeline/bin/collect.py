@@ -18,7 +18,7 @@ from pathlib import Path
 
 import _bootstrap  # noqa: F401
 
-from iwpipe import assets, geocode, ledger, level, mapping, pdftext, schema
+from iwpipe import assets, exclusions, geocode, ledger, level, mapping, pdftext, schema
 from iwpipe.collectors import COLLECTORS
 from iwpipe.config import DATA_DIR, DEFAULT_CONTACT_EMAIL, INCLUDE_COLLEGE
 from iwpipe.http import make_session
@@ -203,6 +203,12 @@ def main() -> int:
             skip_geocode=args.skip_geocode, refresh_assets=args.refresh_assets,
             site_emails=site_emails,
         )
+        # A person took this one out; it stays out until they undo that.
+        excluded = exclusions.reason_for(event["sourceKey"])
+        if excluded:
+            event["review"]["status"] = schema.STATUS_SKIP
+            schema.note(event, f"excluded: {excluded}")
+
         # Being in one environment's ledger must not block the other: push
         # refuses repeats per environment on its own. Just say where it is.
         for environment in ("development", "production"):

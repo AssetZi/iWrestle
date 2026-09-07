@@ -9,6 +9,7 @@ pipeline/.venv/
 pipeline/data/*
 !pipeline/data/pushed.json
 !pipeline/data/geocache.json
+!pipeline/data/excluded.json
 
 # Xcode
 xcuserdata/

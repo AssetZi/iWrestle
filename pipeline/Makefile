@@ -5,7 +5,7 @@ DATE := $(shell date +%Y%m%d)
 # The newest collected file for SOURCE. Override with FILE=path.
 FILE ?= $(shell ls -t data/events.$(SOURCE).*.json 2>/dev/null | head -1)
 
-.PHONY: help venv test token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod promote reconcile routine clean
+.PHONY: help venv test exclude token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod promote reconcile routine clean
 
 help:
 	@echo "make venv          create .venv and install pinned deps"
@@ -20,6 +20,7 @@ help:
 	@echo "make push-prod     write them to production (asks first)"
 	@echo "make promote       push-prod for the newest file of every source"
 	@echo "make reconcile     compare CloudKit against the local ledger"
+	@echo "make exclude KEY=\"name or key\" REASON=\"why\"   remove an event for good"
 	@echo "make routine       collect + enrich + approve + push (development) for every source"
 	@echo ""
 	@echo "current SOURCE: $(SOURCE)   FILE: $(FILE)"
@@ -91,6 +92,10 @@ promote:
 		echo "== $$src ($$f)"; \
 		$(PY) bin/push.py $$f --production --replace || true; \
 	done
+
+# Take an event out of the directory: deletes it everywhere and keeps it out.
+exclude:
+	$(PY) bin/exclude.py "$(KEY)" --reason "$(if $(REASON),$(REASON),removed by hand)"
 
 reconcile:
 	$(PY) bin/reconcile.py
