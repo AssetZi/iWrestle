@@ -1,1 +1,17 @@
-{}
+{
+  "flowrestling:auggie-invite:2026-11-21": {
+    "at": "2026-09-14T14:32:07+00:00",
+    "name": "Auggie Invite",
+    "reason": "college open at Augsburg University"
+  },
+  "pywrestling:fright-night-individual-tournament:2026-11-07": {
+    "at": "2026-09-14T14:32:09+00:00",
+    "name": "Fright Night Individual Tournament",
+    "reason": "pywrestling listing carries Warriors Individual's registration form"
+  },
+  "pywrestling:palmerton-turkey-throwdown:2026-11-15": {
+    "at": "2026-09-14T14:32:11+00:00",
+    "name": "Palmerton Turkey Throwdown",
+    "reason": "duplicate of Flo listing; pywrestling copy has GTE Turkey Classic's form"
+  }
+}

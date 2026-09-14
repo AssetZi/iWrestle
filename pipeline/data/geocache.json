@@ -1,4 +1,10 @@
 {
+  "10 waltman wy, west grove, pa 19390": {
+    "confidence": "precise",
+    "latitude": 39.8176483,
+    "longitude": -75.8627634,
+    "matched": "Avon Grove High School, 10, Waltman Way, Jennersville, West Grove, Chester County, Pennsylvania, 19390, United States"
+  },
   "1215 wilbraham rd, springfield, ma 01119": {
     "confidence": "precise",
     "latitude": 42.114441,
@@ -101,6 +107,12 @@
     "longitude": -79.4369783,
     "matched": "Averett University Athletic Complex, Danville, Virginia, United States"
   },
+  "bayard rustin high school, west chester, pa": {
+    "confidence": "city",
+    "latitude": 39.9597389,
+    "longitude": -75.6044609,
+    "matched": "West Chester, Chester County, Pennsylvania, 19383, United States"
+  },
   "bethel park high school, 309 church road bethel park, pa 15102": {
     "confidence": "precise",
     "latitude": 40.3335572,
@@ -124,6 +136,12 @@
     "latitude": 41.0107472,
     "longitude": -80.6685115,
     "matched": "Boardman High School, 7777, Glenwood Avenue, Boardman Plaza, Boardman Township, Mahoning County, Ohio, 44512, United States"
+  },
+  "brandywine heights high school, 103 old topton road, mertztown, pa 19539": {
+    "confidence": "precise",
+    "latitude": 40.5116688,
+    "longitude": -75.6942152,
+    "matched": "Brandywine Heights High School, 103, Old Topton Road, Ringtown, Longswamp Township, Berks County, Pennsylvania, 19539, United States"
   },
   "bucks county community college, 275 swamp road, newtown, pa 18940": {
     "confidence": "precise",
@@ -251,6 +269,12 @@
     "longitude": -75.1726818,
     "matched": "East Stroudsburg University, 200, Prospect Street, East Stroudsburg, Monroe County, Pennsylvania, 18301, United States"
   },
+  "east stroudsburg, east stroudsburg, pa": {
+    "confidence": "precise",
+    "latitude": 41.0163891,
+    "longitude": -75.1827519,
+    "matched": "North Courtland Street, East Stroudsburg, Monroe County, Pennsylvania, 18301, United States"
+  },
   "elizabeth high school, 600 pearl street, elizabeth, nj 07202": {
     "confidence": "precise",
     "latitude": 40.66005,
@@ -311,6 +335,12 @@
     "longitude": -111.3897753,
     "matched": "Florence High School, 1000, South Main Street, Florence, Pinal County, Arizona, 85132, United States"
   },
+  "foley high school, foley, al": {
+    "confidence": "precise",
+    "latitude": 30.3802917,
+    "longitude": -87.688952,
+    "matched": "Foley High School, Foley, Baldwin County, Alabama, 36535, United States"
+  },
   "fort hays state university, hays, ks": {
     "confidence": "precise",
     "latitude": 38.8706832,
@@ -340,6 +370,12 @@
     "latitude": 40.271868,
     "longitude": -76.847979,
     "matched": "2451, Market Street, East Harrisburg, Harrisburg, Dauphin County, Pennsylvania, 17103, United States"
+  },
+  "highland high school, riverside, ia": {
+    "confidence": "city",
+    "latitude": 41.4797157,
+    "longitude": -91.5812739,
+    "matched": "Riverside, Washington County, Iowa, 52327, United States"
   },
   "holbrook junior high school, 412 west buffalo street, holbrook, az 86025": {
     "confidence": "precise",
@@ -413,6 +449,12 @@
     "longitude": -76.4196485,
     "matched": "Lebanon High School, 1000, South 8th Street, Lebanon, Lebanon County, Pennsylvania, 17042, United States"
   },
+  "lehighton area high school, lehighton, pa": {
+    "confidence": "precise",
+    "latitude": 40.8266496,
+    "longitude": -75.7263435,
+    "matched": "Lehighton Area High School, Union Street, Lehighton, Carbon County, Pennsylvania, 18235, United States"
+  },
   "mcdaniel college, 2 college hill, westminster, md 21074": {
     "confidence": "precise",
     "latitude": 39.5909818,
@@ -424,6 +466,12 @@
     "latitude": 33.2032355,
     "longitude": -96.676952,
     "matched": "McKinney Boyd High School, 600, North Lake Forest Drive, McKinney, Collin County, Texas, 75071, United States"
+  },
+  "mcmichael high school 6845 nc-135 mayodan nc": {
+    "confidence": "precise",
+    "latitude": 36.4172215,
+    "longitude": -79.9426817,
+    "matched": "McMichael High School, NC 135, Mayodan, Rockingham County, North Carolina, 27288, United States"
   },
   "memorial fieldhouse, 1815 harrison avenue nw, canton, oh 44708": {
     "confidence": "precise",
@@ -472,6 +520,12 @@
     "latitude": 48.5536972,
     "longitude": -109.677802,
     "matched": "Havre, Hill County, Montana, United States"
+  },
+  "narrow valley sports complex, 20 market street, nesquehoning, pa 18240": {
+    "confidence": "precise",
+    "latitude": 40.8619369,
+    "longitude": -75.8195559,
+    "matched": "Narrow Valley Sports Complex, 20, Market Street, New Columbus, Nesquehoning, Carbon County, Pennsylvania, 18240, United States"
   },
   "newberry, newberry, sc": {
     "confidence": "city",
@@ -533,6 +587,12 @@
     "longitude": -80.6184547,
     "matched": "Palm Bay High School, School Street, Melbourne, Brevard County, Florida, 32905, United States"
   },
+  "park city arena, 8151 north hartman arena drive, park city, ks 67147": {
+    "confidence": "city",
+    "latitude": 37.8000123,
+    "longitude": -97.3183763,
+    "matched": "Park City, Sedgwick County, Kansas, 67219, United States"
+  },
   "pelham recreation center, 2020 pelham park boulevard, pelham, al 35124": {
     "confidence": "precise",
     "latitude": 33.3064575,
@@ -544,6 +604,12 @@
     "latitude": 33.3064575,
     "longitude": -86.8093518,
     "matched": "PELHAM RECREATION CENTER, 2020, Pelham Park Boulevard, Cahaba Valley Estates, Pelham, Shelby County, Alabama, 35124, United States"
+  },
+  "penn manor high school, millersville, pa": {
+    "confidence": "precise",
+    "latitude": 40.0019461,
+    "longitude": -76.3514717,
+    "matched": "Penn Manor High School, East Cottage Avenue, Wynn Wood Manor, Millersville, Lancaster County, Pennsylvania, 17551, United States"
   },
   "phillipsburg": {
     "confidence": "city",
@@ -558,6 +624,12 @@
     "matched": "Lawrenceville Road, Lawrenceville, Lawrence Township, Mercer County, New Jersey, 08648, United States"
   },
   "saint anthonys high school": null,
+  "sevier valley center, richfield, ut": {
+    "confidence": "precise",
+    "latitude": 38.7672312,
+    "longitude": -112.0968127,
+    "matched": "Sevier Valley Center, North 650 West, Richfield, Sevier County, Utah, United States"
+  },
   "sierra pacific high school, 1259 13th avenue, hanford, ca 93230": {
     "confidence": "precise",
     "latitude": 36.3353295,
@@ -718,6 +790,12 @@
     "longitude": -76.9418547,
     "matched": "Trinity High School, 3601, Simpson Ferry Road, Peace Church, Camp Hill, Cumberland County, Pennsylvania, 17011, United States"
   },
+  "twinsburg high school, 10084 ravenna road, twinsburg, oh 44087": {
+    "confidence": "precise",
+    "latitude": 41.318416,
+    "longitude": -81.4486912,
+    "matched": "10084, Ravenna Road, Twinsburg, Summit County, Ohio, 44087, United States"
+  },
   "uccu center, 800 west university parkway, orem, ut 84097": {
     "confidence": "precise",
     "latitude": 40.2794106,
@@ -736,6 +814,18 @@
     "longitude": -86.1583502,
     "matched": "Indianapolis, Marion County, Indiana, United States"
   },
+  "unatego junior-high school, 2641 new york 7, otego, ny 13825": {
+    "confidence": "city",
+    "latitude": 42.3973023,
+    "longitude": -75.1735017,
+    "matched": "Town of Otego, Otsego County, New York, 13825, United States"
+  },
+  "unatego junior-high school, otego, ny": {
+    "confidence": "precise",
+    "latitude": 42.3707755,
+    "longitude": -75.2259809,
+    "matched": "Unatego Junior-Senior High School, 2641, NY 7, Wells Bridge, Town of Otego, Otsego County, New York, 13825, United States"
+  },
   "union county high school, 4464 u.s. 60, morganfield, ky 42437": {
     "confidence": "city",
     "latitude": 37.6833776,
@@ -753,6 +843,12 @@
     "latitude": 35.205851,
     "longitude": -78.0699786,
     "matched": "University of Mount Olive, 586, Henderson Street, Mount Olive, Wayne County, North Carolina, 28365, United States"
+  },
+  "vinemont, vinemont, al": {
+    "confidence": "precise",
+    "latitude": 34.2417649,
+    "longitude": -86.8661139,
+    "matched": "Vinemont, South Vinemont, Cullman County, Alabama, 35179, United States"
   },
   "weaver high school, weaver, al": {
     "confidence": "precise",
@@ -778,6 +874,12 @@
     "longitude": -86.8278563,
     "matched": "Williamson County AG Expo Park, 4215, Long Lane, Franklin, Williamson County, Middle Tennessee, Tennessee, 37064, United States"
   },
+  "woodrow wilson high school, dallas, tx": {
+    "confidence": "precise",
+    "latitude": 32.8054757,
+    "longitude": -96.7500277,
+    "matched": "Woodrow Wilson High School, 100, South Glasgow Drive, Dallas, Dallas County, Texas, 75214, United States"
+  },
   "wrestling altoona area high school field house, 1404 6th avenue, altoona, pa 16602": {
     "confidence": "precise",
     "latitude": 40.5103448,
@@ -789,6 +891,12 @@
     "latitude": 41.970941,
     "longitude": -76.527207,
     "matched": "401, West Frederick Street, Athens, Bradford County, Pennsylvania, 18810, United States"
+  },
+  "wrestling crestwood high school, 281 south mountain boulevard, mountain top, pa 18707": {
+    "confidence": "precise",
+    "latitude": 41.1408476,
+    "longitude": -75.904853,
+    "matched": "Crestwood Field House, 281, South Mountain Boulevard, Wech Corners, Wright Township, Luzerne County, Pennsylvania, 18707, United States"
   },
   "wrestling palmerton high school, 3529 fireline road, palmerton, pa 18071": {
     "confidence": "precise",
