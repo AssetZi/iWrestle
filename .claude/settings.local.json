@@ -5,7 +5,16 @@
       "Bash(make token-check *)",
       "Bash(make routine *)",
       "Bash(echo \"EXIT=$?\")",
-      "Bash(.venv/bin/python -)"
+      "Bash(.venv/bin/python -)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(.venv/bin/python /private/tmp/claude-501/-Users-brock-Developer-iWrestle/9fc9de42-c78c-445a-9bea-fa01eb206318/scratchpad/sum.py)",
+      "Bash(.venv/bin/python -c ' *)",
+      "Bash(git -C .. diff --stat pipeline/data/pushed.json)",
+      "Bash(.venv/bin/python bin/exclude.py --list)",
+      "Bash(git -C .. status --short)",
+      "Bash(make exclude *)",
+      "Bash(awk '{print $2}')",
+      "Bash(echo \"EXIT $?\")"
     ]
   }
 }
