@@ -14,6 +14,7 @@ enum AppTab: Hashable {
 struct RootView: View {
     @Environment(LocationManager.self) var locationManager
     @Environment(NotificationManager.self) var nm
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab: AppTab = .events
     @State private var homePath = NavigationPath()
     @State private var settingsPath = NavigationPath()
@@ -51,10 +52,22 @@ struct RootView: View {
         .environment(\.tabBarInset, tabBarHidden ? 0 : AppTabBar.contentHeight)
         .animation(Motion.normal, value: tabBarHidden)
         .onAppear(perform: locationManager.requestUserLocaiton)
-        .task {
-            nm.requestPermission()
-            guard let loc = locationManager.userLocation else { return }
-            nm.scheduleWeeklyNotification(userLocation: loc)
+        .task { await nm.requestPermission() }
+        // Keyed on the fix: the first render has no location yet.
+        .task(id: locationManager.userCoordinates?.latitude) {
+            guard let location = locationManager.userLocation else { return }
+            await nm.refreshWeeklyDigest(location: location)
+        }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .active:
+                guard let location = locationManager.userLocation ?? LocationManager.lastKnownLocation else { return }
+                Task { await nm.refreshWeeklyDigest(location: location) }
+            case .background:
+                nm.submitBackgroundRefresh()
+            default:
+                break
+            }
         }
     }
 }

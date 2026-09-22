@@ -53,12 +53,36 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         //updating user cordinates
         userCoordinates = coordinates
         userLocation = locations.first
+        if let location = locations.first { Self.store(lastKnown: location) }
         let region = MKCoordinateRegion(center: coordinates, latitudinalMeters: 1000, longitudinalMeters: 1000)
         position = .region(region)
         
         // stopping updates
         manager.stopUpdatingLocation()
         Task { await reverseGeocodeCity(locations.first) }
+    }
+
+    // MARK: - Last known location
+
+    private static let lastLatitudeKey = "lastKnownLocation.latitude"
+    private static let lastLongitudeKey = "lastKnownLocation.longitude"
+
+    /// Saved so background work (the weekly digest refresh) has a location
+    /// without waiting on CoreLocation, which it cannot do in the background.
+    static func store(lastKnown location: CLLocation) {
+        let defaults = UserDefaults.standard
+        defaults.set(location.coordinate.latitude, forKey: lastLatitudeKey)
+        defaults.set(location.coordinate.longitude, forKey: lastLongitudeKey)
+    }
+
+    /// The most recent fix from any earlier session, or nil if none was saved.
+    static var lastKnownLocation: CLLocation? {
+        let defaults = UserDefaults.standard
+        guard
+            let latitude = defaults.object(forKey: lastLatitudeKey) as? Double,
+            let longitude = defaults.object(forKey: lastLongitudeKey) as? Double
+        else { return nil }
+        return CLLocation(latitude: latitude, longitude: longitude)
     }
 
     /// Resolves the user's city for the "Events near {city}." title.

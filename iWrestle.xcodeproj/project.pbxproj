@@ -16,9 +16,22 @@
 		AA10000000000000000000A8 /* iWrestleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iWrestleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AA10000000000000000000C7 /* Exceptions for "iWrestle" folder in "iWrestle" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = BA79726D2ED62BCF00EA37D6 /* iWrestle */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		BA7972702ED62BCF00EA37D6 /* iWrestle */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AA10000000000000000000C7 /* Exceptions for "iWrestle" folder in "iWrestle" target */,
+			);
 			path = iWrestle;
 			sourceTree = "<group>";
 		};
@@ -347,6 +360,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iWrestle/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = iWrestle;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to find the best events in your area!";
@@ -397,6 +411,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = iWrestle/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = iWrestle;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.sports";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to find the best events in your area!";
