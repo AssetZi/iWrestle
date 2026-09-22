@@ -34,11 +34,6 @@
     "name": "2026 \"King of the Mountain\" presented by National Guard",
     "reason": "duplicate of pywrestling:king-of-the-mountain-tournament:2026-11-21"
   },
-  "flowrestling:2026-king-of-the-mountain-sponsored-by-the-army-national-guard:2026-11-21": {
-    "at": "2026-09-22T11:21:06+00:00",
-    "name": "2026 \"King of the Mountain\" sponsored by The Army National Guard",
-    "reason": "duplicate of pywrestling:king-of-the-mountain-tournament:2026-11-21"
-  },
   "flowrestling:2026-michigan-state-open:2026-11-07": {
     "at": "2026-09-22T11:11:28+00:00",
     "name": "2026 Michigan State Open",
@@ -203,11 +198,6 @@
     "at": "2026-09-22T11:11:31+00:00",
     "name": "Elmira @ John Carroll",
     "reason": "college event"
-  },
-  "flowrestling:emmaus-battle-at-the-hive-tournament:2026-11-15": {
-    "at": "2026-09-22T11:21:08+00:00",
-    "name": "Emmaus  Battle at the Hive Tournament",
-    "reason": "duplicate of pywrestling:battle-at-the-hive:2026-11-15"
   },
   "flowrestling:executive-education-academy-charter-school-panther-valley-hs:2026-12-17:2jstR5tQjZjPyZMC": {
     "at": "2026-09-22T11:20:18+00:00",
@@ -524,10 +514,20 @@
     "name": "William Tennent Hs @ Upper Dublin Hs",
     "reason": "duplicate of flowrestling:william-tennent-hs-upper-dublin-hs:2026-12-24"
   },
+  "pywrestling:battle-at-the-hive:2026-11-15": {
+    "at": "2026-09-22T11:29:18+00:00",
+    "name": "Battle At The Hive",
+    "reason": "duplicate of Flo listing, which has the real contact"
+  },
   "pywrestling:fright-night-individual-tournament:2026-11-07": {
     "at": "2026-09-14T14:32:09+00:00",
     "name": "Fright Night Individual Tournament",
     "reason": "pywrestling listing carries Warriors Individual's registration form"
+  },
+  "pywrestling:king-of-the-mountain-tournament:2026-11-21": {
+    "at": "2026-09-22T11:29:18+00:00",
+    "name": "King Of The Mountain Tournament",
+    "reason": "duplicate of Flo listing, which has the real contact"
   },
   "pywrestling:palmerton-turkey-throwdown:2026-11-15": {
     "at": "2026-09-14T14:32:11+00:00",
