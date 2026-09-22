@@ -89,6 +89,11 @@
     "name": "5th Annual Coolidge Girls Invitational",
     "reason": "invitational"
   },
+  "flowrestling:abraham-lincoln-hs-bristol-hs:2027-01-27:2sKpgGicMy7uEILt": {
+    "at": "2026-09-22T13:56:29+00:00",
+    "name": "Abraham Lincoln Hs @ Bristol Hs",
+    "reason": "same-date duplicate of flowrestling:abraham-lincoln-hs-bristol-hs:2027-01-27"
+  },
   "flowrestling:ahsaa-6a-north-seeding:2027-02-05:2SVrFPPRi32m3byf": {
     "at": "2026-09-22T11:20:23+00:00",
     "name": "AHSAA 6A North Seeding",
@@ -98,6 +103,11 @@
     "at": "2026-09-22T11:20:17+00:00",
     "name": "Anna @ Lucas Lovejoy",
     "reason": "duplicate of flowrestling:anna-lucas-lovejoy:2026-12-09"
+  },
+  "flowrestling:archbishop-carroll-hs-bristol-hs:2027-01-20:2q3mA6VTO9PeaXhh": {
+    "at": "2026-09-22T13:56:29+00:00",
+    "name": "Archbishop Carroll HS @ Bristol Hs",
+    "reason": "same-date duplicate of flowrestling:archbishop-carroll-hs-bristol-hs:2027-01-20"
   },
   "flowrestling:auggie-invite:2026-11-21": {
     "at": "2026-09-14T14:32:07+00:00",
@@ -144,6 +154,11 @@
     "name": "Blackburn @ Eureka",
     "reason": "college event"
   },
+  "flowrestling:bristol-hs-pope-john-paul-ii:2026-12-12:2lPVoBXv7GpDYzUa": {
+    "at": "2026-09-22T13:56:31+00:00",
+    "name": "Bristol Hs @ Pope John Paul II",
+    "reason": "same-date duplicate of flowrestling:bristol-hs-pope-john-paul-ii:2026-12-12"
+  },
   "flowrestling:carthage-north-central-il:2026-11-13": {
     "at": "2026-09-22T11:19:47+00:00",
     "name": "Carthage @ North Central (IL)",
@@ -173,6 +188,21 @@
     "at": "2026-09-22T11:20:16+00:00",
     "name": "Dallas Adamson @ Dallas Hillcrest",
     "reason": "duplicate of flowrestling:dallas-adamson-dallas-hillcrest:2026-11-11"
+  },
+  "flowrestling:dallas-samuell-dallas-adams:2027-01-07:2lf5TK2mnSqma85v": {
+    "at": "2026-09-22T13:56:27+00:00",
+    "name": "Dallas Samuell @ Dallas  Adams",
+    "reason": "same-date duplicate of flowrestling:dallas-samuell-dallas-adams:2027-01-07"
+  },
+  "flowrestling:dallas-samuell-dallas-adamson:2026-12-17:2jhKgniQDGTDCEGg": {
+    "at": "2026-09-22T13:56:27+00:00",
+    "name": "Dallas Samuell @ Dallas Adamson",
+    "reason": "same-date duplicate of flowrestling:dallas-samuell-dallas-adamson:2026-12-17"
+  },
+  "flowrestling:dallas-south-oak-cliff-dallas-adamson:2026-12-03:2zqdulR38GMH33NR": {
+    "at": "2026-09-22T13:56:26+00:00",
+    "name": "Dallas South Oak Cliff @ Dallas Adamson",
+    "reason": "same-date duplicate of flowrestling:dallas-south-oak-cliff-dallas-adamson:2026-12-03"
   },
   "flowrestling:dallas-south-oak-cliff-dallas-roosevelt:2026-11-19:2TAn12EukfZsfmnA": {
     "at": "2026-09-22T11:20:38+00:00",
@@ -314,6 +344,11 @@
     "name": "Lady Bearcat Invitational",
     "reason": "invitational"
   },
+  "flowrestling:marietta-etowah:2026-11-11:2RPAh2RDZP43f6YI": {
+    "at": "2026-09-22T13:56:30+00:00",
+    "name": "Marietta @ Etowah",
+    "reason": "same-date duplicate of flowrestling:marietta-etowah:2026-11-11"
+  },
   "flowrestling:millikin-aurora:2026-12-04": {
     "at": "2026-09-22T11:19:24+00:00",
     "name": "Millikin @ Aurora",
@@ -394,10 +429,20 @@
     "name": "Oak Mountain @ Tuscaloosa County",
     "reason": "duplicate of flowrestling:oak-mountain-tuscaloosa-county:2026-12-15"
   },
+  "flowrestling:orange-beach-high-school-flomaton-high-school:2027-01-14:2Y2bQXJuHApk9jiq": {
+    "at": "2026-09-22T13:56:33+00:00",
+    "name": "Orange Beach High School @ Flomaton High School",
+    "reason": "same-date duplicate of flowrestling:orange-beach-high-school-flomaton-high-school:2027-01-14"
+  },
   "flowrestling:oxford-hewitt-trussville:2027-02-04:2bFmGcrNRsCQE4if": {
     "at": "2026-09-22T11:20:42+00:00",
     "name": "Oxford @ Hewitt-Trussville",
     "reason": "duplicate of flowrestling:oxford-hewitt-trussville:2027-02-04"
+  },
+  "flowrestling:penn-charter-individual:2027-01-16:2l9MQ0Kh9JN3ARSo": {
+    "at": "2026-09-22T13:56:32+00:00",
+    "name": "Penn Charter Individual",
+    "reason": "same-date duplicate of flowrestling:penn-charter-individual:2027-01-16"
   },
   "flowrestling:pine-grove-area-hs-panther-valley-hs:2027-01-14:2z7hVkUg8zkBs5IW": {
     "at": "2026-09-22T11:20:20+00:00",
@@ -413,6 +458,11 @@
     "at": "2026-09-22T11:20:04+00:00",
     "name": "Region IV Duals 2026",
     "reason": "college event"
+  },
+  "flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13:2fwACUOFjdNpSHPq": {
+    "at": "2026-09-22T13:56:25+00:00",
+    "name": "San Antonio MacArthur @ Comal Pieper",
+    "reason": "same-date duplicate of flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13"
   },
   "flowrestling:tssaa-region-2-class-a:2027-02-08:2oDkkeNz3AaAuvBN": {
     "at": "2026-09-22T11:20:24+00:00",
@@ -513,6 +563,16 @@
     "at": "2026-09-22T11:20:43+00:00",
     "name": "William Tennent Hs @ Upper Dublin Hs",
     "reason": "duplicate of flowrestling:william-tennent-hs-upper-dublin-hs:2026-12-24"
+  },
+  "flowrestling:wyoming-air-force:2027-01-24": {
+    "at": "2026-09-22T13:56:24+00:00",
+    "name": "Wyoming @ Air Force",
+    "reason": "college event"
+  },
+  "flowrestling:wyoming-air-force:2027-01-24:2zN7vHvPVmI7FMXC": {
+    "at": "2026-09-22T13:56:23+00:00",
+    "name": "Wyoming @ Air Force",
+    "reason": "college event"
   },
   "pywrestling:battle-at-the-hive:2026-11-15": {
     "at": "2026-09-22T11:29:18+00:00",
@@ -628,6 +688,11 @@
     "at": "2026-09-22T11:20:13+00:00",
     "name": "David Mariola - T.A.B. Invitational",
     "reason": "invitational"
+  },
+  "trackwrestling:deliddo-path-of-champions-26:2026-12-30": {
+    "at": "2026-09-22T13:56:34+00:00",
+    "name": "Deliddo/Path of Champions 26",
+    "reason": "same-date duplicate of flowrestling:deliddo-path-of-champions-26:2026-12-30"
   },
   "trackwrestling:ems-isd-tournament:2026-12-10": {
     "at": "2026-09-22T11:11:33+00:00",

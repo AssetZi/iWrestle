@@ -8178,19 +8178,6 @@
     "recordName": "602C4E26-2353-4927-83A7-7F03D4D6CB6E",
     "sourceKey": "flowrestling:abraham-lincoln-hs-bristol-hs:2027-01-27"
   },
-  "development:flowrestling:abraham-lincoln-hs-bristol-hs:2027-01-27:2sKpgGicMy7uEILt": {
-    "contentHash": "cc50272124967a2e",
-    "date": "2027-01-27",
-    "environment": "development",
-    "location": {
-      "latitude": 40.1083863,
-      "longitude": -74.8452014
-    },
-    "name": "Abraham Lincoln Hs @ Bristol Hs",
-    "pushedAt": "2026-09-22T10:50:46+00:00",
-    "recordName": "52743C3B-E6C3-4C74-A37B-E5BD3080D005",
-    "sourceKey": "flowrestling:abraham-lincoln-hs-bristol-hs:2027-01-27:2sKpgGicMy7uEILt"
-  },
   "development:flowrestling:academy-of-the-new-church-abington-friends-school:2027-01-07": {
     "contentHash": "c829790f38a6c12a",
     "date": "2027-01-07",
@@ -9426,19 +9413,6 @@
     "recordName": "353A6BAD-E946-4D51-89DE-4704E7D3F63B",
     "sourceKey": "flowrestling:archbishop-carroll-hs-bristol-hs:2027-01-20"
   },
-  "development:flowrestling:archbishop-carroll-hs-bristol-hs:2027-01-20:2q3mA6VTO9PeaXhh": {
-    "contentHash": "745aa6c54551cc59",
-    "date": "2027-01-20",
-    "environment": "development",
-    "location": {
-      "latitude": 40.1083863,
-      "longitude": -74.8452014
-    },
-    "name": "Archbishop Carroll HS @ Bristol Hs",
-    "pushedAt": "2026-09-22T10:50:27+00:00",
-    "recordName": "67A9AA4A-75C5-4E8D-8FC3-F110BCA716EB",
-    "sourceKey": "flowrestling:archbishop-carroll-hs-bristol-hs:2027-01-20:2q3mA6VTO9PeaXhh"
-  },
   "development:flowrestling:arizona-christian-hope-international:2027-01-30": {
     "contentHash": "c5afd600ea2c785c",
     "date": "2027-01-30",
@@ -10673,19 +10647,6 @@
     "pushedAt": "2026-09-22T10:52:41+00:00",
     "recordName": "513DB4CF-C879-436A-BAF2-9EBEC26868B3",
     "sourceKey": "flowrestling:bristol-hs-pope-john-paul-ii:2026-12-12"
-  },
-  "development:flowrestling:bristol-hs-pope-john-paul-ii:2026-12-12:2lPVoBXv7GpDYzUa": {
-    "contentHash": "be679763fadfc825",
-    "date": "2026-12-12",
-    "environment": "development",
-    "location": {
-      "latitude": 40.1988766,
-      "longitude": -75.5094719
-    },
-    "name": "Bristol Hs @ Pope John Paul II",
-    "pushedAt": "2026-09-22T10:52:43+00:00",
-    "recordName": "038A2088-C5B8-4B16-B191-F12853D53214",
-    "sourceKey": "flowrestling:bristol-hs-pope-john-paul-ii:2026-12-12:2lPVoBXv7GpDYzUa"
   },
   "development:flowrestling:bronco-stampede-2026:2026-11-07": {
     "contentHash": "432ff323a1e00ac2",
@@ -12611,19 +12572,6 @@
     "recordName": "EC145D16-9EB6-491E-B712-39B633C99E97",
     "sourceKey": "flowrestling:dallas-samuell-dallas-adams:2027-01-07"
   },
-  "development:flowrestling:dallas-samuell-dallas-adams:2027-01-07:2lf5TK2mnSqma85v": {
-    "contentHash": "7cad79dae41c54b5",
-    "date": "2027-01-07",
-    "environment": "development",
-    "location": {
-      "latitude": 32.827288,
-      "longitude": -96.6808535
-    },
-    "name": "Dallas Samuell @ Dallas  Adams",
-    "pushedAt": "2026-09-22T10:49:43+00:00",
-    "recordName": "F9D011F4-8F48-4EAE-A47C-87AC56D45E69",
-    "sourceKey": "flowrestling:dallas-samuell-dallas-adams:2027-01-07:2lf5TK2mnSqma85v"
-  },
   "development:flowrestling:dallas-samuell-dallas-adamson:2026-12-17": {
     "contentHash": "29680c1d53466c8f",
     "date": "2026-12-17",
@@ -12637,19 +12585,6 @@
     "recordName": "8E8D95FE-B1CF-4F42-B513-E93EB3EC0D92",
     "sourceKey": "flowrestling:dallas-samuell-dallas-adamson:2026-12-17"
   },
-  "development:flowrestling:dallas-samuell-dallas-adamson:2026-12-17:2jhKgniQDGTDCEGg": {
-    "contentHash": "769d388fa59bf745",
-    "date": "2026-12-17",
-    "environment": "development",
-    "location": {
-      "latitude": 32.7477671,
-      "longitude": -96.8210319
-    },
-    "name": "Dallas Samuell @ Dallas Adamson",
-    "pushedAt": "2026-09-22T10:49:20+00:00",
-    "recordName": "40B0B0BC-7F09-4196-816A-81C6ADB66588",
-    "sourceKey": "flowrestling:dallas-samuell-dallas-adamson:2026-12-17:2jhKgniQDGTDCEGg"
-  },
   "development:flowrestling:dallas-south-oak-cliff-dallas-adamson:2026-12-03": {
     "contentHash": "def0b0a4f85cdb7d",
     "date": "2026-12-03",
@@ -12662,19 +12597,6 @@
     "pushedAt": "2026-09-22T10:48:52+00:00",
     "recordName": "6B52BADC-B4D0-4A97-8FE0-BBF7F2ABE3EB",
     "sourceKey": "flowrestling:dallas-south-oak-cliff-dallas-adamson:2026-12-03"
-  },
-  "development:flowrestling:dallas-south-oak-cliff-dallas-adamson:2026-12-03:2zqdulR38GMH33NR": {
-    "contentHash": "3b3c6225bcc82f3c",
-    "date": "2026-12-03",
-    "environment": "development",
-    "location": {
-      "latitude": 32.7477671,
-      "longitude": -96.8210319
-    },
-    "name": "Dallas South Oak Cliff @ Dallas Adamson",
-    "pushedAt": "2026-09-22T10:48:54+00:00",
-    "recordName": "4AF4354C-2579-4B0E-92C4-87A54D1FE98F",
-    "sourceKey": "flowrestling:dallas-south-oak-cliff-dallas-adamson:2026-12-03:2zqdulR38GMH33NR"
   },
   "development:flowrestling:dallas-south-oak-cliff-dallas-roosevelt:2026-11-19": {
     "contentHash": "9e4f86ecfad52223",
@@ -20073,19 +19995,6 @@
     "recordName": "B5A6CF5F-7139-41EA-99BB-5810FC3CC334",
     "sourceKey": "flowrestling:marietta-etowah:2026-11-11"
   },
-  "development:flowrestling:marietta-etowah:2026-11-11:2RPAh2RDZP43f6YI": {
-    "contentHash": "674b7b21d52547c2",
-    "date": "2026-11-11",
-    "environment": "development",
-    "location": {
-      "latitude": 34.1166345,
-      "longitude": -84.56496779999999
-    },
-    "name": "Marietta @ Etowah",
-    "pushedAt": "2026-09-22T10:51:19+00:00",
-    "recordName": "34D086DA-7ED4-4A34-A1A0-9B111A80EAD7",
-    "sourceKey": "flowrestling:marietta-etowah:2026-11-11:2RPAh2RDZP43f6YI"
-  },
   "development:flowrestling:marymount-va-apprentice-school:2027-01-29": {
     "contentHash": "a0dcaaf0d555a7f2",
     "date": "2027-01-29",
@@ -23713,19 +23622,6 @@
     "recordName": "D3373F63-3687-42A6-AD1D-E51EEF621EAD",
     "sourceKey": "flowrestling:orange-beach-high-school-flomaton-high-school:2027-01-14"
   },
-  "development:flowrestling:orange-beach-high-school-flomaton-high-school:2027-01-14:2Y2bQXJuHApk9jiq": {
-    "contentHash": "ae652091ba0461d7",
-    "date": "2027-01-14",
-    "environment": "development",
-    "location": {
-      "latitude": 31.0054644,
-      "longitude": -87.2686724
-    },
-    "name": "Orange Beach High School @ Flomaton High School",
-    "pushedAt": "2026-09-22T10:54:16+00:00",
-    "recordName": "6DCC3744-35CC-4DCA-84D0-251FCC82AE70",
-    "sourceKey": "flowrestling:orange-beach-high-school-flomaton-high-school:2027-01-14:2Y2bQXJuHApk9jiq"
-  },
   "development:flowrestling:oregon-st-air-force:2027-01-16": {
     "contentHash": "721c9ef377a6382f",
     "date": "2027-01-16",
@@ -24896,19 +24792,6 @@
     "recordName": "2D5E0742-9FE2-4AB2-B8CA-68DC2663EA4F",
     "sourceKey": "flowrestling:penn-charter-individual:2027-01-16"
   },
-  "development:flowrestling:penn-charter-individual:2027-01-16:2l9MQ0Kh9JN3ARSo": {
-    "contentHash": "55d57553599f5b59",
-    "date": "2027-01-16",
-    "environment": "development",
-    "location": {
-      "latitude": 40.0225031,
-      "longitude": -75.1865816
-    },
-    "name": "Penn Charter Individual",
-    "pushedAt": "2026-09-22T10:53:16+00:00",
-    "recordName": "5D6BA633-2BB5-4F56-B8A6-4B2C1930EE82",
-    "sourceKey": "flowrestling:penn-charter-individual:2027-01-16:2l9MQ0Kh9JN3ARSo"
-  },
   "development:flowrestling:penn-charter-invitational:2027-01-16": {
     "contentHash": "aac562d98ad2b9ed",
     "date": "2027-01-16",
@@ -25870,19 +25753,6 @@
     "pushedAt": "2026-09-22T10:48:31+00:00",
     "recordName": "022CA821-D131-4B5B-AEC1-FC84307B519F",
     "sourceKey": "flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13"
-  },
-  "development:flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13:2fwACUOFjdNpSHPq": {
-    "contentHash": "98040ff315ec4409",
-    "date": "2026-11-13",
-    "environment": "development",
-    "location": {
-      "latitude": 29.7215872,
-      "longitude": -98.4699448
-    },
-    "name": "San Antonio MacArthur @ Comal Pieper",
-    "pushedAt": "2026-09-22T10:48:30+00:00",
-    "recordName": "DE3FEEB0-4BE9-4721-B35E-5E389595EAA6",
-    "sourceKey": "flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13:2fwACUOFjdNpSHPq"
   },
   "development:flowrestling:san-antonio-reagan-austin-bowie:2026-11-24": {
     "contentHash": "0b2b226f93336b60",
@@ -31460,32 +31330,6 @@
     "pushedAt": "2026-09-22T10:52:56+00:00",
     "recordName": "7D288AFC-4C9F-4504-931C-1CAA6E14326E",
     "sourceKey": "flowrestling:wylie-invitational:2026-12-19"
-  },
-  "development:flowrestling:wyoming-air-force:2027-01-24": {
-    "contentHash": "92bc0233b9c7404a",
-    "date": "2027-01-24",
-    "environment": "development",
-    "location": {
-      "latitude": 39.0146281,
-      "longitude": -104.8851693
-    },
-    "name": "Wyoming @ Air Force",
-    "pushedAt": "2026-09-22T10:50:44+00:00",
-    "recordName": "92EB7C85-B0B8-4BA2-A712-D61C2D6BC532",
-    "sourceKey": "flowrestling:wyoming-air-force:2027-01-24"
-  },
-  "development:flowrestling:wyoming-air-force:2027-01-24:2zN7vHvPVmI7FMXC": {
-    "contentHash": "cb7fd43cc08c21c0",
-    "date": "2027-01-24",
-    "environment": "development",
-    "location": {
-      "latitude": 39.0146281,
-      "longitude": -104.8851693
-    },
-    "name": "Wyoming @ Air Force",
-    "pushedAt": "2026-09-22T10:50:43+00:00",
-    "recordName": "CA10484E-DC5C-4E36-A6E7-FAD1C98AB15C",
-    "sourceKey": "flowrestling:wyoming-air-force:2027-01-24:2zN7vHvPVmI7FMXC"
   },
   "development:flowrestling:wyoming-iowa-st:2027-01-17": {
     "contentHash": "cdc4946949ac3b36",
