@@ -9613,6 +9613,19 @@
     "recordName": "4E163F91-552A-45C5-806D-156EAC02EE3D",
     "sourceKey": "flowrestling:brookfield-invitational-2027-ct:2027-02-06"
   },
+  "development:flowrestling:brownsville-area-hs-bethlehem-center-hs:2026-12-17": {
+    "contentHash": "ab10512482165453",
+    "date": "2026-12-17",
+    "environment": "development",
+    "location": {
+      "latitude": 40.0197362,
+      "longitude": -80.0290402
+    },
+    "name": "Brownsville Area HS @ Bethlehem Center Hs",
+    "pushedAt": "2026-09-22T10:49:24+00:00",
+    "recordName": "8EDF1CB7-15DB-49F0-8C2D-9972244EFC02",
+    "sourceKey": "flowrestling:brownsville-area-hs-bethlehem-center-hs:2026-12-17"
+  },
   "development:flowrestling:brownsville-area-hs-summit-academy:2026-12-18": {
     "contentHash": "879c1b95d1ceb77a",
     "date": "2026-12-18",
@@ -11136,6 +11149,19 @@
     "recordName": "53239EB3-CED1-4799-90D7-26779CD76B38",
     "sourceKey": "flowrestling:dallas-adamson-dallas-hillcrest:2026-11-11"
   },
+  "development:flowrestling:dallas-carter-dallas-adams:2026-12-17": {
+    "contentHash": "5329cfcb82680071",
+    "date": "2026-12-17",
+    "environment": "development",
+    "location": {
+      "latitude": 32.827288,
+      "longitude": -96.6808535
+    },
+    "name": "Dallas Carter @ Dallas  Adams",
+    "pushedAt": "2026-09-22T10:49:23+00:00",
+    "recordName": "2666EB1A-506F-4244-B6C7-3D545F7C6AB6",
+    "sourceKey": "flowrestling:dallas-carter-dallas-adams:2026-12-17"
+  },
   "development:flowrestling:dallas-hillcrest-frisco-emerson:2026-11-17": {
     "contentHash": "cee27f5d34d61c0b",
     "date": "2026-11-17",
@@ -11150,6 +11176,32 @@
     "pushedAt": "2026-09-05T11:32:31+00:00",
     "recordName": "D9E68EDF-8E55-4014-BABC-B06EB00CC84A",
     "sourceKey": "flowrestling:dallas-hillcrest-frisco-emerson:2026-11-17"
+  },
+  "development:flowrestling:dallas-samuell-dallas-adamson:2026-12-17": {
+    "contentHash": "29680c1d53466c8f",
+    "date": "2026-12-17",
+    "environment": "development",
+    "location": {
+      "latitude": 32.7477671,
+      "longitude": -96.8210319
+    },
+    "name": "Dallas Samuell @ Dallas Adamson",
+    "pushedAt": "2026-09-22T10:49:19+00:00",
+    "recordName": "8E8D95FE-B1CF-4F42-B513-E93EB3EC0D92",
+    "sourceKey": "flowrestling:dallas-samuell-dallas-adamson:2026-12-17"
+  },
+  "development:flowrestling:dallas-samuell-dallas-adamson:2026-12-17:2jhKgniQDGTDCEGg": {
+    "contentHash": "769d388fa59bf745",
+    "date": "2026-12-17",
+    "environment": "development",
+    "location": {
+      "latitude": 32.7477671,
+      "longitude": -96.8210319
+    },
+    "name": "Dallas Samuell @ Dallas Adamson",
+    "pushedAt": "2026-09-22T10:49:20+00:00",
+    "recordName": "40B0B0BC-7F09-4196-816A-81C6ADB66588",
+    "sourceKey": "flowrestling:dallas-samuell-dallas-adamson:2026-12-17:2jhKgniQDGTDCEGg"
   },
   "development:flowrestling:dallas-south-oak-cliff-dallas-adamson:2026-12-03": {
     "contentHash": "def0b0a4f85cdb7d",
@@ -16649,6 +16701,19 @@
     "recordName": "FEF8DA41-E255-49DE-8F81-D1DF6180B675",
     "sourceKey": "flowrestling:jbp-duals-2:2026-12-15"
   },
+  "development:flowrestling:jesup-hudson-ap-gc:2026-12-18": {
+    "contentHash": "9b60f55d487579f4",
+    "date": "2026-12-18",
+    "environment": "development",
+    "location": {
+      "latitude": 42.4796719,
+      "longitude": -92.0647263
+    },
+    "name": "Jesup/Hudson/AP-GC",
+    "pushedAt": "2026-09-22T10:49:26+00:00",
+    "recordName": "E4BAF2BE-3E3B-4BD4-A623-359FA9703ADD",
+    "sourceKey": "flowrestling:jesup-hudson-ap-gc:2026-12-18"
+  },
   "development:flowrestling:jhb-gulf-coast-clash-presented-by-msa-2026:2026-11-21": {
     "contentHash": "9ac0d840a5b2fe54",
     "date": "2026-11-21",
@@ -17896,6 +17961,19 @@
     "pushedAt": "2026-09-14T13:49:16+00:00",
     "recordName": "F6209B75-E046-4B5F-8109-4946F0A9FBDF",
     "sourceKey": "flowrestling:mcneil-austin-bowie:2026-11-11"
+  },
+  "development:flowrestling:mechanicsburg-area-hs-lower-dauphin-hs:2026-12-16": {
+    "contentHash": "b44d9a4a6ef33aa2",
+    "date": "2026-12-16",
+    "environment": "development",
+    "location": {
+      "latitude": 40.2598683,
+      "longitude": -76.70584699999999
+    },
+    "name": "Mechanicsburg Area Hs @ Lower Dauphin Hs",
+    "pushedAt": "2026-09-22T10:49:16+00:00",
+    "recordName": "3206269B-E368-4A03-9773-AA0D72E649D1",
+    "sourceKey": "flowrestling:mechanicsburg-area-hs-lower-dauphin-hs:2026-12-16"
   },
   "development:flowrestling:mercyhurst-west-virginia:2026-11-08": {
     "contentHash": "d50899c3e40927bb",
@@ -21870,6 +21948,19 @@
     "recordName": "635860EB-6B6C-48C4-B18B-712BDB3DE4E6",
     "sourceKey": "flowrestling:palmerton-youth-wrestling-turkey-throwdown:2026-11-15"
   },
+  "development:flowrestling:palmyra-area-hs-central-dauphin-east-hs:2026-12-17": {
+    "contentHash": "0cb65a3ebdce417b",
+    "date": "2026-12-17",
+    "environment": "development",
+    "location": {
+      "latitude": 40.2844702,
+      "longitude": -76.79969
+    },
+    "name": "Palmyra Area Hs @ Central Dauphin East Hs",
+    "pushedAt": "2026-09-22T10:49:21+00:00",
+    "recordName": "7772E5E7-FD8D-4FCF-82F8-575208E7638F",
+    "sourceKey": "flowrestling:palmyra-area-hs-central-dauphin-east-hs:2026-12-17"
+  },
   "development:flowrestling:palmyra-area-hs-hershey-hs:2027-01-12": {
     "contentHash": "b66969085f601759",
     "date": "2027-01-12",
@@ -22441,6 +22532,19 @@
     "pushedAt": "2026-09-05T11:41:04+00:00",
     "recordName": "0028FFE3-2DA6-4E0D-BF61-FF709B37E34C",
     "sourceKey": "flowrestling:queen-of-the-corral-lambert-invitational:2026-11-23"
+  },
+  "development:flowrestling:red-lion-area-hs-spring-grove-area-hs:2026-12-16": {
+    "contentHash": "e2b4956decaabfbd",
+    "date": "2026-12-16",
+    "environment": "development",
+    "location": {
+      "latitude": 39.8846947,
+      "longitude": -76.8801325
+    },
+    "name": "Red Lion Area Hs @ Spring Grove Area Hs",
+    "pushedAt": "2026-09-22T10:49:15+00:00",
+    "recordName": "71FC5CDB-C7C7-4665-B57E-EF9A93C13A86",
+    "sourceKey": "flowrestling:red-lion-area-hs-spring-grove-area-hs:2026-12-16"
   },
   "development:flowrestling:red-lion-little-lions-novice-open:2026-12-12": {
     "contentHash": "753556aa6a30bf19",
@@ -23043,6 +23147,19 @@
     "pushedAt": "2026-09-14T13:51:05+00:00",
     "recordName": "3B169B84-1249-4DC4-BE48-887F7DDB5119",
     "sourceKey": "flowrestling:selinsgrove-area-hs-shikellamy-hs:2027-01-29"
+  },
+  "development:flowrestling:seneca-valley-hs-fox-chapel-area-hs:2026-12-17": {
+    "contentHash": "22a2fa55659bfe05",
+    "date": "2026-12-17",
+    "environment": "development",
+    "location": {
+      "latitude": 40.5185465,
+      "longitude": -79.86918720000001
+    },
+    "name": "Seneca Valley Hs @ Fox Chapel Area Hs",
+    "pushedAt": "2026-09-22T10:49:25+00:00",
+    "recordName": "CEA179C0-A28C-434D-8DBC-BC2C63CE1EAD",
+    "sourceKey": "flowrestling:seneca-valley-hs-fox-chapel-area-hs:2026-12-17"
   },
   "development:flowrestling:senior-world-championships:2026-10-24": {
     "contentHash": "2b1674dfb6b5eecb",
@@ -24501,6 +24618,19 @@
     "pushedAt": "2026-09-05T12:02:34+00:00",
     "recordName": "914A65F1-CC79-472C-A0BB-FB7A0B40F6EE",
     "sourceKey": "flowrestling:u23-world-championship:2026-10-12"
+  },
+  "development:flowrestling:uchicago-aurora:2026-12-16": {
+    "contentHash": "20fe5d463c55c63e",
+    "date": "2026-12-16",
+    "environment": "development",
+    "location": {
+      "latitude": 41.7544173,
+      "longitude": -88.3494778
+    },
+    "name": "UChicago @ Aurora",
+    "pushedAt": "2026-09-22T10:49:18+00:00",
+    "recordName": "DA4FA765-3B58-4D18-86A7-9F83A5873A6F",
+    "sourceKey": "flowrestling:uchicago-aurora:2026-12-16"
   },
   "development:flowrestling:uchicago-olivet:2026-12-17": {
     "contentHash": "681dcb8ee9e89462",
