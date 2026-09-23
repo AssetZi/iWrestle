@@ -77,6 +77,12 @@
     "longitude": -80.1490638,
     "matched": "2419, State Avenue, Montour Junction, Coraopolis, Allegheny County, Pennsylvania, 15108, United States"
   },
+  "alabama gulf coast sports center, 19025 oak road west, gulf shores, al 36542": {
+    "confidence": "precise",
+    "latitude": 30.3122248,
+    "longitude": -87.6995168,
+    "matched": "19025, Oak Road West, Gulf Shores, Baldwin County, Alabama, 36542, United States"
+  },
   "alabama gulf coast sports center, gulf shores, al": {
     "confidence": "city",
     "latitude": 30.2711224,
@@ -88,6 +94,12 @@
     "latitude": 40.3627666,
     "longitude": -75.9117629,
     "matched": "Albright College, 1621, North 13th Street, Reading, Berks County, Pennsylvania, 19604, United States"
+  },
+  "alfred j. loos field house, 3815 spring valley road, addison, tx 75001": {
+    "confidence": "precise",
+    "latitude": 32.9400422,
+    "longitude": -96.8508126,
+    "matched": "3815, Spring Valley Road, Addison, Dallas County, Texas, 75001, United States"
   },
   "alfred j. loos field house, addison, tx": {
     "confidence": "precise",
@@ -155,6 +167,12 @@
     "longitude": -75.6044609,
     "matched": "West Chester, Chester County, Pennsylvania, 19383, United States"
   },
+  "berry center arena, 8877 barker cypress road, cypress, tx 77433": {
+    "confidence": "precise",
+    "latitude": 29.9901408,
+    "longitude": -95.678141,
+    "matched": "Barker Cypress Road, Cypress Country South, Cypress, Harris County, Texas, 77429, United States"
+  },
   "berry center arena, cypress, tx": {
     "confidence": "city",
     "latitude": 29.9691116,
@@ -221,6 +239,12 @@
     "longitude": -74.8351007,
     "matched": "Centenary University, 1st Avenue, Hackettstown, Warren County, New Jersey, 07840, United States"
   },
+  "central high school, 550 warrior way, grand junction, co 81504": {
+    "confidence": "precise",
+    "latitude": 39.0868617,
+    "longitude": -108.4719128,
+    "matched": "Central High School, 550, Warrior Way, Grand Junction, Mesa County, Colorado, 81504, United States"
+  },
   "central methodist university , fayette, mo": {
     "confidence": "precise",
     "latitude": 39.150919,
@@ -250,6 +274,12 @@
     "latitude": 32.8381374,
     "longitude": -97.3903334,
     "matched": "Chisholm Trail High School, 3100, Northwest College Drive, Fort Worth, Tarrant County, Texas, 76179, United States"
+  },
+  "choctawhatchee high school, 110 racetrack road northwest, fort walton beach, fl 32547": {
+    "confidence": "precise",
+    "latitude": 30.4511129,
+    "longitude": -86.6195251,
+    "matched": "Choctawhatchee High School, 110, Racetrack Road Northwest, Fort Walton Beach, Okaloosa County, Florida, 32547, United States"
   },
   "choctawhatchee high school, fort walton beach, fl": {
     "confidence": "precise",
@@ -515,6 +545,18 @@
     "longitude": -76.700035,
     "matched": "Williamsburg, Virginia, United States"
   },
+  "jenison field house, 223 kalamazoo street, east lansing, mi 48824": {
+    "confidence": "precise",
+    "latitude": 42.7312904,
+    "longitude": -84.4877948,
+    "matched": "East Kalamazoo Street, East Lansing, Ingham County, Michigan, 48825, United States"
+  },
+  "john carroll university, 1 john carroll boulevard, university heights, oh 44118": {
+    "confidence": "precise",
+    "latitude": 41.4871781,
+    "longitude": -81.5351685,
+    "matched": "John Carroll Boulevard, University Heights, Cuyahoga County, Ohio, 44118, United States"
+  },
   "john j. duggan academy, springfield, ma": {
     "confidence": "precise",
     "latitude": 42.1142709,
@@ -550,6 +592,12 @@
     "latitude": 40.8266496,
     "longitude": -75.7263435,
     "matched": "Lehighton Area High School, Union Street, Lehighton, Carbon County, Pennsylvania, 18235, United States"
+  },
+  "lemoore high school, 101 east bush street, lemoore, ca 93245": {
+    "confidence": "precise",
+    "latitude": 36.298216,
+    "longitude": -119.779504,
+    "matched": "101, East Bush Street, Lemoore, Kings County, California, 93245, United States"
   },
   "lincoln, lincoln, al": {
     "confidence": "precise",
@@ -611,6 +659,12 @@
     "longitude": -76.9760527,
     "matched": "Messiah University Graduate School, 401, East Winding Hill Road, Park Hills West, Winding Hill, Mechanicsburg, Cumberland County, Pennsylvania, 17055, United States"
   },
+  "mid-buchanan r-v, 3221 southeast state highway h, faucett, mo 64448": {
+    "confidence": "city",
+    "latitude": 39.6006007,
+    "longitude": -94.801019,
+    "matched": "Faucett, Buchanan County, Missouri, 64448, United States"
+  },
   "mid-buchanan r-v, faucett, mo": {
     "confidence": "city",
     "latitude": 39.6006007,
@@ -671,11 +725,23 @@
     "longitude": -82.4230712,
     "matched": "North Henderson High School, 35, Fruitland Road, U-No, Hendersonville, Henderson County, North Carolina, 28792, United States"
   },
+  "north high school, 4200 cheyenne boulevard, sioux city, ia 51104": {
+    "confidence": "precise",
+    "latitude": 42.5428792,
+    "longitude": -96.3895897,
+    "matched": "North High School, 4200, Cheyenne Boulevard, Sioux City, Woodbury County, Iowa, 51104, United States"
+  },
   "northeastern middle school, 4855 board road, mt wolf, pa 17347": {
     "confidence": "precise",
     "latitude": 40.0680459,
     "longitude": -76.7130511,
     "matched": "Northeastern Middle School, 4855, Board Road, Mount Wolf, York County, Pennsylvania, 17347, United States"
+  },
+  "oakdale high school, 739 west g street, oakdale, ca 95361": {
+    "confidence": "precise",
+    "latitude": 37.7599116,
+    "longitude": -120.8540779,
+    "matched": "Oakdale High School, 739, West G Street, Oakdale, Stanislaus County, California, 95361, United States"
   },
   "ocean lakes high school, virginia beach, va": {
     "confidence": "precise",
@@ -731,6 +797,12 @@
     "longitude": -80.6184547,
     "matched": "Palm Bay High School, School Street, Melbourne, Brevard County, Florida, 32905, United States"
   },
+  "panther athletic center, 2450 19th street, great bend, ks 67530": {
+    "confidence": "precise",
+    "latitude": 38.3706765,
+    "longitude": -98.7712645,
+    "matched": "2450, 19th Street, Great Bend, Barton County, Kansas, 67530, United States"
+  },
   "panther athletic center, great bend, ks": {
     "confidence": "city",
     "latitude": 38.3625063,
@@ -754,6 +826,12 @@
     "latitude": 33.3064575,
     "longitude": -86.8093518,
     "matched": "PELHAM RECREATION CENTER, 2020, Pelham Park Boulevard, Cahaba Valley Estates, Pelham, Shelby County, Alabama, 35124, United States"
+  },
+  "penn manor high school, 100 east cottage avenue, millersville, pa 17551": {
+    "confidence": "precise",
+    "latitude": 40.0013898,
+    "longitude": -76.3498003,
+    "matched": "100, East Cottage Avenue, Wynn Wood Manor, Millersville, Lancaster County, Pennsylvania, 17551, United States"
   },
   "penn manor high school, millersville, pa": {
     "confidence": "precise",
@@ -785,6 +863,12 @@
     "longitude": -71.4628702,
     "matched": "Rhode Island College, 600, Mount Pleasant Avenue, Providence, Providence County, Rhode Island, 02908, United States"
   },
+  "richardson high school, 1250 west belt line road, richardson, tx 75080": {
+    "confidence": "precise",
+    "latitude": 32.9525339,
+    "longitude": -96.7626045,
+    "matched": "Richardson High School, 1250, West Belt Line Road, Richardson, Dallas County, Texas, 75080, United States"
+  },
   "rider university, 2083 lawrenceville road, lawrenceville, nj 08648": {
     "confidence": "precise",
     "latitude": 40.3081147,
@@ -809,6 +893,12 @@
     "latitude": 36.3353295,
     "longitude": -119.6909445,
     "matched": "13th Avenue, Hanford, Kings County, California, 93202, United States"
+  },
+  "sioux central community school district, 4440 u.s. 71, sioux rapids, ia 50585": {
+    "confidence": "city",
+    "latitude": 42.8930479,
+    "longitude": -95.1511239,
+    "matched": "Sioux Rapids, Buena Vista County, Iowa, United States"
   },
   "sioux central community school district, sioux rapids, ia": {
     "confidence": "city",
@@ -1048,6 +1138,12 @@
     "longitude": -78.0699786,
     "matched": "University of Mount Olive, 586, Henderson Street, Mount Olive, Wayne County, North Carolina, 28365, United States"
   },
+  "valley high school, 3650 woodland avenue, west des moines, ia 50266": {
+    "confidence": "precise",
+    "latitude": 41.5878478,
+    "longitude": -93.7542851,
+    "matched": "Valley High School, 3650, Woodland Avenue, West Des Moines, Polk County, Iowa, 50266, United States"
+  },
   "valley high school, west des moines, ia": {
     "confidence": "precise",
     "latitude": 41.586694,
@@ -1137,6 +1233,12 @@
     "latitude": 40.7990637,
     "longitude": -75.6299311,
     "matched": "Fireline Road, Hazard, Palmerton, Carbon County, Pennsylvania, 18071, United States"
+  },
+  "wylie east high school, 3000 wylie east drive, wylie, tx 75098": {
+    "confidence": "precise",
+    "latitude": 33.0170909,
+    "longitude": -96.4925153,
+    "matched": "Wylie East High School, 3000, Wylie East Drive, Wylie, Collin County, Texas, 75098, United States"
   },
   "wylie east high school, wylie, tx": {
     "confidence": "precise",
