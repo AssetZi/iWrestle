@@ -11,6 +11,10 @@ enum AppLinks {
     /// The App Store listing. Printed in the shared event flyer's footer, where
     /// it is also stamped as a clickable link annotation.
     static let appStore = URL(string: "https://apps.apple.com/us/app/iwrestle-youth-wrestling-hub/id6756827197")!
+
+    /// App Store Connect provider ID. Once set, taps on the cross-promo banner
+    /// show up under their campaign token in App Analytics.
+    static let appStoreProviderToken: String? = "125547798"
 }
 
 extension URL {

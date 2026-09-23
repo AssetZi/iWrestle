@@ -12,6 +12,7 @@ struct iWrestleApp: App {
     @State var ck: CloudKitManager
     @State var locationManager: LocationManager = .init()
     @State var nm: NotificationManager
+    @State var promo = CrossPromo()
 
     init() {
         AppFonts.registerAll()
@@ -30,6 +31,7 @@ struct iWrestleApp: App {
                 .environment(ck)
                 .environment(locationManager)
                 .environment(nm)
+                .environment(promo)
                 // Slate Sky Gold is dark-first; the app commits to it.
                 .preferredColorScheme(.dark)
         }

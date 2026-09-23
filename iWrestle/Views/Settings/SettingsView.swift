@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(CloudKitManager.self) var ck
+    @Environment(CrossPromo.self) private var promo
     @Binding var path: NavigationPath
     @Environment(\.tabBarInset) private var tabBarInset
     @State private var showAddSheet: Bool = false
@@ -29,7 +30,13 @@ struct SettingsView: View {
                         organizerCard.entrance()
                         yourEvents.entrance(delay: 0.04)
                         SupportView().entrance(delay: 0.08)
-                        footer.entrance(delay: 0.12)
+                        if let placement = promo.current {
+                            PromotedAppBanner(placement: placement, iconURL: promo.iconURL, campaign: "iwrestle-settings") {
+                                withAnimation(Motion.normal) { promo.dismiss() }
+                            }
+                            .entrance(delay: 0.12)
+                        }
+                        footer.entrance(delay: 0.16)
                     }
                     .padding(.horizontal, Theme.gutter)
                     .padding(.top, 2)
