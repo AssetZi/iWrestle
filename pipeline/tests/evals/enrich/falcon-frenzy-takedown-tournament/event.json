@@ -1,0 +1,27 @@
+{
+  "sourceKey": "pywrestling:falcon-frenzy-takedown-tournament:2026-09-26",
+  "name": "Falcon Frenzy Takedown Tournament",
+  "date": "2026-09-26T16:00:00Z",
+  "address": "Sollenberger Sports Center - Messiah University, 1 University Avenue, Mechanicsburg, PA 17055",
+  "organizer": "Messiah University Wrestling",
+  "ageGroups": [
+    "Youth",
+    "Jr High",
+    "High School"
+  ],
+  "registration": "",
+  "contact": {
+    "firstName": "Messiah University Wrestling",
+    "lastName": "(Organizer)",
+    "email": "support@example.com",
+    "phone": ""
+  },
+  "review": {
+    "status": "pending",
+    "notes": [
+      "organizer used as contact name",
+      "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
+      "no divisions found, defaulted"
+    ]
+  }
+}

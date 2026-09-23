@@ -44,16 +44,43 @@ struct PDFQuickLookView: View {
     @State private var localURL: URL?
 
     var body: some View {
-        Group {
-            if let localURL {
-                QuickLookPreview(url: localURL)
-            } else {
-                ProgressView()
-                    .task {
-                        localURL = try? await downloadToTemp(url)
-                    }
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                BackButton()
+                VStack(alignment: .leading, spacing: 2) {
+                    Eyebrow("Flyer", size: 10)
+                    Text("Event flyer")
+                        .font(.pushedTitle)
+                        .tracked(-0.02, 20)
+                        .foregroundStyle(Theme.textPrimary)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, Theme.gutter)
+            .padding(.top, 6)
+            .padding(.bottom, 10)
+
+            Group {
+                if let localURL {
+                    QuickLookPreview(url: localURL)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.feature, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.Radius.feature, style: .continuous)
+                                .strokeBorder(Theme.borderSubtle, lineWidth: 1)
+                        )
+                        .padding(.horizontal, Theme.gutter)
+                        .padding(.bottom, 16)
+                } else {
+                    iWrestleProgressView()
+                        .task {
+                            localURL = try? await downloadToTemp(url)
+                        }
+                }
             }
         }
+        .canvas()
+        .toolbar(.hidden, for: .navigationBar)
+        .enableSwipeBack()
     }
 
     func downloadToTemp(_ remote: URL) async throws -> URL {

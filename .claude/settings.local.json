@@ -1,7 +1,32 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,id=552BDFF7-4789-4025-A379-B3757CF7C97C' build)"
+      "Bash(xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,id=552BDFF7-4789-4025-A379-B3757CF7C97C' build)",
+      "Bash(make token-check *)",
+      "Bash(make routine *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(.venv/bin/python -)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(.venv/bin/python /private/tmp/claude-501/-Users-brock-Developer-iWrestle/9fc9de42-c78c-445a-9bea-fa01eb206318/scratchpad/sum.py)",
+      "Bash(.venv/bin/python -c ' *)",
+      "Bash(git -C .. diff --stat pipeline/data/pushed.json)",
+      "Bash(.venv/bin/python bin/exclude.py --list)",
+      "Bash(git -C .. status --short)",
+      "Bash(make exclude *)",
+      "Bash(awk '{print $2}')",
+      "Bash(echo \"EXIT $?\")",
+      "Bash(grep -nE 'blocked|ANTHROPIC|tokens:|about \\\\$|states:|gone|due for removal|partial|cap is|retiring|re-pushed|development:|created|replaced|moved|removed|failed|error|Error|Traceback|locked' /private/tmp/claude-501/-Users-brock-Developer-iWrestle/4d9154de-c686-407b-9f44-5e3e7262aa17/scratchpad/routine.log)",
+      "Bash(awk 'length<300')",
+      "Bash(awk 'NR>0 && length<400')",
+      "Bash(grep -vE \"^$\")",
+      "Bash(awk '/== flowrestling/{f=1} f')",
+      "Bash(awk '/^== /{s=$2} /^  \\(created|replaced|removed|moved\\) /{c[s\" \"$1]++} END{for\\(k in c\\) print k, c[k]}' /private/tmp/claude-501/-Users-brock-Developer-iWrestle/4d9154de-c686-407b-9f44-5e3e7262aa17/scratchpad/routine.log)",
+      "Bash(awk '{print $1}')",
+      "Bash(python3 -c ' *)",
+      "Bash(.venv/bin/python /private/tmp/claude-501/-Users-brock-Developer-iWrestle/4d9154de-c686-407b-9f44-5e3e7262aa17/scratchpad/an.py)",
+      "Bash(.venv/bin/python /private/tmp/claude-501/-Users-brock-Developer-iWrestle/4d9154de-c686-407b-9f44-5e3e7262aa17/scratchpad/items.py)",
+      "Bash(.venv/bin/python /private/tmp/claude-501/-Users-brock-Developer-iWrestle/4d9154de-c686-407b-9f44-5e3e7262aa17/scratchpad/flag.py)",
+      "Bash(cd /Users/brock/Developer/iWrestle/pipeline; cat Makefile; echo ---; cat /Users/brock/.claude/scheduled-tasks/iwrestle-events-routine/SKILL.md | head -5; ls -la /Users/brock/.claude/scheduled-tasks/iwrestle-events-routine/)"
     ]
   }
 }

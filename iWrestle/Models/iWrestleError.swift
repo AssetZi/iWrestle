@@ -11,29 +11,29 @@ public enum iWrestleError {
     case noData
     case noUserEvents
     case locationError
-    
-    
+
     var title: String {
         switch self {
         case .noData:
-            return "No Events Found"
+            return "No events found."
         case .noUserEvents:
-            return "No User Events Found"
+            return "No events yet."
         case .locationError:
-            return "iWrestle is Better with Location"
+            return "iWrestle is better with location."
         }
     }
-    
+
     var description: String {
         switch self {
         case .noData:
-            return "We will Update you when they are available."
+            return "We'll let you know when new events are posted near you."
         case .noUserEvents:
-            return "Add an Event to Get Started"
+            return "Add an event to get started."
         case .locationError:
-            return "For the best experience enable Location Services"
+            return "Enable Location Services for the best experience."
         }
     }
+
     var image: String {
         switch self {
         case .noData:

@@ -10,143 +10,113 @@ import Observation
 import UserNotifications
 import UIKit
 import CoreLocation
-import MapKit
+import BackgroundTasks
+import os
 
 @Observable
-class NotificationManager {
-    var ck = CloudKitManager()
-    var numLocalEvents: Int = 0
+final class NotificationManager {
+    /// Counts matching events. Only the number is needed, so the app wires
+    /// this to `countEvents`, which downloads no assets.
+    typealias EventFetch = ([NSPredicate]) async throws -> Int
+
     var permissionGranted: Bool = false
-    init() {
+
+    private let fetch: EventFetch
+    /// Last refresh that produced a decision, so launch + first location fix
+    /// + foregrounding in quick succession query CloudKit once, not three times.
+    private var lastRefresh: Date?
+    private var isRefreshing = false
+    private static let refreshThrottle: TimeInterval = 15 * 60
+    private let log = Logger(subsystem: "zacherlInvestmentsLLC.iWrestle", category: "WeeklyDigest")
+
+    init(fetch: @escaping EventFetch) {
+        self.fetch = fetch
         refreshAuthorizationStatus()
     }
-    
-    func requestPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert,.badge]) { success, error in
-            if success {
-                self.permissionGranted = true
-            } else if let error {
-                print(error.localizedDescription)
-            }
-        }
-    }
-    func refreshAuthorizationStatus() {
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
-            DispatchQueue.main.async {
-                self.permissionGranted = (settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional)
-            }
-        }
-    }
-    func scheduleNotification(userLocation: CLLocation) {
-        Task {
-            clearNotifications()
-            let predicates = establishPredicates(userLocation: userLocation)
-            let ok = await doPreWorkAsyncAwait(predicates: predicates)
-            guard ok else {return}
-            let content = UNMutableNotificationContent()
-            content.title = "\(numLocalEvents) Events in your area this Week"
-            content.body = "Check them out today!"
-            
-            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 60, repeats: true)
-            
-            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-            
-            UNUserNotificationCenter.current().add(request) { error in
-                if let error {
-                    print(error.localizedDescription)
-                }
-            }
-        }
-        
-    }
-    func scheduleWeeklyNotification(userLocation: CLLocation) { // 2 = Monday
-        Task {
-            // monday
-            let weekday = 2
-            let hour = 9
-            let min = 0
-            // 1) Compute right now (when scheduling)
-            clearNotifications()
-            let predicates = establishPredicates(userLocation: userLocation)
-            let ok = await doPreWorkAsyncAwait(predicates: predicates)
-            
-            guard ok else { return }
 
-            let content = UNMutableNotificationContent()
-            content.title = "\(numLocalEvents) Events in your area this Week!"
-            content.body = "Check them out today!"
-            content.sound = .default
-
-            var date = DateComponents()
-            date.weekday = weekday
-            date.hour = hour
-            date.minute = min
-
-            let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: true)
-
-            let request = UNNotificationRequest(
-                identifier: "weekly-events-update", // stable id so you can replace it
-                content: content,
-                trigger: trigger
-            )
-
-            UNUserNotificationCenter.current().add(request) { error in
-                if let error { print("Notification add error:", error) }
-            }
-        }
-    }
-    func doPreWorkAsyncAwait(predicates: [NSPredicate]) async -> Bool {
-        // Perform async work here
+    func requestPermission() async {
         do {
-            let events = try await ck.fetchEvents(predicates: predicates)
-            numLocalEvents = events.count
-            return true
+            let granted = try await UNUserNotificationCenter.current()
+                .requestAuthorization(options: [.alert, .badge, .sound])
+            permissionGranted = granted
         } catch {
-            return false
+            log.error("Notification authorization failed: \(error.localizedDescription)")
         }
     }
-    func clearNotifications() {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+
+    func refreshAuthorizationStatus() {
+        Task {
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            permissionGranted = Self.isAuthorized(settings.authorizationStatus)
+        }
     }
+
     func openAppSettings() {
         guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }
-    
-    
-    func establishPredicates(userLocation: CLLocation) -> [NSPredicate] {
-        var predicates: [NSPredicate] = []
-        let radiusInMeters = 200.milesToMeters
-        let distancePredicate = NSPredicate(
-            format: "distanceToLocation:fromLocation:(location, %@) < %f",
-            userLocation,
-            radiusInMeters
-        )
-        predicates.append(distancePredicate)
-        
-        
-        guard
-            let thisWeek = Calendar.current.dateInterval(of: .weekOfYear, for: Date()),
-            let nextWeekStart = Calendar.current.date(
-                byAdding: .weekOfYear,
-                value: 1,
-                to: thisWeek.start
-            ),
-            let nextWeekEndInclusive = Calendar.current.date(
-                byAdding: .day,
-                value: 1,
-                to: thisWeek.end
-            )
-//            let interval = Calendar.current.dateInterval(of: .weekOfYear, for: nextWeekStart)
-        else { return predicates }
-        
-        let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", nextWeekStart as CVarArg, nextWeekEndInclusive as CVarArg)
-        predicates.append(datePredicate)
-        
-        
-        return predicates
+
+    // MARK: - Weekly digest
+
+    /// Recounts next week's nearby events and schedules, replaces, or
+    /// withdraws the Monday notification. A fetch failure changes nothing.
+    func refreshWeeklyDigest(location: CLLocation, now: Date = .now, force: Bool = false) async {
+        if !force, let lastRefresh, now.timeIntervalSince(lastRefresh) < Self.refreshThrottle { return }
+        // The first location fix and the return to foreground often land together.
+        guard !isRefreshing else { return }
+        isRefreshing = true
+        defer { isRefreshing = false }
+
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+        guard Self.isAuthorized(settings.authorizationStatus) else { return }
+
+        guard let fireDate = WeeklyDigest.nextFireDate(after: now) else { return }
+        let window = WeeklyDigest.window(firingAt: fireDate)
+        let predicates = WeeklyDigest.predicates(location: location, window: window)
+
+        let result: Result<Int, Error>
+        do {
+            result = .success(try await fetch(predicates))
+        } catch {
+            result = .failure(error)
+        }
+
+        switch WeeklyDigest.outcome(for: result, fireDate: fireDate) {
+        case .schedule(let request):
+            do {
+                try await center.add(request)
+                lastRefresh = now
+                log.info("Scheduled weekly digest for \(fireDate): \(request.content.title)")
+            } catch {
+                log.error("Could not schedule weekly digest: \(error.localizedDescription)")
+            }
+        case .removePending:
+            center.removePendingNotificationRequests(withIdentifiers: [WeeklyDigest.requestIdentifier])
+            lastRefresh = now
+            log.info("No events next week; weekly digest withdrawn")
+        case .keepExisting:
+            if case .failure(let error) = result {
+                log.error("Weekly digest count failed; keeping existing: \(error.localizedDescription)")
+            }
+        }
     }
-    
+
+    /// Asks iOS to wake the app shortly before the next digest so its count
+    /// is fresh even if the app is not opened. Replaces any earlier request.
+    func submitBackgroundRefresh(now: Date = .now) {
+        guard let fireDate = WeeklyDigest.nextFireDate(after: now) else { return }
+        do {
+            try BGTaskScheduler.shared.submit(WeeklyDigest.backgroundRefreshRequest(fireDate: fireDate))
+        } catch {
+            // Expected on the Simulator (unavailable) and when Background App Refresh is off.
+            log.error("Could not submit background refresh: \(error.localizedDescription)")
+        }
+    }
+
+    private static func isAuthorized(_ status: UNAuthorizationStatus) -> Bool {
+        status == .authorized || status == .provisional
+    }
 }

@@ -1,0 +1,27 @@
+{
+  "sourceKey": "pywrestling:harold-beal-memorial-tournament:2026-12-19",
+  "name": "Harold Beal Memorial Tournament",
+  "date": "2026-12-19T17:00:00Z",
+  "address": "Southmoreland Senior High School, 2351 Route, 981 Alverton, PA 15612",
+  "organizer": "Southmoreland Junior Wrestling Association",
+  "ageGroups": [
+    "Youth",
+    "Jr High",
+    "High School"
+  ],
+  "registration": "",
+  "contact": {
+    "firstName": "Southmoreland Junior Wrestling Association",
+    "lastName": "(Organizer)",
+    "email": "support@example.com",
+    "phone": ""
+  },
+  "review": {
+    "status": "pending",
+    "notes": [
+      "organizer used as contact name",
+      "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
+      "no divisions found, defaulted"
+    ]
+  }
+}

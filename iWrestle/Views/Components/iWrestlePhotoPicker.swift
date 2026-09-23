@@ -8,48 +8,40 @@
 import SwiftUI
 import PhotosUI
 
+/// Dashed upload row backed by PhotosPicker. Shows a thumbnail of the chosen
+/// image, or of `existingLogoURL` on the edit screen until one is chosen.
 struct iWrestlePhotoPicker: View {
     @State private var selectedItem: PhotosPickerItem?
-    @State private var imageData: Data?
     @Binding var image: UIImage?
-    /// Defaulted so the edit screen keeps its existing wording; the add screens
-    /// pass a title marked "(Required)".
-    var title: String = "Upload Event Logo"
+    var title: String = "Upload event logo (required)"
+    var isInvalid = false
+    var existingLogoURL: URL? = nil
+
     var body: some View {
-        PhotosPicker(selection: $selectedItem,matching: .images) {
-            myview()
+        PhotosPicker(selection: $selectedItem, matching: .images) {
+            UploadRowLabel(icon: .image,
+                           label: image == nil ? title : "Logo added",
+                           filled: image != nil,
+                           isInvalid: isInvalid) {
+                if let image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 28, height: 28)
+                        .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+                } else if let existingLogoURL {
+                    EventLogoView(url: existingLogoURL, name: "", size: 28, radius: 7, font: .monoIndex)
+                }
+            }
         }
+        .buttonStyle(PressableButtonStyle())
         .onChange(of: selectedItem) { _, newItem in
             guard let newItem else { return }
             Task {
                 if let data = try? await newItem.loadTransferable(type: Data.self) {
-                    imageData = data
                     image = UIImage(data: data)
                 }
             }
         }
     }
-    
-    
-    func myview() -> some View {
-        HStack {
-            Label(title, systemImage: "photo")
-            Spacer()
-            if let uiImage = image {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 50)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-            } else {
-                Text("＋")
-            }
-        }
-    }
 }
-
-//#Preview {
-//    iWrestlePhotoPicker(image: )
-//}
-
-

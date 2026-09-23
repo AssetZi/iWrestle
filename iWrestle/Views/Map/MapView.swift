@@ -10,17 +10,19 @@ import MapKit
 
 /// Written into `address` by earlier versions whenever a picked place had no
 /// street address, so existing CloudKit records still contain it. Treated as
-/// "no address" on read, otherwise those events would display a ✓ asserting
-/// the address is good.
+/// "no address" on read, otherwise those events would display as filled in.
 private let legacyMissingAddress = "Address not available"
 
+/// The location row of the event forms; opens the full-screen place picker.
 struct MapView: View {
     @State private var showPicker: Bool = false
     @Binding var selectedLocation: CLLocationCoordinate2D?
     @Binding var address: String
     /// Add-event screens pass true; the edit screen keeps the default so a saved
-    /// event never renders in the red required state.
+    /// event never renders in the error state.
     var isRequired: Bool = false
+    /// The add screen passes its "attempted submit and still missing" state.
+    var showsError: Bool = false
 
     /// Single source of truth for "this row is filled in". The picker refuses to
     /// return a place without an address, so a usable address and real
@@ -34,18 +36,11 @@ struct MapView: View {
     private var needsAttention: Bool { usableAddress == nil && isRequired }
 
     var body: some View {
-        Button {
+        FormRowButton(icon: .mapPin,
+                      text: usableAddress ?? "Add location",
+                      isPlaceholder: usableAddress == nil,
+                      isInvalid: showsError && needsAttention) {
             showPicker.toggle()
-        } label: {
-            HStack {
-                Text(rowTitle)
-                Spacer()
-                Text(usableAddress == nil ? "＋" : "✓")
-            }
-            // Set on the label's contents, not the row: the callers wrap this in
-            // .buttonStyle(BorderlessButtonStyle()), whose accent tint would
-            // otherwise repaint an inherited style and swallow the red.
-            .foregroundStyle(needsAttention ? AnyShapeStyle(.red) : AnyShapeStyle(.tint))
         }
         .accessibilityLabel(accessibilityText)
         .locationPicker(isPresented: $showPicker) { mapItem in
@@ -58,17 +53,8 @@ struct MapView: View {
         }
     }
 
-    private var rowTitle: String {
-        if let usableAddress { return usableAddress }
-        return isRequired ? "Select a location (Required)" : "Pick a location"
-    }
-
     private var accessibilityText: String {
         if let usableAddress { return "Location, \(usableAddress)" }
-        return isRequired ? "Select a location, required" : "Pick a location"
+        return isRequired ? "Add location, required" : "Add location"
     }
 }
-
-//#Preview {
-//    MapView()
-//}

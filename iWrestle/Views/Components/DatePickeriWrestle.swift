@@ -7,39 +7,39 @@
 
 import SwiftUI
 
+/// Graphical calendar in a dark card, gold tint.
+struct EventDateCalendar: View {
+    @Binding var date: Date
+
+    var body: some View {
+        DatePicker("Event date", selection: $date, displayedComponents: .date)
+            .datePickerStyle(.graphical)
+            .tint(Theme.gold)
+            .padding(8)
+            .background(RoundedRectangle(cornerRadius: Theme.Radius.input, style: .continuous).fill(Theme.slate950))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.Radius.input, style: .continuous)
+                    .strokeBorder(Theme.borderDefault, lineWidth: 1)
+            )
+    }
+}
+
+/// Date row that expands into the calendar below it.
 struct DatePickeriWrestle: View {
     @Binding var eventDate: Date
     @State private var isShowingDatePicker: Bool = false
-    var body: some View {
-        Group{
-            Button {
-                withAnimation {
-                    isShowingDatePicker.toggle()
-                }
-            } label: {
-                HStack {
-                    Text("Event Date")
-                    Spacer()
-                    Text(eventDate.formatted(date: .abbreviated, time: .omitted))
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .buttonStyle(BorderlessButtonStyle())
 
+    var body: some View {
+        VStack(spacing: 10) {
+            FormRowButton(icon: .calendar, text: eventDate.shortDayLabel) {
+                withAnimation(Motion.normal) { isShowingDatePicker.toggle() }
+            }
             if isShowingDatePicker {
-                DatePicker("Event Date", selection: $eventDate,displayedComponents: .date)
-                    .datePickerStyle(.graphical)
+                EventDateCalendar(date: $eventDate)
                     .onChange(of: eventDate) {
-                        withAnimation {
-                            isShowingDatePicker = false
-                        }
+                        withAnimation(Motion.normal) { isShowingDatePicker = false }
                     }
-                    .onTapGesture(count: 99) {} // for some reason cant pick without this 😅
             }
         }
     }
 }
-
-//#Preview {
-//    DatePickeriWrestle()
-//}

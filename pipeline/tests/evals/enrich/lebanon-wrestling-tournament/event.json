@@ -1,0 +1,27 @@
+{
+  "sourceKey": "pywrestling:lebanon-wrestling-tournament:2027-01-10",
+  "name": "Lebanon Wrestling Tournament",
+  "date": "2027-01-10T17:00:00Z",
+  "address": "Lebanon High School, 1000 South 8th Street, Lebanon, PA 17042",
+  "organizer": "Lebanon Wrestling",
+  "ageGroups": [
+    "Youth",
+    "Jr High",
+    "High School"
+  ],
+  "registration": "",
+  "contact": {
+    "firstName": "Lebanon Wrestling",
+    "lastName": "(Organizer)",
+    "email": "support@example.com",
+    "phone": ""
+  },
+  "review": {
+    "status": "pending",
+    "notes": [
+      "organizer used as contact name",
+      "placeholder contact email: set a real DEFAULT_CONTACT_EMAIL in .env",
+      "no divisions found, defaulted"
+    ]
+  }
+}

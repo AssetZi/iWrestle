@@ -1,0 +1,50 @@
+{
+ "data": {
+  "id": "24drSAn3vKCci3qW",
+  "coreId": "14479196",
+  "status": "upcoming",
+  "title": "2026 BTC Battle in the Burgh",
+  "slug": "btc-battle-in-the-burgh",
+  "description": "2026 BTC Battle in the Burgh on Sep 5, 2026 in Monroeville, PA.",
+  "startDate": "2026-09-05T10:00:00.000Z",
+  "startTimeTbd": false,
+  "endDate": "2026-09-06T02:00:00.000Z",
+  "imageUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "fallbackImageUrl": "https://d2779tscntxxsw.cloudfront.net/Wrestling-Logo-Overlay.jpg",
+  "isStreamedOnFlo": false,
+  "scheduleHtml": null,
+  "location": {
+   "name": "Monroeville Convention Center",
+   "googlePlaceId": "ChIJT9TBNdHrNIgRRC5oBThPD2E",
+   "coordinates": {
+    "latitude": 40.4326759,
+    "longitude": -79.7911664
+   },
+   "address": {
+    "line1": "209 Mall Plaza Boulevard",
+    "city": "Monroeville",
+    "state": "PA",
+    "country": "US",
+    "zipCode": "15146"
+   }
+  },
+  "registration": null,
+  "eventContact": {
+   "name": "BTC Admin Team",
+   "email": "btcwrestlingusa@gmail.com"
+  },
+  "flyers": [],
+  "subEventDescriptions": [
+   {
+    "name": "2026 BTC Battle in the Burgh",
+    "description": "Visit <a href=\"//Breakthechainswrestling.com\" rel=\"noopener noreferrer\" target=\"_blank\">Breakthechainswrestling.com</a>&nbsp;for Tournament Details"
+   }
+  ]
+ },
+ "meta": {
+  "replayCount": 0,
+  "hasTeamDivisions": true,
+  "lastSegmentStartAt": "2026-09-05T10:00:00.000Z"
+ },
+ "notifications": []
+}
