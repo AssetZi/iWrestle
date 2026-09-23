@@ -83,7 +83,8 @@ struct HomeView: View {
     private var content: some View {
         switch viewState {
         case .loading:
-            iWrestleProgressViewHome()
+            EventsListSkeleton()
+                .transition(.opacity)
         case .loaded(let list):
             switch viewMode {
             case .list:
