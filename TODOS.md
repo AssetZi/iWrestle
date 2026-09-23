@@ -22,7 +22,7 @@
 
 **Why:** Both assets are currently required, so a record missing either is silently dropped from every fetch — it exists in CloudKit but never appears in the app, with no error anywhere. The `pipeline/` importer has to manufacture a placeholder logo and render a flyer PDF for every scraped event just to satisfy this, which puts generated files in front of users where "no flyer" would read better.
 
-**Context:** `iWrestle/Models/Event.swift` — make `logo` and `flyer` optional `URL?` in the struct and drop them from the `guard` in `init?(safeRecord:)`. `EventLogoView` already renders a monogram fallback (`String.monogram` in `iWrestle/Utilities/EventFormatting.swift`), so the logo side is mostly wiring. The flyer side needs `EventDetailView` and `EventSharePDFPage` to hide their flyer affordances when it is nil. Once this lands, `iwpipe/assets.py` can stop rendering placeholders and the pipeline can flag "no flyer" instead.
+**Context:** `iWrestle/Models/Event.swift` — make `logo` optional `URL?` in the struct and drop it from the `guard` in `init?(safeRecord:)`. `EventLogoView` already renders a monogram fallback (`String.monogram` in `iWrestle/Utilities/EventFormatting.swift`), so the logo side is mostly wiring. `flyer` is already `URL?` and no longer required, because list queries leave it out and `EventDetailView` fetches it on the first tap (`CloudKitManager.fetchFlyer(for:)`). What remains on the flyer side: that fetch cannot tell "no flyer in CloudKit" from "not fetched yet", so a record with no flyer shows the row and then a RETRY label. Hide the row when `fetchFlyer` returns nil. Once both land, `iwpipe/assets.py` can stop rendering placeholders and the pipeline can flag "no flyer" instead.
 
 **Effort:** M
 **Priority:** P2

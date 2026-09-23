@@ -3,8 +3,10 @@
 //  iWrestle
 //
 //  Bottom sheet that edits a draft copy of the home filters. The Apply
-//  button carries a live count, fetched (debounced) as the draft changes;
-//  Apply hands the already-fetched events back so nothing is queried twice.
+//  button carries a live count. Counting asks CloudKit for record IDs only,
+//  and each answer is cached per filter combination, so opening the sheet
+//  or switching back to a combination already seen costs nothing. Apply
+//  hands the filters back and HomeView loads the events itself.
 //
 
 import SwiftUI
@@ -15,28 +17,36 @@ struct EventsFilterView: View {
     @Environment(LocationManager.self) var lm
     @Environment(\.dismiss) var dismiss
 
-    let onApply: (EventFilters, [Event]) -> Void
+    /// The filters HomeView is showing now.
+    let filters: EventFilters
+    /// Whether HomeView has a list on screen for `filters`. If it does not
+    /// (still loading, or failed), Apply reloads even without changes.
+    let homeIsLoaded: Bool
+    let onApply: (EventFilters) -> Void
+
     @State private var draft: EventFilters
-    @State private var count: CountState = .idle
-    @State private var isApplying = false
+    /// Known counts by filter combination, seeded with what HomeView shows.
+    @State private var counts: [EventFilters: Int]
+    @State private var status: Status = .idle
+    /// Bumped by Retry so the count task runs again for the same draft.
+    @State private var attempt = 0
     @State private var sheetHeight: CGFloat = 600
 
-    enum CountState: Equatable {
-        case idle, counting, needsLocation
-        case counted(EventFilters, [Event])
+    enum Status { case idle, counting, needsLocation, failed }
 
-        static func == (lhs: CountState, rhs: CountState) -> Bool {
-            switch (lhs, rhs) {
-            case (.idle, .idle), (.counting, .counting), (.needsLocation, .needsLocation): return true
-            case (.counted(let a, let x), .counted(let b, let y)): return a == b && x.map(\.id) == y.map(\.id)
-            default: return false
-            }
-        }
+    private struct CountKey: Equatable {
+        let draft: EventFilters
+        let attempt: Int
     }
 
-    init(filters: EventFilters, onApply: @escaping (EventFilters, [Event]) -> Void) {
+    /// - Parameter currentCount: how many events HomeView is showing for
+    ///   `filters`, or nil when it has no list on screen.
+    init(filters: EventFilters, currentCount: Int?, onApply: @escaping (EventFilters) -> Void) {
+        self.filters = filters
+        self.homeIsLoaded = currentCount != nil
         self.onApply = onApply
         _draft = State(initialValue: filters)
+        _counts = State(initialValue: currentCount.map { [filters: $0] } ?? [:])
     }
 
     var body: some View {
@@ -62,15 +72,29 @@ struct EventsFilterView: View {
             chipGroup("Distance", DistanceOption.allCases, selection: $draft.distance) { $0.title }
             chipGroup("Date", DateOptionsIWrestle.allCases, selection: $draft.date) { $0.rawValue }
 
-            if count == .needsLocation {
+            switch status {
+            case .needsLocation:
                 Text("Enable location to filter by distance.")
                     .font(.caption11_5)
                     .foregroundStyle(Theme.danger)
                     .frame(maxWidth: .infinity, alignment: .leading)
+            case .failed:
+                HStack {
+                    Text("Couldn't load the count.")
+                        .font(.caption11_5)
+                        .foregroundStyle(Theme.textTertiary)
+                    Spacer()
+                    Button("Retry") { attempt += 1 }
+                        .font(.caption11_5)
+                        .foregroundStyle(Theme.gold)
+                        .buttonStyle(.plain)
+                }
+            case .idle, .counting:
+                EmptyView()
             }
 
-            PrimaryGoldButton(title: applyTitle, isBusy: isApplying) { apply() }
-                .disabled(count == .needsLocation)
+            PrimaryGoldButton(title: applyTitle) { apply() }
+                .disabled(status == .needsLocation)
                 .padding(.top, 4)
         }
         .padding(.horizontal, Theme.gutter)
@@ -84,8 +108,7 @@ struct EventsFilterView: View {
         .presentationDragIndicator(.hidden)
         .presentationBackground(Theme.slate900)
         .presentationCornerRadius(Theme.Radius.sheet)
-        .interactiveDismissDisabled(isApplying)
-        .task(id: draft) { await refreshCount() }
+        .task(id: CountKey(draft: draft, attempt: attempt)) { await refreshCount() }
     }
 
     private func chipGroup<T: Hashable & Identifiable>(_ label: String,
@@ -106,58 +129,59 @@ struct EventsFilterView: View {
     }
 
     private var applyTitle: String {
-        switch count {
-        case .counted(let filters, let events) where filters == draft:
-            return events.count == 1 ? "Show 1 event" : "Show \(events.count) events"
-        case .needsLocation:
-            return "Show events"
-        default:
-            return "Show … events"
+        if let count = counts[draft] {
+            if count >= FetchLimits.filtered { return "Show \(FetchLimits.filtered)+ events" }
+            return count == 1 ? "Show 1 event" : "Show \(count) events"
+        }
+        switch status {
+        case .needsLocation, .failed: return "Show events"
+        case .idle, .counting: return "Show … events"
         }
     }
 
-    // MARK: - Fetching
+    // MARK: - Counting
 
     private func refreshCount() async {
+        if counts[draft] != nil {
+            status = .idle
+            return
+        }
         guard let predicates = draft.predicates(userLocation: lm.userLocation) else {
-            count = .needsLocation
+            status = .needsLocation
             return
         }
-        count = .counting
-        // Debounce so tapping through chips doesn't fire a query per tap.
-        try? await Task.sleep(for: .milliseconds(300))
-        guard !Task.isCancelled else { return }
+        status = .counting
         let snapshot = draft
-        #if DEBUG
-        if MockEvents.isEnabled {
-            let filtered = MockEvents.nearby.filter { NSCompoundPredicate(andPredicateWithSubpredicates: predicates.filter { !$0.predicateFormat.contains("distanceToLocation") }).evaluate(with: MockEvents.predicateObject($0)) }
-            count = .counted(snapshot, filtered)
-            return
-        }
-        #endif
-        if let events = try? await ck.fetchEvents(predicates: predicates), !Task.isCancelled {
-            count = .counted(snapshot, events)
-        } else if !Task.isCancelled {
-            count = .idle
+        do {
+            // Debounce so tapping through chips doesn't fire a query per tap.
+            try await Task.sleep(for: .milliseconds(300))
+            #if DEBUG
+            if MockEvents.isEnabled {
+                let local = NSCompoundPredicate(andPredicateWithSubpredicates: predicates.filter { !$0.predicateFormat.contains("distanceToLocation") })
+                counts[snapshot] = MockEvents.nearby.filter { local.evaluate(with: MockEvents.predicateObject($0)) }.count
+                status = .idle
+                return
+            }
+            #endif
+            let ck = self.ck
+            let count = try await withTimeout(.seconds(15)) {
+                try await ck.countEvents(predicates: predicates)
+            }
+            // Keep the answer even if the draft has moved on; it is still
+            // right for `snapshot` if the user comes back to it.
+            counts[snapshot] = count
+            if !Task.isCancelled { status = .idle }
+        } catch {
+            // Cancellation means the draft changed, not that anything failed.
+            guard !Task.isCancelled else { return }
+            status = .failed
         }
     }
 
     private func apply() {
-        if case .counted(let filters, let events) = count, filters == draft {
-            onApply(draft, events)
-            dismiss()
-            return
+        if draft != filters || !homeIsLoaded {
+            onApply(draft)
         }
-        guard let predicates = draft.predicates(userLocation: lm.userLocation) else {
-            count = .needsLocation
-            return
-        }
-        isApplying = true
-        Task {
-            let events = (try? await ck.fetchEvents(predicates: predicates)) ?? []
-            isApplying = false
-            onApply(draft, events)
-            dismiss()
-        }
+        dismiss()
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import CloudKit
+import os
 
 /// One page of query results and the cursor to the next, if any.
 struct EventPage<Cursor> {
@@ -15,6 +16,8 @@ struct EventPage<Cursor> {
 }
 
 enum EventPager {
+    private static let log = Logger(subsystem: "zacherlInvestmentsLLC.iWrestle", category: "EventPager")
+
     /// Follow the cursor until `ceiling` decoded events are in hand or the
     /// results run out.
     ///
@@ -30,22 +33,38 @@ enum EventPager {
         ceiling: Int,
         fetch: (Cursor?, Int) async throws -> EventPage<Cursor>
     ) async throws -> [Event] {
+        try await collect(ceiling: ceiling, decode: Event.init(safeRecord:), fetch: fetch)
+    }
+
+    /// The same loop with a pluggable decoder, so a count can page through
+    /// bare record IDs without building events.
+    static func collect<Cursor, Item>(
+        ceiling: Int,
+        decode: (CKRecord) -> Item?,
+        fetch: (Cursor?, Int) async throws -> EventPage<Cursor>
+    ) async throws -> [Item] {
         guard ceiling > 0 else { return [] }
 
-        var events: [Event] = []
+        var items: [Item] = []
         var cursor: Cursor?
 
         repeat {
-            let remaining = ceiling - events.count
+            let remaining = ceiling - items.count
             let page = try await fetch(cursor, remaining)
+            let before = items.count
             for record in page.records {
-                if let event = Event(safeRecord: record) {
-                    events.append(event)
+                if let item = decode(record) {
+                    items.append(item)
                 }
             }
+            // A whole page that decodes to nothing usually means a query
+            // asked for too few keys (see Event.Field.listKeys).
+            if !page.records.isEmpty && items.count == before {
+                log.error("A page of \(page.records.count) records decoded to nothing")
+            }
             cursor = page.cursor
-        } while cursor != nil && events.count < ceiling
+        } while cursor != nil && items.count < ceiling
 
-        return events
+        return items
     }
 }

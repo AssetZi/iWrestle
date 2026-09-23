@@ -15,7 +15,9 @@ import os
 
 @Observable
 final class NotificationManager {
-    typealias EventFetch = ([NSPredicate]) async throws -> [Event]
+    /// Counts matching events. Only the number is needed, so the app wires
+    /// this to `countEvents`, which downloads no assets.
+    typealias EventFetch = ([NSPredicate]) async throws -> Int
 
     var permissionGranted: Bool = false
 
@@ -77,7 +79,7 @@ final class NotificationManager {
 
         let result: Result<Int, Error>
         do {
-            result = .success(try await fetch(predicates).count)
+            result = .success(try await fetch(predicates))
         } catch {
             result = .failure(error)
         }

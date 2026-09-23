@@ -10,7 +10,7 @@
 import Foundation
 import CoreLocation
 
-struct EventFilters: Equatable {
+struct EventFilters: Hashable {
     var eventType: EventTypeFilter = .all
     var ageGroup: AgeGroupFilter = .all
     var distance: DistanceOption = .any

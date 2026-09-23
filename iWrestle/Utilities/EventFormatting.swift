@@ -121,19 +121,19 @@ extension Event {
 
 extension Array where Element == Event {
     /// Day first (earliest), then distance (closest), then name.
+    ///
+    /// Each event's day and distance are worked out once up front instead
+    /// of twice per comparison.
     func sortedForList(userLocation: CLLocation?) -> [Event] {
         let cal = Calendar.current
-        return sorted { lhs, rhs in
-            let lhsDay = cal.startOfDay(for: lhs.date)
-            let rhsDay = cal.startOfDay(for: rhs.date)
-            if lhsDay != rhsDay { return lhsDay < rhsDay }
-            if let userLocation {
-                let lhsDistance = lhs.location.distance(from: userLocation)
-                let rhsDistance = rhs.location.distance(from: userLocation)
-                if lhsDistance != rhsDistance { return lhsDistance < rhsDistance }
-            }
-            return lhs.name < rhs.name
+        let keyed: [(event: Event, day: Date, distance: CLLocationDistance)] = map { event in
+            (event, cal.startOfDay(for: event.date), userLocation.map { event.location.distance(from: $0) } ?? 0)
         }
+        return keyed.sorted { lhs, rhs in
+            if lhs.day != rhs.day { return lhs.day < rhs.day }
+            if lhs.distance != rhs.distance { return lhs.distance < rhs.distance }
+            return lhs.event.name < rhs.event.name
+        }.map { $0.event }
     }
 
     /// Consecutive runs of the same calendar day, preserving order.
@@ -149,5 +149,25 @@ extension Array where Element == Event {
             }
         }
         return groups
+    }
+}
+
+// MARK: - List layout
+
+/// The home list, sorted and grouped once when the events arrive rather
+/// than on every redraw of the list.
+struct EventList {
+    /// Every event in list order. The map uses these too.
+    let events: [Event]
+    /// The "Next up" card: the first event in list order.
+    let hero: Event?
+    /// Everything after the hero, in runs of the same day.
+    let groups: [(day: Date, events: [Event])]
+
+    init(_ events: [Event], userLocation: CLLocation?) {
+        let sorted = events.sortedForList(userLocation: userLocation)
+        self.events = sorted
+        self.hero = sorted.first
+        self.groups = Array(sorted.dropFirst()).groupedByDay()
     }
 }

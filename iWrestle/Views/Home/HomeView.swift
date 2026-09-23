@@ -57,8 +57,6 @@ struct HomeView: View {
                 switch route {
                 case .eventDetail(let event):
                     EventDetailView(event: event)
-                case .flyer(let url):
-                    PDFQuickLookView(url: url)
                 default:
                     EmptyView()
                 }
@@ -72,9 +70,10 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showFilter) {
-                EventsFilterView(filters: filters) { applied, events in
+                EventsFilterView(filters: filters, currentCount: loadedCount) { applied in
                     filters = applied
-                    viewState = events.isEmpty ? .error(.noData) : .loaded(events)
+                    viewState = .loading
+                    Task { await loadEvents() }
                 }
             }
         }
@@ -85,14 +84,14 @@ struct HomeView: View {
         switch viewState {
         case .loading:
             iWrestleProgressViewHome()
-        case .loaded(let events):
+        case .loaded(let list):
             switch viewMode {
             case .list:
-                EventsListView(events: events, userLocation: lm.userLocation)
+                EventsListView(list: list, userLocation: lm.userLocation)
                     .refreshable { await loadEvents() }
                     .transition(.opacity)
             case .map:
-                EventsMapView(events: events, userLocation: lm.userLocation, selected: $selectedPin)
+                EventsMapView(events: list.events, userLocation: lm.userLocation, selected: $selectedPin)
                     .transition(.opacity)
             }
         case .error(let error):
@@ -101,6 +100,12 @@ struct HomeView: View {
                 Task { await loadEvents() }
             }
         }
+    }
+
+    /// How many events are on screen, or nil when no list is showing.
+    private var loadedCount: Int? {
+        if case .loaded(let list) = viewState { return list.events.count }
+        return nil
     }
 
     // MARK: - Loading
@@ -112,7 +117,7 @@ struct HomeView: View {
 
         #if DEBUG
         if MockEvents.isEnabled {
-            viewState = .loaded(MockEvents.nearby)
+            viewState = .loaded(EventList(MockEvents.nearby, userLocation: lm.userLocation))
             return
         }
         #endif
@@ -124,19 +129,27 @@ struct HomeView: View {
             return
         }
 
-        do {
-            let events: [Event]
-            if filters.isDefault {
-                events = try await fetchWithExpandingRadius(from: userLocation)
-            } else if let predicates = filters.predicates(userLocation: userLocation) {
-                events = try await ck.fetchEvents(predicates: predicates)
-            } else {
-                events = []
+        // Filters applied while a load is in flight would otherwise be
+        // ignored (the guard above) and the older answer would win.
+        var requested: EventFilters
+        repeat {
+            requested = filters
+            do {
+                let events: [Event]
+                if requested.isDefault {
+                    events = try await fetchWithExpandingRadius(from: userLocation)
+                } else if let predicates = requested.predicates(userLocation: userLocation) {
+                    events = try await ck.fetchEvents(predicates: predicates)
+                } else {
+                    events = []
+                }
+                viewState = events.isEmpty
+                    ? .error(.noData)
+                    : .loaded(EventList(events, userLocation: userLocation))
+            } catch {
+                viewState = .error(.noData)
             }
-            viewState = events.isEmpty ? .error(.noData) : .loaded(events)
-        } catch {
-            viewState = .error(.noData)
-        }
+        } while filters != requested
     }
 
     func fetchWithExpandingRadius(from location: CLLocation) async throws -> [Event] {
@@ -164,6 +177,6 @@ struct HomeView: View {
 
 enum HomeViewState {
     case loading
-    case loaded([Event])
+    case loaded(EventList)
     case error(iWrestleError)
 }

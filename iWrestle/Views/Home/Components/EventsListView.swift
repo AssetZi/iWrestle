@@ -10,17 +10,15 @@ import MapKit
 
 struct EventsListView: View {
     @Environment(CrossPromo.self) private var promo
-    let events: [Event]
+    /// Sorted and grouped by HomeView when the events load, so a redraw
+    /// here (a promo icon arriving, say) does not re-sort the list.
+    let list: EventList
     let userLocation: CLLocation?
 
     var body: some View {
-        let sorted = events.sortedForList(userLocation: userLocation)
-        let hero = sorted.first
-        let groups = Array(sorted.dropFirst()).groupedByDay()
-
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 18) {
-                if let hero {
+                if let hero = list.hero {
                     NavigationLink(value: AppRoute.eventDetail(hero)) {
                         HeroEventCard(event: hero, userLocation: userLocation)
                     }
@@ -28,7 +26,7 @@ struct EventsListView: View {
                     .entrance()
                 }
 
-                ForEach(Array(groups.enumerated()), id: \.element.day) { index, group in
+                ForEach(Array(list.groups.enumerated()), id: \.element.day) { index, group in
                     VStack(alignment: .leading, spacing: 9) {
                         SectionLabel(group.day.groupLabel)
                         ForEach(group.events) { event in

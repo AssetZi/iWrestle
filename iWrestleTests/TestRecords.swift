@@ -12,13 +12,16 @@ import CoreLocation
 
 enum TestRecords {
     /// A record with every field Event(safeRecord:) requires.
-    static func event(name: String = "Interstate Classic", phone: String? = "814-555-0100") -> CKRecord {
+    static func event(name: String = "Interstate Classic",
+                      phone: String? = "814-555-0100",
+                      date: Date = Date(timeIntervalSince1970: 1_792_000_000),
+                      location: CLLocation = CLLocation(latitude: 41.2, longitude: -79.4)) -> CKRecord {
         let record = CKRecord(recordType: Event.recordType)
         record[Event.Field.userID] = CKRecord.Reference(recordID: CKRecord.ID(recordName: "_admin"), action: .none)
         record[Event.Field.type] = "tournament"
         record[Event.Field.name] = name
-        record[Event.Field.date] = Date(timeIntervalSince1970: 1_792_000_000)
-        record[Event.Field.location] = CLLocation(latitude: 41.2, longitude: -79.4)
+        record[Event.Field.date] = date
+        record[Event.Field.location] = location
         record[Event.Field.address] = "Venue, 1 Main St, Clarion, PA 16214"
         record[Event.Field.ageGroups] = ["Youth", "Jr High"]
         record[Event.Field.logo] = CKAsset(fileURL: tempFile("logo.png"))
@@ -32,10 +35,17 @@ enum TestRecords {
         return record
     }
 
-    /// A record the app must drop: no flyer asset.
-    static func brokenEvent() -> CKRecord {
-        let record = event(name: "Broken")
+    /// A list query leaves the flyer out; the detail screen fetches it.
+    static func eventWithoutFlyer() -> CKRecord {
+        let record = event(name: "No Flyer")
         record[Event.Field.flyer] = nil
+        return record
+    }
+
+    /// A record the app must drop: no logo asset.
+    static func eventWithoutLogo() -> CKRecord {
+        let record = event(name: "Broken")
+        record[Event.Field.logo] = nil
         return record
     }
 

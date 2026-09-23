@@ -13,12 +13,18 @@ struct EventDetailView: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.requestReview) private var requestReview
     @Environment(LocationManager.self) private var lm
+    @Environment(CloudKitManager.self) private var ck
     @AppStorage("eventDetailViewCount") private var eventDetailViewCount = 0
     @AppStorage("lastReviewRequestDate") private var lastReviewRequestDate = Date.distantPast.timeIntervalSince1970
     let event: Event
 
     @State private var sharePayload: SharePayload?
     @State private var isPreparingShare = false
+    /// Set to push the flyer. List queries leave the flyer out, so it is
+    /// fetched on the first tap.
+    @State private var flyerURL: URL?
+    @State private var isLoadingFlyer = false
+    @State private var flyerFailed = false
 
     private var parts: AddressParts { AddressParts(event.address) }
 
@@ -67,6 +73,7 @@ struct EventDetailView: View {
             ActivityShareSheet(items: payload.items)
                 .presentationDetents([.medium, .large])
         }
+        .navigationDestination(item: $flyerURL) { PDFQuickLookView(url: $0) }
         .onAppear { requestReviewIfAppropriate() }
     }
 
@@ -88,17 +95,22 @@ struct EventDetailView: View {
     }
 
     private var flyerCard: some View {
-        NavigationLink(value: AppRoute.flyer(event.flyer)) {
+        Button(action: openFlyer) {
             RowSurface {
                 CardRow(icon: .fileText, label: "Event flyer") {
-                    Text("PDF")
-                        .font(.monoTag)
-                        .foregroundStyle(Theme.textTertiary)
-                    Chevron()
+                    if isLoadingFlyer {
+                        GoldSpinner(size: 14)
+                    } else {
+                        Text(flyerFailed ? "RETRY" : "PDF")
+                            .font(.monoTag)
+                            .foregroundStyle(flyerFailed ? Theme.danger : Theme.textTertiary)
+                        Chevron()
+                    }
                 }
             }
         }
         .buttonStyle(SurfaceButtonStyle(scale: 1))
+        .disabled(isLoadingFlyer)
         .cardContainer()
     }
 
@@ -205,6 +217,27 @@ struct EventDetailView: View {
 
         guard let pdf = EventPDFExporter.makePDF(for: event) else { return }
         sharePayload = SharePayload(items: [ShareURLItem(url: pdf, subject: event.name)])
+    }
+
+    private func openFlyer() {
+        if let flyer = event.flyer {
+            flyerURL = flyer
+            return
+        }
+        isLoadingFlyer = true
+        flyerFailed = false
+        Task {
+            defer { isLoadingFlyer = false }
+            do {
+                if let url = try await ck.fetchFlyer(for: event.id) {
+                    flyerURL = url
+                } else {
+                    flyerFailed = true
+                }
+            } catch {
+                flyerFailed = true
+            }
+        }
     }
 
     private func openInMaps() {

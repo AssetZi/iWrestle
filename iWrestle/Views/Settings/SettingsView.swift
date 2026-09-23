@@ -57,8 +57,6 @@ struct SettingsView: View {
                     }
                 case .eventDetail(let event):
                     EventDetailView(event: event)
-                case .flyer(let url):
-                    PDFQuickLookView(url: url)
                 }
             }
             .sheet(isPresented: $showAddSheet) {

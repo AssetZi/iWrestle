@@ -11,7 +11,6 @@ import CloudKit
 
 enum AppRoute: Hashable {
     case eventDetail(Event)
-    case flyer(URL)
     case dashboard
     case editEvent(CKRecord.ID)
 }

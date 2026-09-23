@@ -21,7 +21,7 @@ struct iWrestleApp: App {
         let ck = CloudKitManager()
         _ck = State(initialValue: ck)
         _nm = State(initialValue: NotificationManager { predicates in
-            try await ck.fetchEvents(predicates: predicates, limit: FetchLimits.filtered)
+            try await ck.countEvents(predicates: predicates)
         })
     }
 

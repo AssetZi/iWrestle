@@ -19,7 +19,9 @@ struct Event: Identifiable, Hashable {
     var address: String
     var ageGroups: [String]
     var logo: URL
-    var flyer: URL
+    /// Nil when the record came from a list query, which leaves the flyer
+    /// out; `CloudKitManager.fetchFlyer(for:)` loads it on demand.
+    var flyer: URL?
     var registration: String?
     
     var eventContactFirstName: String
@@ -48,6 +50,16 @@ extension Event {
         static let eventContactEmail = "eventContactEmail"
         static let eventContactPhone = "eventContactPhone"
         static let registration = "registration"
+
+        /// What list and map queries fetch: every field `init?(safeRecord:)`
+        /// reads, minus the flyer. A key missing here makes every event fail
+        /// to decode and every list come back empty, so
+        /// EventDecodingTests pins it.
+        static let listKeys: [CKRecord.FieldKey] = [
+            userID, type, name, date, location, address, ageGroups, logo,
+            registration, eventContactFirstName, eventContactLastName,
+            eventContactEmail, eventContactPhone,
+        ]
     }
 }
 
@@ -55,10 +67,7 @@ extension Event {
 extension Event {
     init (record: CKRecord) {
         let logoAsset = record[Event.Field.logo] as! CKAsset
-        let flyerAsset = record[Event.Field.flyer] as! CKAsset
-
         let logo = logoAsset.fileURL
-        let flyer = flyerAsset.fileURL
         self.record = record
         self.userID = record[Event.Field.userID] as! CKRecord.Reference
         self.eventType = record[Event.Field.type] as! String
@@ -69,7 +78,7 @@ extension Event {
         self.address = record[Event.Field.address] as! String
         self.ageGroups = record[Event.Field.ageGroups] as! [String]
         self.logo = logo!
-        self.flyer = flyer!
+        self.flyer = (record[Event.Field.flyer] as? CKAsset)?.fileURL
 
         self.eventContactFirstName = record[Event.Field.eventContactFirstName] as! String
         self.eventContactLastName = record[Event.Field.eventContactLastName] as! String
@@ -80,8 +89,6 @@ extension Event {
     init?(safeRecord record: CKRecord) {
         guard let logoAsset = record[Event.Field.logo] as? CKAsset,
               let logoURL = logoAsset.fileURL,
-              let flyerAsset = record[Event.Field.flyer] as? CKAsset,
-              let flyerURL = flyerAsset.fileURL,
               let userID = record[Event.Field.userID] as? CKRecord.Reference,
               let eventType = record[Event.Field.type] as? String,
               let name = record[Event.Field.name] as? String,
@@ -104,7 +111,7 @@ extension Event {
         self.address = address
         self.ageGroups = ageGroups
         self.logo = logoURL
-        self.flyer = flyerURL
+        self.flyer = (record[Event.Field.flyer] as? CKAsset)?.fileURL
         self.eventContactFirstName = contactFirstName
         self.eventContactLastName = contactLastName
         self.eventContactEmail = contactEmail
