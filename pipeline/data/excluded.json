@@ -9,6 +9,11 @@
     "name": "2025 3C2A SoCal Regional Duals",
     "reason": "college event"
   },
+  "flowrestling:2025-cody-ms-invitational:2026-10-24": {
+    "at": "2026-10-05T16:03:43+00:00",
+    "name": "2025 Cody MS Invitational",
+    "reason": "invitational"
+  },
   "flowrestling:2026-btc-break-at-the-lake:2026-10-17": {
     "at": "2026-09-22T11:20:16+00:00",
     "name": "2026 BTC Break at the Lake",
@@ -28,6 +33,11 @@
     "at": "2026-09-22T11:20:16+00:00",
     "name": "2026 GTE Halloween Classic (Duals and Individual Tournament)",
     "reason": "duplicate of pywrestling:halloween-classic:2026-10-24"
+  },
+  "flowrestling:2026-gte-turkey-classic:2026-11-15": {
+    "at": "2026-10-05T16:03:59+00:00",
+    "name": "2026 GTE Turkey Classic",
+    "reason": "same-date duplicate of pywrestling:turkey-classic:2026-11-15"
   },
   "flowrestling:2026-king-of-the-mountain-presented-by-national-guard:2026-11-21": {
     "at": "2026-09-22T11:21:06+00:00",
@@ -74,6 +84,11 @@
     "name": "2027 CHSAA State Championships",
     "reason": "duplicate of flowrestling:2027-chsaa-state-championships:2027-02-13"
   },
+  "flowrestling:2027-puma-classic:2027-01-23:2sii84cp6Pp2usCD": {
+    "at": "2026-10-05T16:03:59+00:00",
+    "name": "2027 Puma Classic",
+    "reason": "same-date duplicate of flowrestling:2027-puma-classic:2027-01-23"
+  },
   "flowrestling:2nd-an-sierra-pacific-girls-invite:2026-11-14": {
     "at": "2026-09-22T11:19:15+00:00",
     "name": "2nd An Sierra Pacific Girls Invite",
@@ -99,10 +114,25 @@
     "name": "AHSAA 6A North Seeding",
     "reason": "duplicate of flowrestling:ahsaa-6a-north-seeding:2027-02-05"
   },
+  "flowrestling:air-force-little-rock:2026-11-21:23qRYTFFfnbxkCvZ": {
+    "at": "2026-10-05T16:03:39+00:00",
+    "name": "Air Force @ Little Rock",
+    "reason": "college event"
+  },
+  "flowrestling:allen-montevallo:2026-12-03:2APW8XdXSVOTG4Kl": {
+    "at": "2026-10-05T16:03:53+00:00",
+    "name": "Allen @ Montevallo",
+    "reason": "same-date duplicate of flowrestling:allen-montevallo:2026-12-03"
+  },
   "flowrestling:anna-lucas-lovejoy:2026-12-09:2faL1KmWQ5bIMmkX": {
     "at": "2026-09-22T11:20:17+00:00",
     "name": "Anna @ Lucas Lovejoy",
     "reason": "duplicate of flowrestling:anna-lucas-lovejoy:2026-12-09"
+  },
+  "flowrestling:app-state-vs-north-carolina:2026-12-20": {
+    "at": "2026-10-05T16:03:54+00:00",
+    "name": "App State vs. North Carolina",
+    "reason": "same-date duplicate of flowrestling:app-state-vs-north-carolina:2026-12-20:2u8qblM7zMpbpKZs"
   },
   "flowrestling:archbishop-carroll-hs-bristol-hs:2027-01-20:2q3mA6VTO9PeaXhh": {
     "at": "2026-09-22T13:56:29+00:00",
@@ -169,6 +199,16 @@
     "name": "Carthage @ North Central (IL)",
     "reason": "college event"
   },
+  "flowrestling:centenary-nj-alvernia:2026-12-05": {
+    "at": "2026-10-05T16:03:40+00:00",
+    "name": "Centenary (NJ) @ Alvernia",
+    "reason": "college event"
+  },
+  "flowrestling:central-methodist-william-penn-iowa:2026-11-20:2Ye11GDXiQWqcuS7": {
+    "at": "2026-10-05T16:03:45+00:00",
+    "name": "Central Methodist @ William Penn (Iowa)",
+    "reason": "college event"
+  },
   "flowrestling:chatham-penn-st-altoona:2026-11-19": {
     "at": "2026-09-22T11:19:18+00:00",
     "name": "Chatham @ Penn St.-Altoona",
@@ -204,6 +244,11 @@
     "name": "Dallas South Oak Cliff @ Dallas Adamson",
     "reason": "same-date duplicate of flowrestling:dallas-south-oak-cliff-dallas-adamson:2026-12-03"
   },
+  "flowrestling:dallas-south-oak-cliff-dallas-jefferson:2026-12-17:2ZIHYt7eITS5UpBt": {
+    "at": "2026-10-05T16:03:57+00:00",
+    "name": "Dallas South Oak Cliff @ Dallas Jefferson",
+    "reason": "same-date duplicate of flowrestling:dallas-south-oak-cliff-dallas-jefferson:2026-12-17"
+  },
   "flowrestling:dallas-south-oak-cliff-dallas-roosevelt:2026-11-19:2TAn12EukfZsfmnA": {
     "at": "2026-09-22T11:20:38+00:00",
     "name": "Dallas South Oak Cliff @ Dallas Roosevelt",
@@ -213,6 +258,16 @@
     "at": "2026-09-22T11:20:23+00:00",
     "name": "Dallas Sunset @ Dallas Adamson",
     "reason": "duplicate of flowrestling:dallas-sunset-dallas-adamson:2027-01-21"
+  },
+  "flowrestling:east-stroudsburg-bridgeport:2027-02-12:2whAQygF92afc3hX": {
+    "at": "2026-10-05T16:03:43+00:00",
+    "name": "East Stroudsburg @ Bridgeport",
+    "reason": "college event"
+  },
+  "flowrestling:ellsworth-cc-upper-iowa:2026-11-12:2lHPIkLGES2vvuPr": {
+    "at": "2026-10-05T16:03:54+00:00",
+    "name": "Ellsworth CC @ Upper Iowa",
+    "reason": "same-date duplicate of flowrestling:ellsworth-cc-upper-iowa:2026-11-12"
   },
   "flowrestling:elmhurst-augustana-il:2026-11-18": {
     "at": "2026-09-22T11:19:16+00:00",
@@ -227,6 +282,11 @@
   "flowrestling:elmira-john-carroll:2026-11-21": {
     "at": "2026-09-22T11:11:31+00:00",
     "name": "Elmira @ John Carroll",
+    "reason": "college event"
+  },
+  "flowrestling:emory-henry-greensboro:2026-11-18": {
+    "at": "2026-10-05T16:03:41+00:00",
+    "name": "Emory & Henry @ Greensboro",
     "reason": "college event"
   },
   "flowrestling:executive-education-academy-charter-school-panther-valley-hs:2026-12-17:2jstR5tQjZjPyZMC": {
@@ -274,6 +334,16 @@
     "name": "Hawkeye Community College @ Iowa Western Community College",
     "reason": "college event"
   },
+  "flowrestling:huntingdon-andrew-college:2026-12-10:2X6isC7hcByfIibK": {
+    "at": "2026-10-05T16:03:41+00:00",
+    "name": "Huntingdon @ Andrew College",
+    "reason": "college event"
+  },
+  "flowrestling:husky-invite-test-2025-data:2026-11-14": {
+    "at": "2026-10-05T16:03:44+00:00",
+    "name": "Husky Invite (TEST - 2025 Data)",
+    "reason": "invitational"
+  },
   "flowrestling:ighsau-1a-reg-1:2027-01-29:2wchl3xljzJH0Mbw": {
     "at": "2026-09-22T11:20:35+00:00",
     "name": "IGHSAU 1A Reg. 1 @",
@@ -293,6 +363,11 @@
     "at": "2026-09-22T11:20:35+00:00",
     "name": "IHSAA 1A Regional Duals @",
     "reason": "duplicate of flowrestling:ihsaa-1a-regional-duals:2027-02-02"
+  },
+  "flowrestling:ill-wesleyan-blackburn:2026-11-20:2rMUu58ewLV5d9OJ": {
+    "at": "2026-10-05T16:03:45+00:00",
+    "name": "Ill. Wesleyan @ Blackburn",
+    "reason": "college event"
   },
   "flowrestling:ill-wesleyan-eureka:2027-01-31": {
     "at": "2026-09-22T11:19:41+00:00",
@@ -324,6 +399,11 @@
     "name": "Iowa City, West @ Cedar Falls",
     "reason": "duplicate of flowrestling:iowa-city-west-cedar-falls:2027-01-08"
   },
+  "flowrestling:iowa-st-lock-haven:2027-01-24:2pQY8iiikQSuFQeB": {
+    "at": "2026-10-05T16:03:45+00:00",
+    "name": "Iowa St. @ Lock Haven",
+    "reason": "college event"
+  },
   "flowrestling:ithaca-buffalo-st:2027-01-29": {
     "at": "2026-09-22T11:20:02+00:00",
     "name": "Ithaca @ Buffalo St.",
@@ -332,6 +412,11 @@
   "flowrestling:ithaca-buffalo-st:2027-01-29:2h9LrKXf8wH9UxPk": {
     "at": "2026-09-22T11:20:03+00:00",
     "name": "Ithaca @ Buffalo St.",
+    "reason": "college event"
+  },
+  "flowrestling:ithaca-wilkes:2027-02-13:2uTZKOypez9IEgEW": {
+    "at": "2026-10-05T16:03:45+00:00",
+    "name": "Ithaca @ Wilkes",
     "reason": "college event"
   },
   "flowrestling:lady-bearcat-invitational:2026-12-22": {
@@ -343,6 +428,11 @@
     "at": "2026-09-22T11:19:51+00:00",
     "name": "Lady Bearcat Invitational",
     "reason": "invitational"
+  },
+  "flowrestling:maria-carrillo-ukiah:2026-12-17:2g9yiP7jQZQabqSh": {
+    "at": "2026-10-05T16:03:58+00:00",
+    "name": "Maria Carrillo @ Ukiah",
+    "reason": "same-date duplicate of flowrestling:maria-carrillo-ukiah:2026-12-17"
   },
   "flowrestling:marietta-etowah:2026-11-11:2RPAh2RDZP43f6YI": {
     "at": "2026-09-22T13:56:30+00:00",
@@ -374,10 +464,25 @@
     "name": "MISSHSAA Individual State Tournament",
     "reason": "duplicate of flowrestling:misshsaa-individual-state-tournament:2027-02-13"
   },
+  "flowrestling:mount-olive-emory-henry:2027-01-07:2ftxTK0Y2t9R9ws2": {
+    "at": "2026-10-05T16:03:42+00:00",
+    "name": "Mount Olive @ Emory & Henry",
+    "reason": "college event"
+  },
   "flowrestling:mpssaa-2a-1a-south-regional:2027-02-27:2iLf5Jo6Wg8QibDe": {
     "at": "2026-09-22T11:20:51+00:00",
     "name": "MPSSAA 2A-1A South Regional",
     "reason": "duplicate of flowrestling:mpssaa-2a-1a-south-regional:2027-02-27"
+  },
+  "flowrestling:muhlenberg-ursinus:2027-02-05": {
+    "at": "2026-10-05T16:03:47+00:00",
+    "name": "Muhlenberg @ Ursinus",
+    "reason": "college event"
+  },
+  "flowrestling:muhlenberg-ursinus:2027-02-05:26hk1B5jDi8ERP9O": {
+    "at": "2026-10-05T16:03:46+00:00",
+    "name": "Muhlenberg @ Ursinus",
+    "reason": "college event"
   },
   "flowrestling:nchsaa-women-s-5a-east-regional:2027-02-11:2gHV6DCzlbRn2F4m": {
     "at": "2026-09-22T11:20:27+00:00",
@@ -399,6 +504,11 @@
     "name": "NCHSAA Women`s 8A West Regional",
     "reason": "duplicate of flowrestling:nchsaa-women-s-8a-west-regional:2027-02-11"
   },
+  "flowrestling:new-england-col-emmanuel-ma:2027-02-13:2bhsvCkvI7AnWExR": {
+    "at": "2026-10-05T16:03:54+00:00",
+    "name": "New England Col. @ Emmanuel (MA)",
+    "reason": "same-date duplicate of flowrestling:new-england-col-emmanuel-ma:2027-02-13"
+  },
   "flowrestling:north-central-il-augustana-il:2026-11-25": {
     "at": "2026-09-22T11:19:20+00:00",
     "name": "North Central (IL) @ Augustana (IL)",
@@ -407,6 +517,11 @@
   "flowrestling:north-central-il-augustana-il:2026-11-25:2Xrr5KXFRmrJGbCc": {
     "at": "2026-09-22T11:19:22+00:00",
     "name": "North Central (IL) @ Augustana (IL)",
+    "reason": "college event"
+  },
+  "flowrestling:north-central-il-elmhurst:2027-01-15:2gdr5IFiTdSdvE8y": {
+    "at": "2026-10-05T16:03:43+00:00",
+    "name": "North Central (IL) @ Elmhurst",
     "reason": "college event"
   },
   "flowrestling:north-central-il-millikin:2027-01-21": {
@@ -434,6 +549,11 @@
     "name": "Orange Beach High School @ Flomaton High School",
     "reason": "same-date duplicate of flowrestling:orange-beach-high-school-flomaton-high-school:2027-01-14"
   },
+  "flowrestling:otterbein-wash-jeff:2027-01-16:2tSDaQv9dPDOquOe": {
+    "at": "2026-10-05T16:03:46+00:00",
+    "name": "Otterbein @ Wash. & Jeff.",
+    "reason": "college event"
+  },
   "flowrestling:oxford-hewitt-trussville:2027-02-04:2bFmGcrNRsCQE4if": {
     "at": "2026-09-22T11:20:42+00:00",
     "name": "Oxford @ Hewitt-Trussville",
@@ -454,15 +574,30 @@
     "name": "Prairie, Cedar Rapids @ Iowa City, City High",
     "reason": "duplicate of flowrestling:prairie-cedar-rapids-iowa-city-city-high:2027-01-22"
   },
+  "flowrestling:red-dragon-wrestling-tournament:2027-02-05:2L9DI9BvHdrCgde0": {
+    "at": "2026-10-05T16:04:01+00:00",
+    "name": "Red Dragon Wrestling Tournament",
+    "reason": "same-date duplicate of flowrestling:red-dragon-wrestling-tournament:2027-02-05"
+  },
   "flowrestling:region-iv-duals-2026:2027-02-06": {
     "at": "2026-09-22T11:20:04+00:00",
     "name": "Region IV Duals 2026",
     "reason": "college event"
   },
+  "flowrestling:richmond-tomas-college-station-a-m-consolidated:2026-11-18:2ztd0yjTlalH60qf": {
+    "at": "2026-10-05T16:03:53+00:00",
+    "name": "Richmond Tomas @ College Station A&M Consolidated",
+    "reason": "same-date duplicate of flowrestling:richmond-tomas-college-station-a-m-consolidated:2026-11-18"
+  },
   "flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13:2fwACUOFjdNpSHPq": {
     "at": "2026-09-22T13:56:25+00:00",
     "name": "San Antonio MacArthur @ Comal Pieper",
     "reason": "same-date duplicate of flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13"
+  },
+  "flowrestling:southern-oregon-evergreen-state-college:2026-12-13": {
+    "at": "2026-10-05T16:03:42+00:00",
+    "name": "Southern Oregon @ Evergreen State College",
+    "reason": "college event"
   },
   "flowrestling:tssaa-region-2-class-a:2027-02-08:2oDkkeNz3AaAuvBN": {
     "at": "2026-09-22T11:20:24+00:00",
@@ -539,10 +674,20 @@
     "name": "Warrior Invitational",
     "reason": "invitational"
   },
+  "flowrestling:wash-jeff-west-liberty:2026-11-07": {
+    "at": "2026-10-05T16:03:51+00:00",
+    "name": "Wash. & Jeff. @ West Liberty",
+    "reason": "college event"
+  },
   "flowrestling:waterloo-united-iowa-city-city-high:2027-01-08:2h7xay3XAumOguhl": {
     "at": "2026-09-22T11:20:29+00:00",
     "name": "Waterloo United @ Iowa City, City High",
     "reason": "duplicate of flowrestling:waterloo-united-iowa-city-city-high:2027-01-08"
+  },
+  "flowrestling:west-park-high-school-whitney:2026-11-25:2oYSrIHpoDOPwds1": {
+    "at": "2026-10-05T16:04:00+00:00",
+    "name": "West Park High School @ Whitney",
+    "reason": "same-date duplicate of flowrestling:west-park-high-school-whitney:2026-11-25"
   },
   "flowrestling:westminster-mo-eureka:2026-11-22": {
     "at": "2026-09-22T11:19:36+00:00",
@@ -553,6 +698,11 @@
     "at": "2026-09-22T11:19:37+00:00",
     "name": "Westminster (MO) @ Eureka",
     "reason": "college event"
+  },
+  "flowrestling:whitney-oak-ridge:2026-12-03:2qpBML5HcUHMOSWN": {
+    "at": "2026-10-05T16:03:56+00:00",
+    "name": "Whitney @ Oak Ridge",
+    "reason": "same-date duplicate of flowrestling:whitney-oak-ridge:2026-12-03"
   },
   "flowrestling:william-penn-baker-university:2026-11-19": {
     "at": "2026-09-22T11:20:05+00:00",
@@ -574,6 +724,16 @@
     "name": "Wyoming @ Air Force",
     "reason": "college event"
   },
+  "flowrestling:york-pa-penn-college:2026-11-21": {
+    "at": "2026-10-05T16:03:48+00:00",
+    "name": "York (PA) @ Penn College",
+    "reason": "college event"
+  },
+  "flowrestling:york-pa-penn-college:2026-11-21:2irc7UaLtUl8QnFS": {
+    "at": "2026-10-05T16:03:50+00:00",
+    "name": "York (PA) @ Penn College",
+    "reason": "college event"
+  },
   "pywrestling:battle-at-the-hive:2026-11-15": {
     "at": "2026-09-22T11:29:18+00:00",
     "name": "Battle At The Hive",
@@ -589,10 +749,20 @@
     "name": "King Of The Mountain Tournament",
     "reason": "duplicate of Flo listing, which has the real contact"
   },
+  "pywrestling:mat-town-mistletoe-madness:2026-12-28": {
+    "at": "2026-10-05T16:03:53+00:00",
+    "name": "Mat Town Mistletoe Madness",
+    "reason": "same-date duplicate of flowrestling:mat-town-usa-mistletoe-madness:2026-12-28"
+  },
   "pywrestling:palmerton-turkey-throwdown:2026-11-15": {
     "at": "2026-09-14T14:32:11+00:00",
     "name": "Palmerton Turkey Throwdown",
     "reason": "duplicate of Flo listing; pywrestling copy has GTE Turkey Classic's form"
+  },
+  "pywrestling:spartan-classic:2026-11-14": {
+    "at": "2026-10-05T16:03:53+00:00",
+    "name": "Spartan Classic",
+    "reason": "same-date duplicate of flowrestling:wyoming-valley-west-spartan-classic:2026-11-14"
   },
   "trackwrestling:2026-buc-brawl-girls-division:2026-11-21": {
     "at": "2026-09-22T11:11:29+00:00",
@@ -603,6 +773,16 @@
     "at": "2026-09-22T11:20:12+00:00",
     "name": "2026 Cougar Open",
     "reason": "college event"
+  },
+  "trackwrestling:2026-east-brunswick-bear-invitational:2026-12-28": {
+    "at": "2026-10-05T16:03:52+00:00",
+    "name": "2026 East Brunswick Bear Invitational",
+    "reason": "invitational"
+  },
+  "trackwrestling:2026-girls-garden-state-duals:2026-12-23": {
+    "at": "2026-10-05T16:04:04+00:00",
+    "name": "2026 Girls Garden State Duals",
+    "reason": "same-date duplicate of flowrestling:2026-girls-garden-state-duals:2026-12-23"
   },
   "trackwrestling:2026-griffin-open-mens:2026-11-21": {
     "at": "2026-09-22T11:11:30+00:00",
@@ -634,15 +814,60 @@
     "name": "2026 IIAAG Girls All Island Tournament",
     "reason": "duplicate of flowrestling:2026-iiaag-girls-all-island-tournament:2026-12-20"
   },
+  "trackwrestling:2026-kc-stampede-girls:2026-12-17": {
+    "at": "2026-10-05T16:04:04+00:00",
+    "name": "2026 KC Stampede (Girls)",
+    "reason": "same-date duplicate of flowrestling:kc-stampede:2026-12-17"
+  },
   "trackwrestling:2026-michigan-state-open:2026-11-07": {
     "at": "2026-09-22T11:11:28+00:00",
     "name": "2026 Michigan State Open",
     "reason": "college open"
   },
+  "trackwrestling:2026-rahway-holiday-tournament:2026-12-28": {
+    "at": "2026-10-05T16:04:05+00:00",
+    "name": "2026 Rahway Holiday Tournament",
+    "reason": "same-date duplicate of flowrestling:2026-rahway-holiday-tournament:2026-12-28"
+  },
+  "trackwrestling:2026-ridge-jv-tournament:2026-12-20": {
+    "at": "2026-10-05T16:04:04+00:00",
+    "name": "2026 Ridge JV Tournament",
+    "reason": "same-date duplicate of flowrestling:2026-ridge-jv-tournament:2026-12-20"
+  },
+  "trackwrestling:2026-spartan-invitational:2026-11-07": {
+    "at": "2026-10-05T16:03:52+00:00",
+    "name": "2026 Spartan Invitational",
+    "reason": "invitational"
+  },
   "trackwrestling:2027-5a-region-4-region-duals:2027-01-08": {
     "at": "2026-09-22T11:20:48+00:00",
     "name": "2027 5A Region 4 Region Duals",
     "reason": "duplicate of flowrestling:2027-5a-region-4-region-duals:2027-01-08"
+  },
+  "trackwrestling:2027-battle-of-the-buck-girls-varsity:2027-01-24": {
+    "at": "2026-10-05T16:04:07+00:00",
+    "name": "2027 Battle of the Buck Girls Varsity",
+    "reason": "same-date duplicate of flowrestling:2027-battle-of-the-buck-girls-varsity:2027-01-24"
+  },
+  "trackwrestling:2027-battle-of-the-buck-jv-tournament:2027-01-23": {
+    "at": "2026-10-05T16:04:06+00:00",
+    "name": "2027 Battle of the Buck JV Tournament",
+    "reason": "same-date duplicate of flowrestling:2027-battle-of-the-buck-jv-tournament:2027-01-23"
+  },
+  "trackwrestling:2027-battle-of-the-bucks-boys-varsity:2027-01-23": {
+    "at": "2026-10-05T16:04:06+00:00",
+    "name": "2027 Battle of the Bucks Boys varsity",
+    "reason": "same-date duplicate of flowrestling:2027-battle-of-the-bucks-boys-varsity:2027-01-23"
+  },
+  "trackwrestling:2027-puma-classic:2027-01-23": {
+    "at": "2026-10-05T16:04:07+00:00",
+    "name": "2027 Puma Classic",
+    "reason": "same-date duplicate of flowrestling:2027-puma-classic:2027-01-23"
+  },
+  "trackwrestling:2027-virginia-duals-kids-nationals-rookie-girls:2027-01-10": {
+    "at": "2026-10-05T16:04:05+00:00",
+    "name": "2027 Virginia Duals  Kids Nationals/Rookie/Girls",
+    "reason": "same-date duplicate of flowrestling:2027-virginia-duals-nationals-rookie-girls:2027-01-10"
   },
   "trackwrestling:24th-annual-cfisd-girls-tournament:2027-01-08": {
     "at": "2026-09-22T11:20:55+00:00",
@@ -669,6 +894,31 @@
     "name": "5th Annual Coolidge Girls Invitational",
     "reason": "invitational"
   },
+  "trackwrestling:5th-annual-girls-beast-of-the-east:2026-12-17": {
+    "at": "2026-10-05T16:04:04+00:00",
+    "name": "5th Annual Girls Beast of the East",
+    "reason": "same-date duplicate of flowrestling:beast-of-the-east:2026-12-17"
+  },
+  "trackwrestling:6th-annual-ladies-nye-scuffle:2026-12-30": {
+    "at": "2026-10-05T16:04:05+00:00",
+    "name": "6th Annual Ladies NYE Scuffle",
+    "reason": "same-date duplicate of flowrestling:6th-annual-ladies-nye-scuffle:2026-12-30"
+  },
+  "trackwrestling:6th-annual-nye-scuffle:2026-12-30": {
+    "at": "2026-10-05T16:04:05+00:00",
+    "name": "6th Annual NYE Scuffle",
+    "reason": "same-date duplicate of flowrestling:6th-annual-ladies-nye-scuffle:2026-12-30"
+  },
+  "trackwrestling:915-kick-off-classic-2026:2026-11-08": {
+    "at": "2026-10-05T16:04:02+00:00",
+    "name": "915 Kick Off Classic 2026",
+    "reason": "same-date duplicate of flowrestling:915-kick-off-classic-2026:2026-11-08"
+  },
+  "trackwrestling:auggie-invite:2026-11-21": {
+    "at": "2026-10-05T16:03:52+00:00",
+    "name": "Auggie Invite",
+    "reason": "invitational"
+  },
   "trackwrestling:battle-of-the-braids-virginia:2026-11-01": {
     "at": "2026-09-22T11:11:26+00:00",
     "name": "Battle of the Braids-Virginia",
@@ -678,6 +928,11 @@
     "at": "2026-09-22T11:20:56+00:00",
     "name": "BCWC Youth Novice/Girls/Open",
     "reason": "duplicate of flowrestling:bcwc-youth-novice-girls-open:2027-01-10"
+  },
+  "trackwrestling:beckley-brawl-valhalla-wrestling:2026-11-29": {
+    "at": "2026-10-05T16:04:03+00:00",
+    "name": "Beckley Brawl - Valhalla Wrestling",
+    "reason": "same-date duplicate of flowrestling:beckley-brawl-valhalla-wrestling:2026-11-29"
   },
   "trackwrestling:cvywa-south-valley-asso-duals-27:2027-01-23": {
     "at": "2026-09-22T11:20:56+00:00",
@@ -694,6 +949,11 @@
     "name": "Deliddo/Path of Champions 26",
     "reason": "same-date duplicate of flowrestling:deliddo-path-of-champions-26:2026-12-30"
   },
+  "trackwrestling:don-duals-2026:2026-11-21": {
+    "at": "2026-10-05T16:04:03+00:00",
+    "name": "Don Duals 2026",
+    "reason": "same-date duplicate of flowrestling:don-duals-2026:2026-11-21"
+  },
   "trackwrestling:ems-isd-tournament:2026-12-10": {
     "at": "2026-09-22T11:11:33+00:00",
     "name": "EMS-ISD Tournament",
@@ -708,6 +968,16 @@
     "at": "2026-09-22T11:20:13+00:00",
     "name": "Greyhound Open",
     "reason": "college event"
+  },
+  "trackwrestling:hawks-classic-open:2027-01-10": {
+    "at": "2026-10-05T16:04:05+00:00",
+    "name": "Hawks Classic Open",
+    "reason": "same-date duplicate of flowrestling:hawks-classic-open:2027-01-10"
+  },
+  "trackwrestling:hms-triangular-augusta-and-wellington:2026-12-01": {
+    "at": "2026-10-05T16:04:03+00:00",
+    "name": "HMS Triangular: Augusta and Wellington",
+    "reason": "same-date duplicate of flowrestling:hms-triangular-augusta-and-wellington:2026-12-01"
   },
   "trackwrestling:indigo-rain-memorial-2nd-annual-event:2027-01-09": {
     "at": "2026-09-22T11:20:56+00:00",
@@ -724,10 +994,30 @@
     "name": "JCU Duals (Women)",
     "reason": "college event"
   },
+  "trackwrestling:king-queen-of-the-castle:2026-12-22": {
+    "at": "2026-10-05T16:04:04+00:00",
+    "name": "King & Queen Of The Castle",
+    "reason": "same-date duplicate of flowrestling:king-queen-of-the-castle:2026-12-22"
+  },
+  "trackwrestling:octorarra-girls-tournament:2027-01-16": {
+    "at": "2026-10-05T16:04:06+00:00",
+    "name": "Octorarra Girls Tournament",
+    "reason": "same-date duplicate of flowrestling:octorarra-girls-tournament:2027-01-16"
+  },
+  "trackwrestling:pioneer-individual-tournament:2027-01-10": {
+    "at": "2026-10-05T16:04:06+00:00",
+    "name": "Pioneer Individual Tournament",
+    "reason": "same-date duplicate of flowrestling:pioneer-individual-tournament:2027-01-10"
+  },
   "trackwrestling:raider-invitational-jv:2026-12-12": {
     "at": "2026-09-22T11:20:11+00:00",
     "name": "Raider Invitational JV",
     "reason": "invitational"
+  },
+  "trackwrestling:rose-city-championship-2026:2026-12-11": {
+    "at": "2026-10-05T16:04:03+00:00",
+    "name": "Rose City Championship 2026",
+    "reason": "same-date duplicate of flowrestling:rose-city-championship-2026:2026-12-11"
   },
   "trackwrestling:scwc-boys-wrestling-tournament:2026-11-22": {
     "at": "2026-09-22T11:11:32+00:00",
@@ -738,6 +1028,31 @@
     "at": "2026-09-22T11:11:33+00:00",
     "name": "TCE Wrestling Championship",
     "reason": "duplicate of Flo listing, same date"
+  },
+  "trackwrestling:the-brittany-david-invitational:2026-12-28": {
+    "at": "2026-10-05T16:03:52+00:00",
+    "name": "The Brittany David Invitational",
+    "reason": "invitational"
+  },
+  "trackwrestling:tigress-scuffle-2027:2027-01-16": {
+    "at": "2026-10-05T16:04:06+00:00",
+    "name": "Tigress Scuffle 2027",
+    "reason": "same-date duplicate of flowrestling:tigress-scuffle-2027:2027-01-16"
+  },
+  "trackwrestling:tryon-athletic-woman-s-wrestling-classic:2026-11-14": {
+    "at": "2026-10-05T16:04:02+00:00",
+    "name": "Tryon Athletic Woman`s Wrestling Classic",
+    "reason": "same-date duplicate of flowrestling:tryon-athletic-woman-s-wrestling-classic:2026-11-14"
+  },
+  "trackwrestling:tryon-athletics-jv-wrestling-classic:2026-11-14": {
+    "at": "2026-10-05T16:04:02+00:00",
+    "name": "Tryon Athletics JV Wrestling Classic",
+    "reason": "same-date duplicate of flowrestling:tryon-athletics-jv-wrestling-classic:2026-11-14"
+  },
+  "trackwrestling:tryon-athletics-wrestling-classic:2026-11-14": {
+    "at": "2026-10-05T16:04:03+00:00",
+    "name": "Tryon Athletics Wrestling Classic",
+    "reason": "same-date duplicate of flowrestling:tryon-athletics-jv-wrestling-classic:2026-11-14"
   },
   "trackwrestling:uhsaa-1a-boys-division-a:2027-01-30": {
     "at": "2026-09-22T11:20:59+00:00",
@@ -1013,5 +1328,20 @@
     "at": "2026-09-22T11:20:13+00:00",
     "name": "Willadsen JV Invite",
     "reason": "invitational"
+  },
+  "trackwrestling:yellowjacket-open:2026-11-07": {
+    "at": "2026-10-05T16:03:52+00:00",
+    "name": "Yellowjacket Open",
+    "reason": "college event"
+  },
+  "trackwrestling:york-university-women-s-open:2027-01-16": {
+    "at": "2026-10-05T16:03:53+00:00",
+    "name": "York University Women`s Open",
+    "reason": "college event"
+  },
+  "trackwrestling:yukon-boys-open:2026-11-14": {
+    "at": "2026-10-05T16:03:54+00:00",
+    "name": "Yukon Boys Open",
+    "reason": "same-date duplicate of flowrestling:yukon-ladies-open:2026-11-14"
   }
 }
