@@ -24,7 +24,7 @@ from pathlib import Path
 
 import _bootstrap  # noqa: F401
 
-from iwpipe import assets, exclusions, geocode, ledger, level, mapping, pdftext, schema
+from iwpipe import assets, exclusions, geocode, ledger, level, mapping, pdftext, renames, schema
 from iwpipe.collectors import COLLECTORS
 from iwpipe.config import DATA_DIR, DEFAULT_CONTACT_EMAIL, INCLUDE_COLLEGE
 from iwpipe.http import make_session
@@ -204,6 +204,12 @@ def annotate_from_ledger(event) -> None:
     if excluded:
         event["review"]["status"] = schema.STATUS_SKIP
         schema.note(event, f"excluded: {excluded}")
+
+    renamed = renames.name_for(event["sourceKey"])
+    if renamed:
+        event["name"] = renamed
+        notes = event["review"].get("notes", [])
+        schema.drop_notes(event, [n for n in notes if n.startswith("name says")])
 
     # Being in one environment's ledger must not block the other: push
     # refuses repeats per environment on its own. Just say where it is.
