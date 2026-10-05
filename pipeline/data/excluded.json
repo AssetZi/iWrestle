@@ -29,6 +29,11 @@
     "name": "2026 Buc Brawl (Girls Division)",
     "reason": "duplicate of flowrestling:2026-buc-brawl-girls-division:2026-11-21"
   },
+  "flowrestling:2026-gte-cougars-classic:2026-11-08": {
+    "at": "2026-10-05T16:38:38+00:00",
+    "name": "2026 GTE Cougars Classic",
+    "reason": "same-date duplicate of pywrestling:cougar-classic:2026-11-08 (Brock 2026-10-05)"
+  },
   "flowrestling:2026-gte-halloween-classic-duals-and-individual-tournament:2026-10-24": {
     "at": "2026-09-22T11:20:16+00:00",
     "name": "2026 GTE Halloween Classic (Duals and Individual Tournament)",
@@ -38,6 +43,11 @@
     "at": "2026-10-05T16:03:59+00:00",
     "name": "2026 GTE Turkey Classic",
     "reason": "same-date duplicate of pywrestling:turkey-classic:2026-11-15"
+  },
+  "flowrestling:2026-junior-powerade-girls-hs-tournaments:2026-12-27": {
+    "at": "2026-10-05T16:38:42+00:00",
+    "name": "2026 Junior Powerade & Girls HS Tournaments",
+    "reason": "same-date duplicate of pywrestling:powerade-open-tournament:2026-12-27 (Brock 2026-10-05)"
   },
   "flowrestling:2026-king-of-the-mountain-presented-by-national-guard:2026-11-21": {
     "at": "2026-09-22T11:21:06+00:00",
@@ -59,6 +69,11 @@
     "name": "2026 Oakland Invitational",
     "reason": "invitational"
   },
+  "flowrestling:2026-pa-2026-turkey-takedown:2026-11-29": {
+    "at": "2026-10-05T16:38:40+00:00",
+    "name": "2026 - PA 2026 Turkey Takedown",
+    "reason": "same-date duplicate of pywrestling:turkey-takedown-round-robin:2026-11-29 (Brock 2026-10-05)"
+  },
   "flowrestling:2026-piaa-district-iv-central-section:2027-02-20:2vwHSRtrkrpyA9im": {
     "at": "2026-09-22T11:20:37+00:00",
     "name": "2026 PIAA District IV Central Section",
@@ -74,6 +89,11 @@
     "name": "2026 Warrior Run Tournament",
     "reason": "duplicate of pywrestling:randy-watts-warrior-run-classic:2026-12-19"
   },
+  "flowrestling:2027-10th-annual-cedars-youth-wrestling-tournament:2027-01-10": {
+    "at": "2026-10-05T16:38:46+00:00",
+    "name": "2027 - 10th Annual Cedars Youth Wrestling Tournament",
+    "reason": "same-date duplicate of pywrestling:lebanon-wrestling-tournament:2027-01-10 (Brock 2026-10-05)"
+  },
   "flowrestling:2027-brandywine-battle-for-the-bullet-novice:2027-02-20:2ij0ktp5YmL5f2dJ": {
     "at": "2026-09-22T11:20:50+00:00",
     "name": "2027 Brandywine Battle For The Bullet Novice",
@@ -88,6 +108,11 @@
     "at": "2026-10-05T16:03:59+00:00",
     "name": "2027 Puma Classic",
     "reason": "same-date duplicate of flowrestling:2027-puma-classic:2027-01-23"
+  },
+  "flowrestling:2027-ted-gates-1st-year-odd-age:2027-03-07": {
+    "at": "2026-10-05T16:38:46+00:00",
+    "name": "2027 Ted Gates 1st Year & Odd Age",
+    "reason": "same-date duplicate of pywrestling:ted-gates-memorial-tournament:2027-03-07 (Brock 2026-10-05)"
   },
   "flowrestling:2nd-an-sierra-pacific-girls-invite:2026-11-14": {
     "at": "2026-09-22T11:19:15+00:00",
@@ -173,6 +198,11 @@
     "at": "2026-09-22T11:19:15+00:00",
     "name": "AWC Gladiator Duals",
     "reason": "college event"
+  },
+  "flowrestling:beth-center-youth-tournament:2026-11-22": {
+    "at": "2026-10-05T16:38:38+00:00",
+    "name": "Beth Center Youth Tournament",
+    "reason": "same-date duplicate of pywrestling:preseason-bulldog-brawl:2026-11-22 (Brock 2026-10-05)"
   },
   "flowrestling:blackburn-eureka:2026-12-17": {
     "at": "2026-09-22T11:19:38+00:00",
@@ -288,6 +318,11 @@
     "at": "2026-10-05T16:03:41+00:00",
     "name": "Emory & Henry @ Greensboro",
     "reason": "college event"
+  },
+  "flowrestling:everett-tournament:2026-12-12": {
+    "at": "2026-10-05T16:38:40+00:00",
+    "name": "Everett Tournament",
+    "reason": "same-date duplicate of pywrestling:bloody-run-brawl:2026-12-12 (Brock 2026-10-05)"
   },
   "flowrestling:executive-education-academy-charter-school-panther-valley-hs:2026-12-17:2jstR5tQjZjPyZMC": {
     "at": "2026-09-22T11:20:18+00:00",
@@ -464,6 +499,11 @@
     "name": "MISSHSAA Individual State Tournament",
     "reason": "duplicate of flowrestling:misshsaa-individual-state-tournament:2027-02-13"
   },
+  "flowrestling:mo-valley-youth-tournament:2027-01-03": {
+    "at": "2026-10-05T16:38:44+00:00",
+    "name": "Mo Valley Youth Tournament",
+    "reason": "same-date duplicate of pywrestling:chet-thompson-memorial:2027-01-03 (Brock 2026-10-05)"
+  },
   "flowrestling:mount-olive-emory-henry:2027-01-07:2ftxTK0Y2t9R9ws2": {
     "at": "2026-10-05T16:03:42+00:00",
     "name": "Mount Olive @ Emory & Henry",
@@ -588,6 +628,11 @@
     "at": "2026-10-05T16:03:53+00:00",
     "name": "Richmond Tomas @ College Station A&M Consolidated",
     "reason": "same-date duplicate of flowrestling:richmond-tomas-college-station-a-m-consolidated:2026-11-18"
+  },
+  "flowrestling:rookies-of-the-mac:2026-12-13": {
+    "at": "2026-10-05T16:38:48+00:00",
+    "name": "Rookies of the MAC",
+    "reason": "shares a registration form with flowrestling:2026-king-queen-of-the-mac:2026-12-13; keep one (Brock 2026-10-05)"
   },
   "flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13:2fwACUOFjdNpSHPq": {
     "at": "2026-09-22T13:56:25+00:00",
@@ -748,6 +793,11 @@
     "at": "2026-09-22T11:29:18+00:00",
     "name": "King Of The Mountain Tournament",
     "reason": "duplicate of Flo listing, which has the real contact"
+  },
+  "pywrestling:konkrete-tune-up:2026-10-25": {
+    "at": "2026-10-05T16:38:36+00:00",
+    "name": "Konkrete Tune Up",
+    "reason": "same-date duplicate of flowrestling:northampton-koncrete-tune-up:2026-10-25 (Brock 2026-10-05: keep the copy with the most info)"
   },
   "pywrestling:mat-town-mistletoe-madness:2026-12-28": {
     "at": "2026-10-05T16:03:53+00:00",
@@ -944,6 +994,16 @@
     "name": "David Mariola - T.A.B. Invitational",
     "reason": "invitational"
   },
+  "trackwrestling:david-nichols-boys-scramble-delete:2026-11-21": {
+    "at": "2026-10-05T16:43:46+00:00",
+    "name": "David Nichols Boys Scramble DELETE",
+    "reason": "junk listing, name says DELETE (Brock 2026-10-05)"
+  },
+  "trackwrestling:delete-delete-delete:2026-12-19": {
+    "at": "2026-10-05T16:38:47+00:00",
+    "name": "DELETE DELETE DELETE",
+    "reason": "same-date duplicate of flowrestling:oregon-girls-ms-26-27-state:2026-12-19; junk listing (Brock 2026-10-05)"
+  },
   "trackwrestling:deliddo-path-of-champions-26:2026-12-30": {
     "at": "2026-09-22T13:56:34+00:00",
     "name": "Deliddo/Path of Champions 26",
@@ -958,6 +1018,11 @@
     "at": "2026-09-22T11:11:33+00:00",
     "name": "EMS-ISD Tournament",
     "reason": "duplicate of Flo listing, same date"
+  },
+  "trackwrestling:falcon-duals:2027-01-16": {
+    "at": "2026-10-05T16:38:46+00:00",
+    "name": "Falcon Duals",
+    "reason": "same-date duplicate of flowrestling:falcon-woman-s-individual:2027-01-16 (Brock 2026-10-05)"
   },
   "trackwrestling:girls-warriors-invitational:2027-01-16": {
     "at": "2026-09-22T11:20:12+00:00",
@@ -998,6 +1063,11 @@
     "at": "2026-10-05T16:04:04+00:00",
     "name": "King & Queen Of The Castle",
     "reason": "same-date duplicate of flowrestling:king-queen-of-the-castle:2026-12-22"
+  },
+  "trackwrestling:mountaineer-women-s-open:2027-01-09": {
+    "at": "2026-10-05T16:38:47+00:00",
+    "name": "Mountaineer Women`s Open",
+    "reason": "same-date duplicate of flowrestling:gunnison-cowboy-invitational:2027-01-09; college open (Brock 2026-10-05)"
   },
   "trackwrestling:octorarra-girls-tournament:2027-01-16": {
     "at": "2026-10-05T16:04:06+00:00",
