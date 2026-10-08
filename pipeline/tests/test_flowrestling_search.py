@@ -87,3 +87,38 @@ def test_swapped_coordinates_are_put_right_and_garbage_is_dropped():
     assert _coordinates({"latitude": 40.1, "longitude": -79.4}) == {"latitude": 40.1, "longitude": -79.4}
     assert _coordinates({"latitude": 500, "longitude": 500}) is None
     assert _coordinates(None) is None
+
+
+def test_a_search_page_that_times_out_is_tried_again(monkeypatch):
+    import requests
+
+    monkeypatch.setattr(flowrestling, "POST_RETRY_WAITS", (0, 0))
+
+    class Flaky:
+        def __init__(self):
+            self.calls = 0
+        def post(self, url, headers=None, json=None, timeout=None):
+            self.calls += 1
+            if self.calls == 1:
+                raise requests.ReadTimeout("slow")
+            if self.calls == 2:
+                return Response({}, status=503)
+            return Response({"ok": True})
+
+    session = Flaky()
+    assert flowrestling._post(session, "search", {}) == {"ok": True}
+    assert session.calls == 3
+
+
+def test_a_search_page_that_never_answers_still_fails(monkeypatch):
+    import pytest
+    import requests
+
+    monkeypatch.setattr(flowrestling, "POST_RETRY_WAITS", (0,))
+
+    class Dead:
+        def post(self, url, headers=None, json=None, timeout=None):
+            raise requests.ReadTimeout("slow")
+
+    with pytest.raises(requests.ReadTimeout):
+        flowrestling._post(Dead(), "search", {})

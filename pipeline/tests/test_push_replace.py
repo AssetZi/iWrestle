@@ -164,13 +164,13 @@ def test_a_listing_gone_from_its_source_is_removed_only_with_replace(tmp_path, m
 
 
 def test_mass_removals_are_blocked_by_the_cap(tmp_path, monkeypatch):
-    """Eight of ten entries gone at once is a broken scrape, not eight cancellations."""
+    """Eighteen of twenty entries gone at once is a broken scrape, not eighteen cancellations."""
     import push as push_cli
 
     client = _wire(tmp_path, monkeypatch)
-    for i in range(10):
+    for i in range(20):
         ledger.record(f"pywrestling:e{i}:2026-11-07", "development", f"R{i}", f"E{i}", day="2026-11-07")
-    kept = {f"pywrestling:e{i}:2026-11-07" for i in (8, 9)}
+    kept = {f"pywrestling:e{i}:2026-11-07" for i in (18, 19)}
     ledger.mark_misses("pywrestling", kept, "2026-09-07")
     ledger.mark_misses("pywrestling", kept, "2026-09-14")
     file = tmp_path / "events.json"
@@ -182,9 +182,9 @@ def test_mass_removals_are_blocked_by_the_cap(tmp_path, monkeypatch):
     assert ledger.get("pywrestling:e0:2026-11-07", "development")
 
     # A person can raise the cap for one run.
-    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace", "--max-removals", "8"])
+    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace", "--max-removals", "18"])
     assert push_cli.main() == 0
-    assert len([c for c in client.calls if c[0] == "delete"]) == 8
+    assert len([c for c in client.calls if c[0] == "delete"]) == 18
 
 
 def test_a_pushed_event_reclassified_as_college_is_retired_after_two_runs(tmp_path, monkeypatch):
@@ -233,3 +233,15 @@ def test_no_key_means_no_push(tmp_path, monkeypatch):
     schema.dump(file, "pywrestling", [_event(tmp_path)])
     monkeypatch.setattr(sys, "argv", ["push", str(file)])
     assert push_cli.main() == 1
+
+
+def test_development_allows_a_larger_share_of_removals_than_production(tmp_path, monkeypatch):
+    import push as push_cli
+
+    _wire(tmp_path, monkeypatch)
+    for environment in ("development", "production"):
+        for i in range(40):
+            ledger.record(f"trackwrestling:e{i}:2026-11-07", environment, f"R{i}", f"E{i}", day="2026-11-07")
+
+    assert push_cli.removal_cap("trackwrestling", cktool.DEVELOPMENT) == 15
+    assert push_cli.removal_cap("trackwrestling", cktool.PRODUCTION) == 5

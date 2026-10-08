@@ -26,7 +26,23 @@
       "Bash(.venv/bin/python /private/tmp/claude-501/-Users-brock-Developer-iWrestle/4d9154de-c686-407b-9f44-5e3e7262aa17/scratchpad/an.py)",
       "Bash(.venv/bin/python /private/tmp/claude-501/-Users-brock-Developer-iWrestle/4d9154de-c686-407b-9f44-5e3e7262aa17/scratchpad/items.py)",
       "Bash(.venv/bin/python /private/tmp/claude-501/-Users-brock-Developer-iWrestle/4d9154de-c686-407b-9f44-5e3e7262aa17/scratchpad/flag.py)",
-      "Bash(cd /Users/brock/Developer/iWrestle/pipeline; cat Makefile; echo ---; cat /Users/brock/.claude/scheduled-tasks/iwrestle-events-routine/SKILL.md | head -5; ls -la /Users/brock/.claude/scheduled-tasks/iwrestle-events-routine/)"
+      "Bash(cd /Users/brock/Developer/iWrestle/pipeline; cat Makefile; echo ---; cat /Users/brock/.claude/scheduled-tasks/iwrestle-events-routine/SKILL.md | head -5; ls -la /Users/brock/.claude/scheduled-tasks/iwrestle-events-routine/)",
+      "Bash(.venv/bin/python /Users/brock/.claude/scheduled-tasks/iwrestle-events-routine/triage.py apply)",
+      "Bash(echo \"exit $?\")",
+      "Bash(grep -vE \"^\\\\s+\\\\^|^    [a-z_ ].*\\\\\\($\")",
+      "Bash(awk 'NR<=14 || /Error|Exception|HTTP|raise/')",
+      "Bash(git add *)",
+      "Bash(git commit -q -m 'Record push *)",
+      "Bash(git check-ignore *)",
+      "Bash(echo \"ignore rc=$?\")",
+      "Bash(.venv/bin/python -m pytest -q tests)",
+      "Bash(.venv/bin/python bin/exclude.py \"trackwrestling:david-nichols-boys-scramble-delete:2026-11-21\" --reason \"junk listing, name says DELETE \\(Brock 2026-10-05\\)\")",
+      "Read(//Users/brock/.claude/scheduled-tasks/iwrestle-events-routine/**)",
+      "Bash(sed -E 's/.*\\\\\\(\\(.*\\)\\\\\\)$/\\\\1/')",
+      "Bash(git commit -q -m 'Keep corrected event names across collects *)",
+      "Bash(git commit -q -m 'Record production push *)",
+      "Bash(cd /Users/brock/Developer/iWrestle/pipeline && sed -n 60,95p iwpipe/collectors/flowrestling.py; sed -n 205,232p bin/collect.py; sed -n 60,110p bin/review.py; sed -n 214,245p bin/push.py; grep -n \"MISS_LIMIT\\\\|def looks_partial\\\\|def mark_misses\" iwpipe/ledger.py; cat bin/reconcile.py | sed -n 1,40p; ls ~/Library/LaunchAgents 2>/dev/null | head; sed -n 1,12p Makefile)",
+      "Bash(sed -i '' 's|ledger.record\\(FLO, \"development\", \"REC1\", \"hash\", name=\"Everett Tournament\", date=\"2026-12-12\",|ledger.record\\(FLO, \"development\", \"REC1\", \"Everett Tournament\", day=\"2026-12-12\",|' tests/test_recheck.py && grep -n \"def test_mass_removals_are_blocked_by_the_cap\" -A26 tests/test_push_replace.py)"
     ]
   }
 }

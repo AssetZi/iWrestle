@@ -79,6 +79,11 @@
     "name": "2026 PIAA District IV Central Section",
     "reason": "duplicate of flowrestling:2026-piaa-district-iv-central-section:2027-02-20"
   },
+  "flowrestling:2026-rahway-holiday-tournament:2026-12-28:2x1v478xhINJImyr": {
+    "at": "2026-10-05T19:42:57+00:00",
+    "name": "2026 Rahway Holiday Tournament",
+    "reason": "same-date duplicate of flowrestling:2026-rahway-holiday-tournament:2026-12-28"
+  },
   "flowrestling:2026-revolution-duals-k-8-cancel-cancel:2026-12-20": {
     "at": "2026-09-22T11:20:09+00:00",
     "name": "2026 Revolution Duals K-8 cancel cancel",
@@ -103,6 +108,11 @@
     "at": "2026-09-22T11:20:50+00:00",
     "name": "2027 CHSAA State Championships",
     "reason": "duplicate of flowrestling:2027-chsaa-state-championships:2027-02-13"
+  },
+  "flowrestling:2027-district-one-team-duals:2027-02-06:2cpYf4sfPgKLgrk6": {
+    "at": "2026-10-05T19:42:53+00:00",
+    "name": "2027 District One Team Duals",
+    "reason": "same-date duplicate of flowrestling:2027-district-one-team-duals:2027-02-06"
   },
   "flowrestling:2027-puma-classic:2027-01-23:2sii84cp6Pp2usCD": {
     "at": "2026-10-05T16:03:59+00:00",
@@ -144,6 +154,16 @@
     "name": "Air Force @ Little Rock",
     "reason": "college event"
   },
+  "flowrestling:alexander-central-high-school-north-iredell-high-school:2026-11-20:2vWq2z1lKfnEAkjr": {
+    "at": "2026-10-05T19:42:34+00:00",
+    "name": "Alexander Central High School @ North Iredell High School",
+    "reason": "same-date duplicate of flowrestling:alexander-central-high-school-north-iredell-high-school:2026-11-20"
+  },
+  "flowrestling:alisal-monterey:2027-02-03:2JsX9WCY7iIEKe3L": {
+    "at": "2026-10-05T19:42:36+00:00",
+    "name": "Alisal @ Monterey",
+    "reason": "same-date duplicate of flowrestling:alisal-monterey:2027-02-03"
+  },
   "flowrestling:allen-montevallo:2026-12-03:2APW8XdXSVOTG4Kl": {
     "at": "2026-10-05T16:03:53+00:00",
     "name": "Allen @ Montevallo",
@@ -177,6 +197,16 @@
   "flowrestling:augustana-il-ill-wesleyan:2026-12-05:2mc4gGcG2YLAXu6Q": {
     "at": "2026-09-22T11:19:28+00:00",
     "name": "Augustana (IL) @ Ill. Wesleyan",
+    "reason": "college event"
+  },
+  "flowrestling:aurora-carthage:2027-01-15": {
+    "at": "2026-10-05T19:42:14+00:00",
+    "name": "Aurora @ Carthage",
+    "reason": "college event"
+  },
+  "flowrestling:aurora-carthage:2027-01-15:2xJys23RApGbeOMo": {
+    "at": "2026-10-05T19:42:13+00:00",
+    "name": "Aurora @ Carthage",
     "reason": "college event"
   },
   "flowrestling:aurora-north-central-il:2027-02-05": {
@@ -214,10 +244,25 @@
     "name": "Blackburn @ Eureka",
     "reason": "college event"
   },
+  "flowrestling:bluefield-st-allen:2026-11-18:2IuvmP7nyQzF34fr": {
+    "at": "2026-10-05T19:42:34+00:00",
+    "name": "Bluefield St. @ Allen",
+    "reason": "same-date duplicate of flowrestling:bluefield-st-allen:2026-11-18"
+  },
   "flowrestling:bristol-hs-pope-john-paul-ii:2026-12-12:2lPVoBXv7GpDYzUa": {
     "at": "2026-09-22T13:56:31+00:00",
     "name": "Bristol Hs @ Pope John Paul II",
     "reason": "same-date duplicate of flowrestling:bristol-hs-pope-john-paul-ii:2026-12-12"
+  },
+  "flowrestling:carthage-elmhurst:2026-12-04": {
+    "at": "2026-10-05T19:42:18+00:00",
+    "name": "Carthage @ Elmhurst",
+    "reason": "college event"
+  },
+  "flowrestling:carthage-elmhurst:2026-12-04:2zICGQbkAX6qCPd1": {
+    "at": "2026-10-05T19:42:17+00:00",
+    "name": "Carthage @ Elmhurst",
+    "reason": "college event"
   },
   "flowrestling:carthage-north-central-il:2026-11-13": {
     "at": "2026-09-22T11:19:47+00:00",
@@ -239,6 +284,16 @@
     "name": "Central Methodist @ William Penn (Iowa)",
     "reason": "college event"
   },
+  "flowrestling:central-okla-newman:2026-12-04": {
+    "at": "2026-10-05T19:42:23+00:00",
+    "name": "Central Okla. @ Newman",
+    "reason": "college event"
+  },
+  "flowrestling:central-okla-newman:2026-12-04:2tUoJjx5R2Iv0RNs": {
+    "at": "2026-10-05T19:42:24+00:00",
+    "name": "Central Okla. @ Newman",
+    "reason": "college event"
+  },
   "flowrestling:chatham-penn-st-altoona:2026-11-19": {
     "at": "2026-09-22T11:19:18+00:00",
     "name": "Chatham @ Penn St.-Altoona",
@@ -248,6 +303,16 @@
     "at": "2026-09-22T11:19:20+00:00",
     "name": "Chatham @ Penn St.- Altoona",
     "reason": "college event"
+  },
+  "flowrestling:cheyenne-mountain-jr-high-eagleview-ms:2026-10-12:2p9S0K6jMCb7WiTl": {
+    "at": "2026-10-05T19:42:38+00:00",
+    "name": "Cheyenne Mountain Jr High @ Eagleview MS",
+    "reason": "same-date duplicate of flowrestling:cheyenne-mountain-jr-high-eagleview-ms:2026-10-12"
+  },
+  "flowrestling:chinook-trail-middle-school-eagleview-ms:2026-10-08:2cSnQC6apb9Bvmtd": {
+    "at": "2026-10-05T19:42:37+00:00",
+    "name": "Chinook Trail Middle School @ Eagleview MS",
+    "reason": "same-date duplicate of flowrestling:chinook-trail-middle-school-eagleview-ms:2026-10-08"
   },
   "flowrestling:college-station-a-m-consolidated-college-station:2027-01-20:2vmfhOHSJp8eJ8XX": {
     "at": "2026-09-22T11:20:22+00:00",
@@ -289,10 +354,55 @@
     "name": "Dallas Sunset @ Dallas Adamson",
     "reason": "duplicate of flowrestling:dallas-sunset-dallas-adamson:2027-01-21"
   },
+  "flowrestling:eagle-invitational:2026-12-19": {
+    "at": "2026-10-05T19:42:19+00:00",
+    "name": "Eagle Invitational",
+    "reason": "invitational"
+  },
+  "flowrestling:eagle-invitational:2026-12-19:2dZbjhb7buAn2afM": {
+    "at": "2026-10-05T19:42:20+00:00",
+    "name": "Eagle Invitational",
+    "reason": "invitational"
+  },
+  "flowrestling:eagleview-ms-discovery-canyon-middle-school:2026-10-29:2V4fNakZi3NU0CXo": {
+    "at": "2026-10-05T19:42:41+00:00",
+    "name": "Eagleview MS @ Discovery Canyon Middle School",
+    "reason": "same-date duplicate of flowrestling:eagleview-ms-discovery-canyon-middle-school:2026-10-29"
+  },
+  "flowrestling:eagleview-ms-elizabeth-middle-school:2026-10-20:2Pp5aVRGAqGHCuzM": {
+    "at": "2026-10-05T19:42:39+00:00",
+    "name": "Eagleview MS @ Elizabeth Middle School",
+    "reason": "same-date duplicate of flowrestling:eagleview-ms-elizabeth-middle-school:2026-10-20"
+  },
+  "flowrestling:eagleview-ms-lewis-palmer-middle-school:2026-10-22:2nIP9ohuC380Qipu": {
+    "at": "2026-10-05T19:42:40+00:00",
+    "name": "Eagleview MS @ Lewis-Palmer Middle School",
+    "reason": "same-date duplicate of flowrestling:eagleview-ms-lewis-palmer-middle-school:2026-10-22"
+  },
   "flowrestling:east-stroudsburg-bridgeport:2027-02-12:2whAQygF92afc3hX": {
     "at": "2026-10-05T16:03:43+00:00",
     "name": "East Stroudsburg @ Bridgeport",
     "reason": "college event"
+  },
+  "flowrestling:eastern-otterbein:2026-11-21": {
+    "at": "2026-10-05T19:42:16+00:00",
+    "name": "Eastern @ Otterbein",
+    "reason": "college event"
+  },
+  "flowrestling:eastern-otterbein:2026-11-21:2nMKSi7XfmFVJOQP": {
+    "at": "2026-10-05T19:42:15+00:00",
+    "name": "Eastern @ Otterbein",
+    "reason": "college event"
+  },
+  "flowrestling:ec-dadeville-valley:2027-01-19:2VFqZMOSJ7Jnp3yX": {
+    "at": "2026-10-05T19:42:45+00:00",
+    "name": "EC/Dadeville/Valley",
+    "reason": "same-date duplicate of flowrestling:ec-dadeville-valley:2027-01-19"
+  },
+  "flowrestling:effingham-county-brunswick:2027-01-21:2WgR7NF9cTUMgIOl": {
+    "at": "2026-10-05T19:42:46+00:00",
+    "name": "Effingham County @ Brunswick",
+    "reason": "same-date duplicate of flowrestling:effingham-county-brunswick:2027-01-21"
   },
   "flowrestling:ellsworth-cc-upper-iowa:2026-11-12:2lHPIkLGES2vvuPr": {
     "at": "2026-10-05T16:03:54+00:00",
@@ -344,6 +454,16 @@
     "name": "Friends University @ Avila",
     "reason": "college event"
   },
+  "flowrestling:friends-university-ottawa-university:2026-12-11": {
+    "at": "2026-10-05T19:42:26+00:00",
+    "name": "Friends University @ Ottawa University",
+    "reason": "college event"
+  },
+  "flowrestling:friends-university-ottawa-university:2026-12-11:2iIjgOs5ecS5W6bB": {
+    "at": "2026-10-05T19:42:25+00:00",
+    "name": "Friends University @ Ottawa University",
+    "reason": "college event"
+  },
   "flowrestling:gannon-ashland:2027-02-06:2XCtvRChudwH6Ams": {
     "at": "2026-09-22T11:19:33+00:00",
     "name": "Gannon @ Ashland",
@@ -368,6 +488,11 @@
     "at": "2026-09-22T11:20:01+00:00",
     "name": "Hawkeye Community College @ Iowa Western Community College",
     "reason": "college event"
+  },
+  "flowrestling:holtville-elmore-county-school:2026-11-19:2pzekjT5Micmvy4H": {
+    "at": "2026-10-05T19:42:43+00:00",
+    "name": "Holtville @ Elmore County School",
+    "reason": "same-date duplicate of flowrestling:holtville-elmore-county-school:2026-11-19"
   },
   "flowrestling:huntingdon-andrew-college:2026-12-10:2X6isC7hcByfIibK": {
     "at": "2026-10-05T16:03:41+00:00",
@@ -424,6 +549,16 @@
     "name": "Ill. Wesleyan @ North Central (IL)",
     "reason": "college event"
   },
+  "flowrestling:iowa-city-city-high-cedar-rapids-washington:2026-12-01:2qtWILleHuhyyJay": {
+    "at": "2026-10-05T19:42:48+00:00",
+    "name": "Iowa City, City High @ Cedar Rapids Washington",
+    "reason": "same-date duplicate of flowrestling:iowa-city-city-high-cedar-rapids-washington:2026-12-01"
+  },
+  "flowrestling:iowa-city-liberty-cedar-rapids-washington:2027-01-22:2vMfDf8m33cmGLM5": {
+    "at": "2026-10-05T19:42:49+00:00",
+    "name": "Iowa City, Liberty @ Cedar Rapids Washington",
+    "reason": "same-date duplicate of flowrestling:iowa-city-liberty-cedar-rapids-washington:2027-01-22"
+  },
   "flowrestling:iowa-city-liberty-iowa-city-city-high:2027-01-29:2gMVvOeXOeAwCQKH": {
     "at": "2026-09-22T11:20:33+00:00",
     "name": "Iowa City, Liberty @ Iowa City, City High",
@@ -454,6 +589,16 @@
     "name": "Ithaca @ Wilkes",
     "reason": "college event"
   },
+  "flowrestling:kick-off-classic:2026-11-07:2h3iT5ChR1zvQbWg": {
+    "at": "2026-10-05T19:42:50+00:00",
+    "name": "Kick Off Classic",
+    "reason": "same-date duplicate of flowrestling:kick-off-classic:2026-11-07"
+  },
+  "flowrestling:king-queen-of-the-castle:2026-12-22:2n9Fr8bZAvOBQA2i": {
+    "at": "2026-10-05T19:42:51+00:00",
+    "name": "King & Queen Of The Castle",
+    "reason": "same-date duplicate of flowrestling:king-queen-of-the-castle:2026-12-22"
+  },
   "flowrestling:lady-bearcat-invitational:2026-12-22": {
     "at": "2026-09-22T11:19:49+00:00",
     "name": "Lady Bearcat Invitational",
@@ -464,6 +609,26 @@
     "name": "Lady Bearcat Invitational",
     "reason": "invitational"
   },
+  "flowrestling:linfield-pacific-or:2027-02-03": {
+    "at": "2026-10-05T19:42:28+00:00",
+    "name": "Linfield @ Pacific (OR)",
+    "reason": "college event"
+  },
+  "flowrestling:linfield-pacific-or:2027-02-03:2zOkUjliMkQCXiQh": {
+    "at": "2026-10-05T19:42:29+00:00",
+    "name": "Linfield @ Pacific (OR)",
+    "reason": "college event"
+  },
+  "flowrestling:manchester-albion:2026-12-03": {
+    "at": "2026-10-05T19:42:11+00:00",
+    "name": "Manchester @ Albion",
+    "reason": "college event"
+  },
+  "flowrestling:manchester-albion:2026-12-03:2qbjUYCNM32HfY7V": {
+    "at": "2026-10-05T19:42:12+00:00",
+    "name": "Manchester @ Albion",
+    "reason": "college event"
+  },
   "flowrestling:maria-carrillo-ukiah:2026-12-17:2g9yiP7jQZQabqSh": {
     "at": "2026-10-05T16:03:58+00:00",
     "name": "Maria Carrillo @ Ukiah",
@@ -473,6 +638,11 @@
     "at": "2026-09-22T13:56:30+00:00",
     "name": "Marietta @ Etowah",
     "reason": "same-date duplicate of flowrestling:marietta-etowah:2026-11-11"
+  },
+  "flowrestling:mcintosh-county-academy-brunswick:2027-01-06:2KJHJcX9mk36gdhZ": {
+    "at": "2026-10-05T19:42:35+00:00",
+    "name": "McIntosh County Academy @ Brunswick",
+    "reason": "same-date duplicate of flowrestling:mcintosh-county-academy-brunswick:2027-01-06"
   },
   "flowrestling:millikin-aurora:2026-12-04": {
     "at": "2026-09-22T11:19:24+00:00",
@@ -508,6 +678,16 @@
     "at": "2026-10-05T16:03:42+00:00",
     "name": "Mount Olive @ Emory & Henry",
     "reason": "college event"
+  },
+  "flowrestling:mount-olive-lincoln-memorial:2027-01-13": {
+    "at": "2026-10-05T19:42:27+00:00",
+    "name": "Mount Olive @ Lincoln Memorial",
+    "reason": "college event"
+  },
+  "flowrestling:mountain-ridge-middle-school-eagleview-ms:2026-11-05:2eYRC2YvK5R5ZRCb": {
+    "at": "2026-10-05T19:42:42+00:00",
+    "name": "Mountain Ridge Middle School @ Eagleview MS",
+    "reason": "same-date duplicate of flowrestling:mountain-ridge-middle-school-eagleview-ms:2026-11-05"
   },
   "flowrestling:mpssaa-2a-1a-south-regional:2027-02-27:2iLf5Jo6Wg8QibDe": {
     "at": "2026-09-22T11:20:51+00:00",
@@ -574,6 +754,11 @@
     "name": "North Central (IL) @ Millikin",
     "reason": "college event"
   },
+  "flowrestling:north-iredell-high-school-lake-norman-high-school:2027-01-28:2sELNvUKBxMdxSCJ": {
+    "at": "2026-10-05T19:42:49+00:00",
+    "name": "North Iredell High School @ Lake Norman High School",
+    "reason": "same-date duplicate of flowrestling:north-iredell-high-school-lake-norman-high-school:2027-01-28"
+  },
   "flowrestling:oak-grove-tuscaloosa-county:2027-01-07:2r9jdZlAJDufO8Wa": {
     "at": "2026-09-22T11:20:41+00:00",
     "name": "Oak Grove @ Tuscaloosa County",
@@ -583,6 +768,11 @@
     "at": "2026-09-22T11:20:40+00:00",
     "name": "Oak Mountain @ Tuscaloosa County",
     "reason": "duplicate of flowrestling:oak-mountain-tuscaloosa-county:2026-12-15"
+  },
+  "flowrestling:okemah-heavener:2027-01-27:2QwfjSNDusYhvwWu": {
+    "at": "2026-10-05T19:42:52+00:00",
+    "name": "OKEMAH @ HEAVENER",
+    "reason": "same-date duplicate of flowrestling:okemah-heavener:2027-01-27"
   },
   "flowrestling:orange-beach-high-school-flomaton-high-school:2027-01-14:2Y2bQXJuHApk9jiq": {
     "at": "2026-09-22T13:56:33+00:00",
@@ -598,6 +788,11 @@
     "at": "2026-09-22T11:20:42+00:00",
     "name": "Oxford @ Hewitt-Trussville",
     "reason": "duplicate of flowrestling:oxford-hewitt-trussville:2027-02-04"
+  },
+  "flowrestling:pacific-or-linfield:2026-11-14": {
+    "at": "2026-10-05T19:42:22+00:00",
+    "name": "Pacific (OR) @ Linfield",
+    "reason": "college event"
   },
   "flowrestling:penn-charter-individual:2027-01-16:2l9MQ0Kh9JN3ARSo": {
     "at": "2026-09-22T13:56:32+00:00",
@@ -618,6 +813,11 @@
     "at": "2026-10-05T16:04:01+00:00",
     "name": "Red Dragon Wrestling Tournament",
     "reason": "same-date duplicate of flowrestling:red-dragon-wrestling-tournament:2027-02-05"
+  },
+  "flowrestling:reeltown-elmore-county-school:2026-12-10:2f8zdmUZyxtfV51H": {
+    "at": "2026-10-05T19:42:44+00:00",
+    "name": "Reeltown @ Elmore County School",
+    "reason": "same-date duplicate of flowrestling:reeltown-elmore-county-school:2026-12-10"
   },
   "flowrestling:region-iv-duals-2026:2027-02-06": {
     "at": "2026-09-22T11:20:04+00:00",
@@ -643,6 +843,21 @@
     "at": "2026-10-05T16:03:42+00:00",
     "name": "Southern Oregon @ Evergreen State College",
     "reason": "college event"
+  },
+  "flowrestling:tca-the-classical-academy-holmes-middle-school:2026-10-20:2x562YuwqwXJJuuA": {
+    "at": "2026-10-05T19:42:32+00:00",
+    "name": "TCA - The Classical Academy @ Holmes Middle School",
+    "reason": "same-date duplicate of flowrestling:tca-the-classical-academy-holmes-middle-school:2026-10-20"
+  },
+  "flowrestling:tca-the-classical-academy-lewis-palmer-middle-school:2026-11-10:2qDMdocSZbNeACrQ": {
+    "at": "2026-10-05T19:42:33+00:00",
+    "name": "TCA - The Classical Academy @ Lewis-Palmer Middle School",
+    "reason": "same-date duplicate of flowrestling:tca-the-classical-academy-lewis-palmer-middle-school:2026-11-10"
+  },
+  "flowrestling:timberview-middle-school-eagleview-ms:2026-11-09:2lDz1touDbsc5N3T": {
+    "at": "2026-10-05T19:42:42+00:00",
+    "name": "Timberview Middle School @ Eagleview MS",
+    "reason": "same-date duplicate of flowrestling:timberview-middle-school-eagleview-ms:2026-11-09"
   },
   "flowrestling:tssaa-region-2-class-a:2027-02-08:2oDkkeNz3AaAuvBN": {
     "at": "2026-09-22T11:20:24+00:00",
@@ -684,6 +899,21 @@
     "name": "UIL Girls District 9-5A",
     "reason": "duplicate of flowrestling:uil-girls-district-9-5a:2027-01-30"
   },
+  "flowrestling:umpqua-community-college-linfield:2027-01-16": {
+    "at": "2026-10-05T19:42:31+00:00",
+    "name": "Umpqua Community College @ Linfield",
+    "reason": "college event"
+  },
+  "flowrestling:umpqua-community-college-linfield:2027-01-16:2VBuHuN495Zp2Yv0": {
+    "at": "2026-10-05T19:42:30+00:00",
+    "name": "Umpqua Community College @ Linfield",
+    "reason": "college event"
+  },
+  "flowrestling:unlv-linfield:2026-12-14:2d7ZWQA4byVEZBoi": {
+    "at": "2026-10-05T19:42:54+00:00",
+    "name": "UNLV @ Linfield",
+    "reason": "same-date duplicate of flowrestling:unlv-linfield:2026-12-14"
+  },
   "flowrestling:ursinus-east-stroudsburg:2026-11-21": {
     "at": "2026-09-22T11:19:34+00:00",
     "name": "Ursinus @ East Stroudsburg",
@@ -724,15 +954,30 @@
     "name": "Wash. & Jeff. @ West Liberty",
     "reason": "college event"
   },
+  "flowrestling:waterloo-united-cedar-rapids-washington:2027-01-15:2ziGo9w6phkuRPLd": {
+    "at": "2026-10-05T19:42:55+00:00",
+    "name": "Waterloo United @ Cedar Rapids Washington",
+    "reason": "same-date duplicate of flowrestling:waterloo-united-cedar-rapids-washington:2027-01-15"
+  },
   "flowrestling:waterloo-united-iowa-city-city-high:2027-01-08:2h7xay3XAumOguhl": {
     "at": "2026-09-22T11:20:29+00:00",
     "name": "Waterloo United @ Iowa City, City High",
     "reason": "duplicate of flowrestling:waterloo-united-iowa-city-city-high:2027-01-08"
   },
+  "flowrestling:west-lincoln-high-school-lincolnton-high-school:2027-01-23:2rryeE8SeXaF5v1A": {
+    "at": "2026-10-05T19:42:58+00:00",
+    "name": "West Lincoln High School @ Lincolnton High School",
+    "reason": "same-date duplicate of flowrestling:west-lincoln-high-school-lincolnton-high-school:2027-01-23"
+  },
   "flowrestling:west-park-high-school-whitney:2026-11-25:2oYSrIHpoDOPwds1": {
     "at": "2026-10-05T16:04:00+00:00",
     "name": "West Park High School @ Whitney",
     "reason": "same-date duplicate of flowrestling:west-park-high-school-whitney:2026-11-25"
+  },
+  "flowrestling:western-new-eng-eastern:2027-01-16:2UK9b5KDflNMhaR7": {
+    "at": "2026-10-05T19:42:21+00:00",
+    "name": "Western New Eng. @ Eastern",
+    "reason": "college event"
   },
   "flowrestling:westminster-mo-eureka:2026-11-22": {
     "at": "2026-09-22T11:19:36+00:00",
@@ -758,6 +1003,16 @@
     "at": "2026-09-22T11:20:43+00:00",
     "name": "William Tennent Hs @ Upper Dublin Hs",
     "reason": "duplicate of flowrestling:william-tennent-hs-upper-dublin-hs:2026-12-24"
+  },
+  "flowrestling:woodlake-union-golden-west:2027-01-19:2OL7d2l0PKgRF8c1": {
+    "at": "2026-10-05T19:42:56+00:00",
+    "name": "Woodlake Union @ Golden West",
+    "reason": "same-date duplicate of flowrestling:woodlake-union-golden-west:2027-01-19"
+  },
+  "flowrestling:woodlake-union-golden-west:2027-01-19:2w2EnAOMcwhvI7vJ": {
+    "at": "2026-10-05T19:42:56+00:00",
+    "name": "Woodlake Union @ Golden West",
+    "reason": "same-date duplicate of flowrestling:woodlake-union-golden-west:2027-01-19:2OL7d2l0PKgRF8c1"
   },
   "flowrestling:wyoming-air-force:2027-01-24": {
     "at": "2026-09-22T13:56:24+00:00",
@@ -909,6 +1164,11 @@
     "name": "2027 Battle of the Bucks Boys varsity",
     "reason": "same-date duplicate of flowrestling:2027-battle-of-the-bucks-boys-varsity:2027-01-23"
   },
+  "trackwrestling:2027-for-her-duals:2027-01-23": {
+    "at": "2026-10-05T19:42:59+00:00",
+    "name": "2027 For Her Duals",
+    "reason": "same-date duplicate of flowrestling:2027-for-her-duals:2027-01-23"
+  },
   "trackwrestling:2027-puma-classic:2027-01-23": {
     "at": "2026-10-05T16:04:07+00:00",
     "name": "2027 Puma Classic",
@@ -983,6 +1243,11 @@
     "at": "2026-10-05T16:04:03+00:00",
     "name": "Beckley Brawl - Valhalla Wrestling",
     "reason": "same-date duplicate of flowrestling:beckley-brawl-valhalla-wrestling:2026-11-29"
+  },
+  "trackwrestling:black-hills-nationals-girls-glam-slam:2026-10-17": {
+    "at": "2026-10-05T19:42:59+00:00",
+    "name": "Black Hills Nationals Girls Glam Slam",
+    "reason": "same-date duplicate of flowrestling:black-hills-nationals-girls-glam-slam:2026-10-17"
   },
   "trackwrestling:cvywa-south-valley-asso-duals-27:2027-01-23": {
     "at": "2026-09-22T11:20:56+00:00",

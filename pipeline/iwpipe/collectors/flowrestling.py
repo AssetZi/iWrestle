@@ -71,10 +71,24 @@ HREF = re.compile(r'href="([^"]+)"')
 
 # --- HTTP ----------------------------------------------------------------------
 
+# One slow answer among ~80 search pages used to lose the whole source for
+# the day. Waits between tries, in seconds.
+POST_RETRY_WAITS = (5, 20, 60)
+
+
 def _post(session: requests.Session, path: str, body: dict[str, Any]) -> dict[str, Any]:
-    response = session.post(f"{API}/{path}", headers=API_HEADERS, json=body, timeout=30)
-    response.raise_for_status()
-    return response.json()
+    for wait in (*POST_RETRY_WAITS, None):
+        try:
+            response = session.post(f"{API}/{path}", headers=API_HEADERS, json=body, timeout=30)
+            if response.status_code < 500 or wait is None:
+                response.raise_for_status()
+                return response.json()
+        except (requests.Timeout, requests.ConnectionError):
+            if wait is None:
+                raise
+        print(f"  flowrestling: {path} did not answer, trying again in {wait}s")
+        time.sleep(wait)
+    raise AssertionError("unreachable")
 
 
 # Between detail requests. The first national run is ~2,000 of them, and

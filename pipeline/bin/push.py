@@ -43,6 +43,10 @@ from iwpipe.term import BOLD, DIM, GREEN, RED, RESET, YELLOW
 # than the minimum, so a small source can still lose a handful.
 REMOVAL_CAP_FRACTION = 0.10
 REMOVAL_CAP_MIN = 5
+# Development is the sandbox, and a small source (Track has a few dozen
+# events pushed) loses a fifth of its listings in an ordinary week.
+REMOVAL_CAP_FRACTION_DEVELOPMENT = 0.30
+REMOVAL_CAP_MIN_DEVELOPMENT = 15
 # Re-pushing more than this many existing events in one run means the
 # content hash changed for a reason other than the events changing (a
 # template change, a cache wipe). It is allowed, but not by accident.
@@ -127,6 +131,8 @@ def removal_cap(source, environment):
         1 for v in ledger.load().values()
         if v["environment"] == environment and v["sourceKey"].startswith(f"{source}:")
     )
+    if environment == cktool.DEVELOPMENT:
+        return max(REMOVAL_CAP_MIN_DEVELOPMENT, int(REMOVAL_CAP_FRACTION_DEVELOPMENT * entries))
     return max(REMOVAL_CAP_MIN, int(REMOVAL_CAP_FRACTION * entries))
 
 
