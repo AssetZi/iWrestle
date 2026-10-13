@@ -299,6 +299,11 @@
     "name": "AWC Gladiator Duals",
     "reason": "college event"
   },
+  "flowrestling:berwick-area-hs-wyoming-valley-west-hs:2027-01-07:2r0pqYeTEHAiLcGU": {
+    "at": "2026-10-13T09:43:53+00:00",
+    "name": "Berwick Area Hs @ Wyoming Valley West Hs",
+    "reason": "same-date duplicate of flowrestling:berwick-area-hs-wyoming-valley-west-hs:2027-01-07"
+  },
   "flowrestling:beth-center-youth-tournament:2026-11-22": {
     "at": "2026-10-05T16:38:38+00:00",
     "name": "Beth Center Youth Tournament",
@@ -464,6 +469,16 @@
     "name": "East Chapel Hill @ Chapel Hill High School",
     "reason": "same-date duplicate of flowrestling:east-chapel-hill-chapel-hill-high-school:2027-01-15"
   },
+  "flowrestling:east-islip-hauppauge:2026-12-23:2m8I9LeTac2nHKpU": {
+    "at": "2026-10-13T09:43:59+00:00",
+    "name": "East Islip @ Hauppauge",
+    "reason": "same-date duplicate of flowrestling:east-islip-hauppauge:2026-12-23"
+  },
+  "flowrestling:east-ramapo-clarkstown-north:2027-01-28:2R6pk5tDq6MjCIEh": {
+    "at": "2026-10-13T09:44:00+00:00",
+    "name": "East Ramapo @ Clarkstown North",
+    "reason": "same-date duplicate of flowrestling:east-ramapo-clarkstown-north:2027-01-28"
+  },
   "flowrestling:east-stroudsburg-bridgeport:2027-02-12:2whAQygF92afc3hX": {
     "at": "2026-10-05T16:03:43+00:00",
     "name": "East Stroudsburg @ Bridgeport",
@@ -488,6 +503,16 @@
     "at": "2026-10-05T19:42:46+00:00",
     "name": "Effingham County @ Brunswick",
     "reason": "same-date duplicate of flowrestling:effingham-county-brunswick:2027-01-21"
+  },
+  "flowrestling:elizabeth-middle-school-challenger-middle-school:2026-11-03:2PlCpGopw81VlybB": {
+    "at": "2026-10-13T09:43:56+00:00",
+    "name": "Elizabeth Middle School @ Challenger Middle School",
+    "reason": "same-date duplicate of flowrestling:elizabeth-middle-school-challenger-middle-school:2026-11-03"
+  },
+  "flowrestling:elizabeth-middle-school-skyview-middle-school:2026-10-29:2o3ER2mQNjQeKNPe": {
+    "at": "2026-10-13T09:43:55+00:00",
+    "name": "Elizabeth Middle School @ Skyview Middle School",
+    "reason": "same-date duplicate of flowrestling:elizabeth-middle-school-skyview-middle-school:2026-10-29"
   },
   "flowrestling:ellsworth-cc-upper-iowa:2026-11-12:2lHPIkLGES2vvuPr": {
     "at": "2026-10-05T16:03:54+00:00",
@@ -934,6 +959,11 @@
     "name": "Pine Grove Area Hs @ Panther Valley Hs",
     "reason": "duplicate of flowrestling:pine-grove-area-hs-panther-valley-hs:2027-01-14"
   },
+  "flowrestling:pittston-area-hs-berwick-area-hs:2027-01-21:2OneoPq5qqZTPHGN": {
+    "at": "2026-10-13T09:43:54+00:00",
+    "name": "Pittston Area Hs @ Berwick Area Hs",
+    "reason": "same-date duplicate of flowrestling:pittston-area-hs-berwick-area-hs:2027-01-21"
+  },
   "flowrestling:point-park-mount-union:2027-01-09:2wz0wTrfjmDehjW5": {
     "at": "2026-10-12T16:46:10+00:00",
     "name": "Point Park @ Mount Union",
@@ -964,20 +994,55 @@
     "name": "Richmond Tomas @ College Station A&M Consolidated",
     "reason": "same-date duplicate of flowrestling:richmond-tomas-college-station-a-m-consolidated:2026-11-18"
   },
+  "flowrestling:rome-east-paulding-hs:2026-11-11:2NyVHZYSVlj1dMYL": {
+    "at": "2026-10-13T09:43:57+00:00",
+    "name": "Rome @ East Paulding Hs",
+    "reason": "same-date duplicate of flowrestling:rome-east-paulding-hs:2026-11-11"
+  },
+  "flowrestling:rome-east-paulding-hs:2026-11-11:2sJ4jzyrEGG6XV0L": {
+    "at": "2026-10-13T09:43:57+00:00",
+    "name": "Rome @ East Paulding Hs",
+    "reason": "same-date duplicate of flowrestling:rome-east-paulding-hs:2026-11-11"
+  },
+  "flowrestling:rome-east-paulding-hs:2026-11-11:2vwHYdjtWA67bwvL": {
+    "at": "2026-10-13T09:43:58+00:00",
+    "name": "Rome @ East Paulding Hs",
+    "reason": "same-date duplicate of flowrestling:rome-east-paulding-hs:2026-11-11"
+  },
   "flowrestling:rookies-of-the-mac:2026-12-13": {
     "at": "2026-10-05T16:38:48+00:00",
     "name": "Rookies of the MAC",
     "reason": "shares a registration form with flowrestling:2026-king-queen-of-the-mac:2026-12-13; keep one (Brock 2026-10-05)"
+  },
+  "flowrestling:rose-state-college-northern-oklahoma-college-tonkawa:2027-02-07:2fxa8S6rAa3SGe6U": {
+    "at": "2026-10-13T09:43:50+00:00",
+    "name": "Rose State College @ Northern Oklahoma College- Tonkawa",
+    "reason": "college event"
+  },
+  "flowrestling:san-antonio-macarthur-comal-pieper:2026-11-12:2esrw8lN6DoQud1j": {
+    "at": "2026-10-13T09:43:52+00:00",
+    "name": "San Antonio MacArthur @ Comal Pieper",
+    "reason": "same-date duplicate of flowrestling:san-antonio-macarthur-comal-pieper:2026-11-12"
   },
   "flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13:2fwACUOFjdNpSHPq": {
     "at": "2026-09-22T13:56:25+00:00",
     "name": "San Antonio MacArthur @ Comal Pieper",
     "reason": "same-date duplicate of flowrestling:san-antonio-macarthur-comal-pieper:2026-11-13"
   },
+  "flowrestling:santa-ana-westminster:2027-01-06:2IXixF7tiVk5D9Ts": {
+    "at": "2026-10-13T09:43:52+00:00",
+    "name": "Santa Ana @ Westminster",
+    "reason": "same-date duplicate of flowrestling:santa-ana-westminster:2027-01-06"
+  },
   "flowrestling:southern-oregon-evergreen-state-college:2026-12-13": {
     "at": "2026-10-05T16:03:42+00:00",
     "name": "Southern Oregon @ Evergreen State College",
     "reason": "college event"
+  },
+  "flowrestling:tca-the-classical-academy-challenger-middle-school:2026-10-28:2tOJQTi4UOO6XLyr": {
+    "at": "2026-10-13T09:43:50+00:00",
+    "name": "TCA - The Classical Academy @ Challenger Middle School",
+    "reason": "same-date duplicate of flowrestling:tca-the-classical-academy-challenger-middle-school:2026-10-28"
   },
   "flowrestling:tca-the-classical-academy-holmes-middle-school:2026-10-20:2x562YuwqwXJJuuA": {
     "at": "2026-10-05T19:42:32+00:00",
@@ -1048,6 +1113,11 @@
     "at": "2026-10-05T19:42:54+00:00",
     "name": "UNLV @ Linfield",
     "reason": "same-date duplicate of flowrestling:unlv-linfield:2026-12-14"
+  },
+  "flowrestling:upson-lee-whitewater:2027-01-06:2q5nHDCkeCqXLsvY": {
+    "at": "2026-10-13T09:44:01+00:00",
+    "name": "Upson Lee @ Whitewater",
+    "reason": "same-date duplicate of flowrestling:upson-lee-whitewater:2027-01-06"
   },
   "flowrestling:ursinus-east-stroudsburg:2026-11-21": {
     "at": "2026-09-22T11:19:34+00:00",
@@ -1425,9 +1495,9 @@
     "reason": "junk listing, name says DELETE (Brock 2026-10-05)"
   },
   "trackwrestling:delete-delete-delete:2026-12-19": {
-    "at": "2026-10-05T16:38:47+00:00",
+    "at": "2026-10-13T09:43:48+00:00",
     "name": "DELETE DELETE DELETE",
-    "reason": "same-date duplicate of flowrestling:oregon-girls-ms-26-27-state:2026-12-19; junk listing (Brock 2026-10-05)"
+    "reason": "placeholder listing"
   },
   "trackwrestling:delete:2026-11-21": {
     "at": "2026-10-12T16:46:30+00:00",
