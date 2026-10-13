@@ -1494,6 +1494,11 @@
     "name": "David Nichols Boys Scramble DELETE",
     "reason": "junk listing, name says DELETE (Brock 2026-10-05)"
   },
+  "trackwrestling:delete-delete-delete:2026-12-19": {
+    "at": "2026-10-13T11:19:35+00:00",
+    "name": "DELETE DELETE DELETE",
+    "reason": "placeholder listing"
+  },
   "trackwrestling:delete-delete-delete:2026-12-19:1028577132": {
     "at": "2026-10-13T09:49:12+00:00",
     "name": "Delete Delete Delete",
