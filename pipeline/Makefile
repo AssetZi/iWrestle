@@ -135,13 +135,15 @@ routine:
 	$(PY) bin/reconcile.py || status=1; \
 	exit $$status
 
-# After exclusions or corrected names change, re-read today's files against
-# the ledger and push what that frees. No scraping: a minute, not an hour.
+# After exclusions or corrected names change, re-read the newest file of
+# every source against the ledger and push what that frees. No scraping: a
+# minute, not an hour. The newest file, not today's: a routine that ran
+# past midnight, or a decision made the morning after, still has one.
 recheck:
 	@status=0; for src in pywrestling flowrestling trackwrestling; do \
-		f=data/events.$$src.$(DATE).json; \
-		echo "== $$src"; \
-		[ -f $$f ] || { echo "no file for today"; status=1; continue; }; \
+		f=$$(ls -t data/events.$$src.*.json 2>/dev/null | head -1); \
+		echo "== $$src ($${f:-nothing collected})"; \
+		[ -n "$$f" ] || { status=1; continue; }; \
 		$(PY) bin/recheck.py $$f || { status=1; continue; }; \
 		$(PY) bin/review.py $$f --approve-all > /dev/null || { status=1; continue; }; \
 		$(PY) bin/push.py $$f --replace --yes || status=1; \

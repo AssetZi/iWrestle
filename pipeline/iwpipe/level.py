@@ -41,12 +41,19 @@ def classify_level(name: str, venue: str = "", description: str = "") -> str | N
     return None
 
 
-PLACEHOLDER = re.compile(r"^\s*(cancel+ed|postponed|no|tba|tbd|test|placeholder)\b|\b(cancel+ed|postponed)\b", re.I)
+# Organizers who cannot remove a listing rename it: "Bobcat JV-Delete",
+# "Delete Delete Delete", "STP Hold - Please Set Invisible", "RS Dual Test".
+PLACEHOLDER = re.compile(
+    r"^\s*(cancel+ed|postponed|no|tba|tbd|test|placeholder)\b|\b(cancel+ed|postponed)\b"
+    r"|\bdelete\b|\bset invisible\b|\btest\s*$",
+    re.I,
+)
 TBA_ADDRESS = re.compile(r"\btba\b|\btbd\b", re.I)
 
 
 def is_placeholder(name: str) -> bool:
-    """A listing that is not an event: cancelled, postponed, or a bare "NO"/"TBA"."""
+    """A listing that is not an event: cancelled, postponed, a bare "NO"/"TBA",
+    or one its organizer has marked for deletion."""
     return bool(PLACEHOLDER.search(name or ""))
 
 
