@@ -53361,19 +53361,6 @@
     "recordName": "2535D52E-C334-47CD-9FD1-30D6AD32654C",
     "sourceKey": "trackwrestling:bobcat-jv-delete:2026-10-13"
   },
-  "development:trackwrestling:delete-delete-delete:2026-12-19:1028577132": {
-    "contentHash": "6a8909e0fafaad3f",
-    "date": "2026-12-19",
-    "environment": "development",
-    "location": {
-      "latitude": 34.096496,
-      "longitude": -83.7612839
-    },
-    "name": "Delete Delete Delete",
-    "pushedAt": "2026-10-12T14:01:13+00:00",
-    "recordName": "023AE6B4-7939-4700-9F67-303444C526DF",
-    "sourceKey": "trackwrestling:delete-delete-delete:2026-12-19:1028577132"
-  },
   "development:trackwrestling:falcon-frenzy-jv:2026-12-11": {
     "contentHash": "6750f643e29b8aa3",
     "date": "2026-12-11",
