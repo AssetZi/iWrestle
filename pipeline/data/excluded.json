@@ -544,16 +544,6 @@
     "name": "California School for the Deaf, Riverside @ Santa Rosa Academy",
     "reason": "same-date duplicate of flowrestling:california-school-for-the-deaf-riverside-santa-rosa-academy:2027-01-13"
   },
-  "flowrestling:campbell-osborne:2026-11-19": {
-    "at": "2026-10-26T15:44:03+00:00",
-    "name": "Campbell @ Osborne",
-    "reason": "college event"
-  },
-  "flowrestling:campbell-osborne:2026-11-19:2e7KLXhfdAUZ6ift": {
-    "at": "2026-10-26T15:44:04+00:00",
-    "name": "Campbell @ Osborne",
-    "reason": "college event"
-  },
   "flowrestling:carmel-arlington:2027-01-28:2PdnUnzZACiQ7mm3": {
     "at": "2026-10-12T16:46:24+00:00",
     "name": "Carmel @ Arlington",
@@ -723,16 +713,6 @@
     "at": "2026-10-26T15:44:44+00:00",
     "name": "Douglas Byrd High School @ E.E. Smith High School",
     "reason": "same-date duplicate of flowrestling:douglas-byrd-high-school-e-e-smith-high-school:2027-01-07"
-  },
-  "flowrestling:dubuque-senior-iowa-city-liberty:2026-12-11": {
-    "at": "2026-10-26T15:43:58+00:00",
-    "name": "Dubuque Senior @ Iowa City, Liberty",
-    "reason": "college event"
-  },
-  "flowrestling:dubuque-senior-iowa-city-liberty:2026-12-11:2sl349x0mzdORqdv": {
-    "at": "2026-10-26T15:43:57+00:00",
-    "name": "Dubuque Senior @ Iowa City, Liberty",
-    "reason": "college event"
   },
   "flowrestling:dupo-high-school-belleville-althoff-catholic:2026-12-23:2QDo8vFQnsZgCY9v": {
     "at": "2026-10-26T15:44:19+00:00",
@@ -1154,16 +1134,6 @@
     "name": "Iowa City, West @ Cedar Falls",
     "reason": "duplicate of flowrestling:iowa-city-west-cedar-falls:2027-01-08"
   },
-  "flowrestling:iowa-city-west-western-dubuque:2027-01-08": {
-    "at": "2026-10-26T15:34:31+00:00",
-    "name": "Iowa City, West @ Western Dubuque",
-    "reason": "college event"
-  },
-  "flowrestling:iowa-city-west-western-dubuque:2027-01-08:2q6jWClP6sZKjs6e": {
-    "at": "2026-10-26T15:34:32+00:00",
-    "name": "Iowa City, West @ Western Dubuque",
-    "reason": "college event"
-  },
   "flowrestling:iowa-st-lock-haven:2027-01-24:2pQY8iiikQSuFQeB": {
     "at": "2026-10-05T16:03:45+00:00",
     "name": "Iowa St. @ Lock Haven",
@@ -1338,16 +1308,6 @@
     "at": "2026-10-26T15:34:42+00:00",
     "name": "Manchester Holiday Wrestling Tournament",
     "reason": "same-date duplicate of pywrestling:manchester-holiday-tournament:2026-12-05"
-  },
-  "flowrestling:mandeville-new-orleans-military-maritime:2027-01-28": {
-    "at": "2026-10-26T15:34:33+00:00",
-    "name": "Mandeville @ New Orleans Military & Maritime",
-    "reason": "college event"
-  },
-  "flowrestling:mandeville-new-orleans-military-maritime:2027-01-28:2ZjU2t8adU6Gla7t": {
-    "at": "2026-10-26T15:34:34+00:00",
-    "name": "Mandeville @ New Orleans Military & Maritime",
-    "reason": "college event"
   },
   "flowrestling:maria-carrillo-ukiah:2026-12-17:2g9yiP7jQZQabqSh": {
     "at": "2026-10-05T16:03:58+00:00",
@@ -1719,16 +1679,6 @@
     "name": "Oswego (East) @ Yorkville (H.S.)",
     "reason": "same-date duplicate of flowrestling:oswego-east-yorkville-h-s:2027-01-14"
   },
-  "flowrestling:oswego-h-s-oswego-east:2026-12-03:26VMDTuUw7xjV3HK": {
-    "at": "2026-10-26T15:34:27+00:00",
-    "name": "Oswego (H.S.) @ Oswego (East)",
-    "reason": "college event"
-  },
-  "flowrestling:oswego-h-s-oswego-east:2026-12-03:28xjOvMggdrNxTK2": {
-    "at": "2026-10-26T15:34:27+00:00",
-    "name": "Oswego (H.S.) @ Oswego (East)",
-    "reason": "college event"
-  },
   "flowrestling:otterbein-wash-jeff:2027-01-16:2tSDaQv9dPDOquOe": {
     "at": "2026-10-05T16:03:46+00:00",
     "name": "Otterbein @ Wash. & Jeff.",
@@ -1808,16 +1758,6 @@
     "at": "2026-10-13T09:43:54+00:00",
     "name": "Pittston Area Hs @ Berwick Area Hs",
     "reason": "same-date duplicate of flowrestling:pittston-area-hs-berwick-area-hs:2027-01-21"
-  },
-  "flowrestling:plainfield-north-oswego-east:2027-01-07:2lJ7Parp4lakvJ0b": {
-    "at": "2026-10-26T15:34:27+00:00",
-    "name": "Plainfield (North) @ Oswego (East)",
-    "reason": "college event"
-  },
-  "flowrestling:plainfield-north-oswego-east:2027-01-07:2p466yAZfrqN9KvH": {
-    "at": "2026-10-26T15:34:28+00:00",
-    "name": "Plainfield (North) @ Oswego (East)",
-    "reason": "college event"
   },
   "flowrestling:plainview-old-bethpage-jfk-east-meadow:2026-12-17:2iZk50ibToSNLJQm": {
     "at": "2026-10-26T15:44:40+00:00",
@@ -2584,6 +2524,11 @@
     "name": "915 Kick Off Classic 2026",
     "reason": "same-date duplicate of flowrestling:915-kick-off-classic-2026:2026-11-08"
   },
+  "trackwrestling:a-town-takedown-tourney-testing:2026-12-05": {
+    "at": "2026-10-26T16:25:49+00:00",
+    "name": "A-Town Takedown Tourney Testing",
+    "reason": "test listing"
+  },
   "trackwrestling:auggie-invite:2026-11-21": {
     "at": "2026-10-05T16:03:52+00:00",
     "name": "Auggie Invite",
@@ -2748,6 +2693,11 @@
     "at": "2026-09-22T11:11:33+00:00",
     "name": "TCE Wrestling Championship",
     "reason": "duplicate of Flo listing, same date"
+  },
+  "trackwrestling:testing-dual-no-entry-allowed:2026-10-31": {
+    "at": "2026-10-26T16:25:48+00:00",
+    "name": "Testing Dual - No entry allowed",
+    "reason": "test listing"
   },
   "trackwrestling:the-brittany-david-invitational:2026-12-28": {
     "at": "2026-10-05T16:03:52+00:00",
