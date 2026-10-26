@@ -79,6 +79,7 @@ Applied by triage.py, to flagged events only (rules given 2026-09-22 and 2026-10
 What the pipeline settles before triage sees it:
 
 - A listing named "Delete", "... - Delete", "Hold - Please Set Invisible" or "... Test" is a placeholder: skipped at collect, and taken down after two runs if it was already pushed.
+- A dual meet, named "<team> @ <team>", is not listed (Brock, 2026-10-26): skipped at collect (and by `make recheck`) as "dual meet", and taken down after two runs if it was already pushed. A dual tournament ("Tobin Duals") has no "@" and stays. Triage may still print duals as same-date duplicates; they are on their way out either way.
 - A listing renamed in place (same day, same gym, nearly the same name) is pushed as a move, noted `renamed from <old name>`. It counts under "moved", not as a removal plus a new event.
 - A listing gone from its source for two runs on different days is removed.
 

@@ -23,6 +23,18 @@ def test_adult_opens_are_not_youth():
     assert classify_level("Yukon Boys Open", "Yukon High School") is None
 
 
+def test_dual_meets():
+    from iwpipe.level import is_dual
+
+    assert is_dual("Alta @ Bountiful")
+    assert is_dual("Arroyo  (El Monte) @ Alhambra  (Alhambra)")
+    assert is_dual("Oswego (H.S.) @ Oswego (East)")
+    assert not is_dual("Tobin Duals")
+    assert not is_dual("IGHSAU 2A Reg. Duals 1 @")
+    assert not is_dual("@ West Iredell")
+    assert not is_dual("Imperial Valley vs Santa Ana")
+
+
 def test_placeholders():
     from iwpipe.level import is_placeholder
 

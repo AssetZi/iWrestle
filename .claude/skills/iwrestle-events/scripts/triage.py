@@ -65,16 +65,19 @@ DECISION = (
     "AI: attached flyer is for another event",
 )
 CONTACT_NOTES = ("AI: email", "AI: phone", "AI: contact name", "email from flyer PDF")
-SKIP_REASONS = ("college-level event", "adult-level event", "excluded:", "cancelled or placeholder listing")
+SKIP_REASONS = ("college-level event", "adult-level event", "excluded:", "cancelled or placeholder listing", "dual meet")
 
 INVITATIONAL = re.compile(r"\b(invitational|invite)\b", re.I)
 CANCELLED = re.compile(r"\bcancel", re.I)
 KEY = re.compile(r"(?:flowrestling|trackwrestling|pywrestling):[^,\s]+")
 DUAL = re.compile(r"^[^@]+ @ [^@]+$")
-# Colleges whose dual meets Flo lists among youth events. A name on this list
-# on either side of an "@" is a college dual. Add to it when a new one shows
-# up under "remains"; a miss is only a line for Brock, a wrong hit deletes
-# an event, so keep entries unambiguous (no "Central", no city names).
+# Colleges whose dual meets Flo lists among youth events. A side of an "@"
+# that IS one of these names (alone, or followed by a state in parentheses;
+# an entry ending in "-" or a space, like "uw-" or "suny ", is a prefix) is a college dual; a name merely inside
+# a side ("Oswego (East)", "Western Dubuque", "Maritime" for "rit") is not.
+# Add to it when a new one shows up under "remains"; a miss is only a line
+# for Brock, a wrong hit deletes an event, so keep entries unambiguous (no
+# "Central", no city names, no school a high school shares, like Campbell).
 COLLEGES = (
     "augustana", "elmhurst", "millikin", "aurora", "ill. wesleyan", "illinois wesleyan",
     "north central (il)", "carthage", "eureka", "blackburn", "westminster (mo)",
@@ -105,13 +108,35 @@ COLLEGES = (
     "harvard", "columbia", "rutgers", "purdue", "northwestern", "stanford",
     "cal poly", "oregon st.", "boise st.", "utah valley", "north dakota st.",
     "south dakota st.", "virginia tech", "west virginia", "bucknell", "binghamton",
-    "hofstra", "sacred heart", "kent st.", "cleveland st.", "campbell",
+    "hofstra", "sacred heart", "kent st.", "cleveland st.",
     "appalachian st.", "chattanooga", "gardner-webb", "presbyterian", "the citadel",
     "george mason", "drexel", "rider", "franklin & marshall", "cal baptist",
     "little rock", "csu bakersfield", "northern colorado", "northern iowa",
-    "south dakota st", "wyoming @", "@ wyoming",
+    "south dakota st", "wyoming", "app state", "oswego st.", "maine maritime",
+    "maine maritime academy", "wis.-", "suny ", "vtsu ",
 )
 COLLEGE_VENUE = re.compile(r"\b(university|college|collegiate|ncaa|naia|njcaa)\b", re.I)
+# A dual side that names a college outright, whatever the list says.
+COLLEGE_SIDE = re.compile(
+    r"\b(community college|junior college|city college|college of|university of)\b|\b(university|cc)$", re.I
+)
+SIDE_STATE = re.compile(r"^(.+?) \(([^)]+)\)$")
+STATES = {
+    "al", "ak", "az", "ar", "ca", "co", "ct", "de", "fl", "ga", "hi", "id", "il", "in", "ia",
+    "ks", "ky", "la", "me", "md", "ma", "mi", "mn", "ms", "mo", "mt", "ne", "nv", "nh", "nj",
+    "nm", "ny", "nc", "nd", "oh", "ok", "or", "pa", "ri", "sc", "sd", "tn", "tx", "ut", "vt",
+    "va", "wa", "wv", "wi", "wy", "alabama", "alaska", "arizona", "arkansas", "california",
+    "colorado", "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho", "illinois",
+    "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts",
+    "michigan", "minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada",
+    "new hampshire", "new jersey", "new mexico", "new york", "north carolina", "north dakota",
+    "ohio", "oklahoma", "oregon", "pennsylvania", "rhode island", "south carolina",
+    "south dakota", "tennessee", "texas", "utah", "vermont", "virginia", "washington",
+    "west virginia", "wisconsin", "wyoming",
+    # The AP abbreviations Flo uses: "Embry-Riddle (Ariz.)", "Cumberland (Tenn.)".
+    "ala", "ariz", "ark", "calif", "colo", "conn", "fla", "ill", "ind", "kan", "mass", "mich",
+    "minn", "miss", "neb", "nev", "okla", "ore", "penn", "tenn", "wash", "wis", "wyo", "w.va",
+}
 
 
 # --- Loading -------------------------------------------------------------------
@@ -187,6 +212,21 @@ def is_invitational(event: dict) -> bool:
     return bool(INVITATIONAL.search(event.get("name", "")))
 
 
+def is_college_side(side: str) -> bool:
+    """Whether one team of a dual is a college, by its whole name."""
+    side = " ".join(side.lower().split())
+    names = {side}
+    state = SIDE_STATE.match(side)
+    if state and state.group(2).strip(". ") in STATES:
+        names.add(state.group(1))
+    if any(COLLEGE_SIDE.search(name) for name in names):
+        return True
+    for college in COLLEGES:
+        if college in names or (college.endswith(("-", " ")) and side.startswith(college)):
+            return True
+    return False
+
+
 def is_college(event: dict) -> bool:
     name = event.get("name", "") or ""
     venue = event.get("venue") or ""
@@ -196,8 +236,7 @@ def is_college(event: dict) -> bool:
     if level.classify_level(name, venue) == "college":
         return True
     if DUAL.match(name):
-        lowered = name.lower()
-        if any(college in lowered for college in COLLEGES):
+        if any(is_college_side(side) for side in name.split(" @ ")):
             return True
         if COLLEGE_VENUE.search(f"{venue} {address}"):
             return True

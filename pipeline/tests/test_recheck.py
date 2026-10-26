@@ -59,6 +59,21 @@ def test_a_copy_whose_partner_is_still_pushed_stays_set_aside(monkeypatch, tmp_p
     assert after["review"]["notes"] == [f"possible duplicate of {FLO}"]
 
 
+def test_a_dual_meet_is_set_aside_and_stays_set_aside(monkeypatch, tmp_path):
+    dual = _event(FLO, "Everett @ Bedford", schema.STATUS_APPROVED, [])
+
+    after = _run(tmp_path, monkeypatch, [dual])[FLO]
+    assert after["review"]["status"] == schema.STATUS_SKIP
+    assert after["review"]["notes"] == ["dual meet"]
+
+    path = tmp_path / "events.pywrestling.20261005.json"
+    monkeypatch.setattr(sys, "argv", ["recheck.py", str(path)])
+    assert recheck_cli.main() == 0
+    again = schema.load(path)["events"][0]
+    assert again["review"]["status"] == schema.STATUS_SKIP
+    assert again["review"]["notes"] == ["dual meet"]
+
+
 def test_a_college_event_is_not_freed_by_losing_its_duplicate_note(monkeypatch, tmp_path):
     event = _event(PYW, "Bloody Run Open", schema.STATUS_SKIP, ["college-level event", f"possible duplicate of {FLO}"])
 

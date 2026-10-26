@@ -94,7 +94,7 @@ def push_one(event, environment, client, *, dry_run, replace_record=None):
     return name, content_hash
 
 
-RETIRE_NOTES = ("excluded:", "college-level event", "adult-level event", "cancelled or placeholder listing")
+RETIRE_NOTES = ("excluded:", "college-level event", "adult-level event", "cancelled or placeholder listing", "dual meet")
 
 
 def retired(events, environment, already, *, record=True):

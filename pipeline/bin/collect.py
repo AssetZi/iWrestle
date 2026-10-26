@@ -74,6 +74,13 @@ def classify_divisions_and_level(event) -> None:
         event["ageGroups"] = list(DEFAULT_AGE_GROUPS)
 
 
+def flag_dual(event) -> None:
+    """A dual meet ("Alta @ Bountiful") is not listed in the directory."""
+    if level.is_dual(event.get("name", "")):
+        schema.note(event, "dual meet")
+        event["review"]["status"] = schema.STATUS_SKIP
+
+
 def flag_placeholders(event) -> bool:
     """Cancelled listings are not events; a "TBA" venue is real but unfinished.
     Returns True when there is nothing worth geocoding."""
@@ -130,6 +137,7 @@ def normalize(event, session, *, source, today, skip_geocode=False):
     event.setdefault("review", {"status": schema.STATUS_PENDING, "notes": []})
     classify_type_and_date(event, today)
     classify_divisions_and_level(event)
+    flag_dual(event)
     if flag_placeholders(event):
         skip_geocode = True
     default_contact(event)

@@ -49,12 +49,21 @@ PLACEHOLDER = re.compile(
     re.I,
 )
 TBA_ADDRESS = re.compile(r"\btba\b|\btbd\b", re.I)
+# A dual meet is one school hosting another: "Alta @ Bountiful". Brock keeps
+# them out of the directory (2026-10-26). A dual tournament ("Tobin Duals")
+# has no "@", and "IGHSAU 2A Reg. Duals 1 @" names no opponent, so both stay.
+DUAL = re.compile(r"^[^@]*\w[^@]* @ [^@]*\w[^@]*$")
 
 
 def is_placeholder(name: str) -> bool:
     """A listing that is not an event: cancelled, postponed, a bare "NO"/"TBA",
     or one its organizer has marked for deletion."""
     return bool(PLACEHOLDER.search(name or ""))
+
+
+def is_dual(name: str) -> bool:
+    """One team at another's gym, named "<team> @ <team>"."""
+    return bool(DUAL.match(" ".join((name or "").split())))
 
 
 def venue_is_tba(address: str) -> bool:

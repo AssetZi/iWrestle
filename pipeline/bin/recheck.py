@@ -7,7 +7,8 @@ Collect sets an event aside as a possible duplicate when its look-alike is
 in the ledger. Once a person (or the triage rules) has excluded one of the
 pair, the other is free to go out, but only a new collect used to notice.
 This redoes just that step: exclusions, corrected names, where each event
-already is, and look-alikes. Listings, assets and miss counts are untouched.
+already is, and look-alikes. It also sets aside dual meets, a rule that reads
+only the name. Listings, assets and miss counts are untouched.
 """
 from __future__ import annotations
 
@@ -25,7 +26,7 @@ from iwpipe.term import RED, RESET
 # What annotate_from_ledger writes; everything else on an event is collect's.
 LEDGER_NOTES = ("excluded:", "already in ", "possible duplicate of ", "same day a few km from ")
 # A skip any of these explains is not the ledger's doing and stays a skip.
-OTHER_SKIPS = ("college-level event", "adult-level event", "cancelled or placeholder listing")
+OTHER_SKIPS = ("college-level event", "adult-level event", "cancelled or placeholder listing", "dual meet")
 
 
 def reset(event) -> None:
@@ -55,6 +56,8 @@ def main() -> int:
         with ledger.lock():
             for event in events:
                 reset(event)
+                if "dual meet" not in event["review"]["notes"]:
+                    collect_cli.flag_dual(event)
                 collect_cli.annotate_from_ledger(event)
     except ledger.LedgerError as error:
         print(f"{RED}{error}{RESET}")
