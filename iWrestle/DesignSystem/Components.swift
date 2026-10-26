@@ -682,13 +682,15 @@ struct GoldSpinner: View {
                 .trim(from: 0, to: 0.7)
                 .stroke(Theme.gold, style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
                 .rotationEffect(.degrees(rotation))
+                // Scoped to the rotation. A `withAnimation(.repeatForever)` in
+                // onAppear leaks into whatever transaction the spinner first
+                // lays out in: on a freshly pushed screen that is the safe-area
+                // layout, and the screen's header then sweeps from the top of
+                // the screen to its place every 1.1s forever.
+                .animation(.linear(duration: 1.1).repeatForever(autoreverses: false), value: rotation)
         }
         .frame(width: size, height: size)
-        .onAppear {
-            withAnimation(.linear(duration: 1.1).repeatForever(autoreverses: false)) {
-                rotation = 360
-            }
-        }
+        .onAppear { rotation = 360 }
     }
 }
 
