@@ -192,3 +192,48 @@ def test_a_disambiguated_twin_still_matches_by_name_and_day(monkeypatch, tmp_pat
     assert ledger.find_moved("flowrestling", "x-y", "2026-11-25", set(), "2026-09-07") == [
         "flowrestling:x-y:2026-11-18:2gPX"
     ]
+
+
+def test_a_second_run_on_the_same_day_is_the_same_absence(monkeypatch, tmp_path):
+    """A rerun after a failed push must not finish off what the first run missed."""
+    _seed_upcoming(monkeypatch, tmp_path)
+    ledger.mark_misses("pywrestling", {"pywrestling:a:2026-09-12"}, "2026-09-07")
+    missing = ledger.mark_misses("pywrestling", {"pywrestling:a:2026-09-12"}, "2026-09-07")
+    assert [m["missCount"] for m in missing] == [1]
+    assert ledger.due_for_removal("pywrestling", "development") == []
+
+
+def _seed_renamed(monkeypatch, tmp_path):
+    monkeypatch.setattr(ledger, "LEDGER_PATH", tmp_path / "pushed.json")
+    gym = {"latitude": 42.8739, "longitude": -95.1495}
+    for environment in ("development", "production"):
+        ledger.record("flowrestling:scwc-boys-wrestling-tournament:2026-11-22", environment, "B", "SCWC Boys Wrestling Tournament", day="2026-11-22", location=gym)
+        ledger.record("flowrestling:sierra-classic-hs-boys:2026-11-22", environment, "S", "Sierra Classic - HS Boys", day="2026-11-22", location=gym)
+    return gym
+
+
+def test_a_listing_renamed_in_place_is_the_same_event(monkeypatch, tmp_path):
+    gym = _seed_renamed(monkeypatch, tmp_path)
+    found = ledger.find_renamed("flowrestling", "scwc-boys-wrestling-tournament-2026", "2026-11-22", gym, set(), "2026-10-12")
+    assert found == ["flowrestling:scwc-boys-wrestling-tournament:2026-11-22"]
+    # Still listed under the old name too: two events.
+    assert ledger.find_renamed(
+        "flowrestling", "scwc-boys-wrestling-tournament-2026", "2026-11-22", gym,
+        {"flowrestling:scwc-boys-wrestling-tournament:2026-11-22"}, "2026-10-12",
+    ) == []
+
+
+def test_a_sibling_bracket_at_the_same_gym_is_not_a_rename(monkeypatch, tmp_path):
+    gym = _seed_renamed(monkeypatch, tmp_path)
+    assert ledger.find_renamed("flowrestling", "sierra-classic-hs-girls", "2026-11-22", gym, set(), "2026-10-12") == []
+    # Nor is the same name at another gym, on another day, or from another site.
+    far = {"latitude": 43.5, "longitude": -95.1495}
+    assert ledger.find_renamed("flowrestling", "scwc-boys-wrestling-tournament-2026", "2026-11-22", far, set(), "2026-10-12") == []
+    assert ledger.find_renamed("flowrestling", "scwc-boys-wrestling-tournament-2026", "2026-11-29", gym, set(), "2026-10-12") == []
+    assert ledger.find_renamed("trackwrestling", "scwc-boys-wrestling-tournament-2026", "2026-11-22", gym, set(), "2026-10-12") == []
+
+
+def test_without_a_location_only_the_year_may_differ(monkeypatch, tmp_path):
+    _seed_renamed(monkeypatch, tmp_path)
+    assert ledger.find_renamed("flowrestling", "scwc-boys-wrestling-tournament-2026", "2026-11-22", None, set(), "2026-10-12")
+    assert ledger.find_renamed("flowrestling", "scwc-boys-wrestling-open-2026", "2026-11-22", None, set(), "2026-10-12") == []

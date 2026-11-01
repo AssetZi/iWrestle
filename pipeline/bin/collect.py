@@ -24,7 +24,9 @@ from pathlib import Path
 
 import _bootstrap  # noqa: F401
 
-from iwpipe import assets, exclusions, geocode, ledger, level, mapping, pdftext, schema
+import requests
+
+from iwpipe import assets, exclusions, geocode, ledger, level, mapping, netcheck, pdftext, renames, schema
 from iwpipe.collectors import COLLECTORS
 from iwpipe.config import DATA_DIR, DEFAULT_CONTACT_EMAIL, INCLUDE_COLLEGE
 from iwpipe.http import make_session
@@ -70,6 +72,13 @@ def classify_divisions_and_level(event) -> None:
     if not event.get("ageGroups"):
         schema.note(event, "no divisions found, defaulted")
         event["ageGroups"] = list(DEFAULT_AGE_GROUPS)
+
+
+def flag_dual(event) -> None:
+    """A dual meet ("Alta @ Bountiful") is not listed in the directory."""
+    if level.is_dual(event.get("name", "")):
+        schema.note(event, "dual meet")
+        event["review"]["status"] = schema.STATUS_SKIP
 
 
 def flag_placeholders(event) -> bool:
@@ -128,6 +137,7 @@ def normalize(event, session, *, source, today, skip_geocode=False):
     event.setdefault("review", {"status": schema.STATUS_PENDING, "notes": []})
     classify_type_and_date(event, today)
     classify_divisions_and_level(event)
+    flag_dual(event)
     if flag_placeholders(event):
         skip_geocode = True
     default_contact(event)
@@ -205,6 +215,12 @@ def annotate_from_ledger(event) -> None:
         event["review"]["status"] = schema.STATUS_SKIP
         schema.note(event, f"excluded: {excluded}")
 
+    renamed = renames.name_for(event["sourceKey"])
+    if renamed:
+        event["name"] = renamed
+        notes = event["review"].get("notes", [])
+        schema.drop_notes(event, [n for n in notes if n.startswith("name says")])
+
     # Being in one environment's ledger must not block the other: push
     # refuses repeats per environment on its own. Just say where it is.
     for environment in ("development", "production"):
@@ -242,10 +258,15 @@ def main() -> int:
     collector = COLLECTORS[args.source]
     site_emails = getattr(collector, "SITE_EMAILS", frozenset())
     extra = {"flo_session": session} if args.source == "trackwrestling" else {}
-    raw = collector.collect(
-        session, fixture=args.from_fixture, limit=args.limit,
-        dump_unparsed=args.dump_unparsed, **extra,
-    )
+    try:
+        raw = collector.collect(
+            session, fixture=args.from_fixture, limit=args.limit,
+            dump_unparsed=args.dump_unparsed, **extra,
+        )
+    except (requests.ConnectionError, requests.Timeout) as error:
+        # No file is written: the newest file stays the last good collect.
+        print(f"{RED}{args.source}: network unreachable{RESET} ({netcheck.brief(error)}), skipped this run")
+        return 1
     print(f"collected {len(raw)} raw listings from {args.source}")
 
     today = date.today()
@@ -271,6 +292,7 @@ def main() -> int:
                 annotate_from_ledger(event)
 
             seen_keys = {e["sourceKey"] for e in events}
+            claimed: set[str] = set()
             for event in events:
                 if any(ledger.contains(event["sourceKey"], env) for env in ("development", "production")):
                     continue
@@ -282,6 +304,18 @@ def main() -> int:
                     # The old listing is gone from the site; push replaces its record.
                     event["movedFrom"] = moved[0]
                     schema.note(event, f"moved from {moved[0].rsplit(':', 1)[-1]}")
+                    continue
+                renamed = [
+                    key for key in ledger.find_renamed(
+                        args.source, schema.slug(event.get("name", "")),
+                        (event.get("date") or "")[:10], event.get("location"), seen_keys, today_iso,
+                    ) if key not in claimed
+                ]
+                if renamed:
+                    # Same day, same gym, nearly the same name: one event renamed.
+                    claimed.add(renamed[0])
+                    event["movedFrom"] = renamed[0]
+                    schema.note(event, f"renamed from {schema.base_key(renamed[0]).split(':')[1]}")
 
             # An upcoming event that stopped appearing here is probably cancelled.
             # An empty or badly short scrape (the site blocked us, the markup

@@ -7,7 +7,7 @@ FILE ?= $(shell ls -t data/events.$(SOURCE).*.json 2>/dev/null | head -1)
 # A collected file older than this is stale; promote refuses it unless FORCE=1.
 STALE_DAYS ?= 10
 
-.PHONY: help venv test enrich-eval exclude token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod promote reconcile routine clean clean-assets
+.PHONY: help venv test enrich-eval exclude token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod promote reconcile routine recheck nightly summary clean clean-assets
 
 help:
 	@echo "make venv          create .venv and install pinned deps"
@@ -25,6 +25,9 @@ help:
 	@echo "make reconcile     compare CloudKit against the local ledger"
 	@echo "make exclude KEY=\"name or key\" REASON=\"why\"   remove an event for good"
 	@echo "make routine       collect + enrich + approve + push (development) for every source"
+	@echo "make recheck       re-read today's files against the ledger and push, no scraping"
+	@echo "make nightly       the routine, logged to data/logs/ (what launchd runs)"
+	@echo "make summary       the short version of the newest routine log"
 	@echo "make clean-assets  delete rendered logos and flyers (the next push re-sends every event)"
 	@echo ""
 	@echo "current SOURCE: $(SOURCE)   FILE: $(FILE)"
@@ -131,6 +134,34 @@ routine:
 	done; \
 	$(PY) bin/reconcile.py || status=1; \
 	exit $$status
+
+# After exclusions or corrected names change, re-read the newest file of
+# every source against the ledger and push what that frees. No scraping: a
+# minute, not an hour. The newest file, not today's: a routine that ran
+# past midnight, or a decision made the morning after, still has one.
+recheck:
+	@status=0; for src in pywrestling flowrestling trackwrestling; do \
+		f=$$(ls -t data/events.$$src.*.json 2>/dev/null | head -1); \
+		echo "== $$src ($${f:-nothing collected})"; \
+		[ -n "$$f" ] || { status=1; continue; }; \
+		$(PY) bin/recheck.py $$f || { status=1; continue; }; \
+		$(PY) bin/review.py $$f --approve-all > /dev/null || { status=1; continue; }; \
+		$(PY) bin/push.py $$f --replace --yes || status=1; \
+	done; \
+	$(PY) bin/reconcile.py || status=1; \
+	exit $$status
+
+# The routine with its output kept: what launchd runs before anyone is up.
+# The last line of the log says it finished, and with what exit code.
+nightly:
+	@mkdir -p data/logs; log=data/logs/routine.$(DATE).log; \
+	echo "started $$(date '+%Y-%m-%d %H:%M')" > $$log; \
+	$(MAKE) --no-print-directory routine >> $$log 2>&1; code=$$?; \
+	echo "finished $$(date '+%Y-%m-%d %H:%M') exit $$code" >> $$log; \
+	exit $$code
+
+summary:
+	@$(PY) bin/summary.py $(LOG)
 
 # Rendered assets are kept on purpose: their bytes are part of the content
 # hash, so deleting them makes the next push --replace re-send every event.

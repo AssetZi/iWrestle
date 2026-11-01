@@ -8,32 +8,30 @@
 import SwiftUI
 import Foundation
 import UIKit
-import QuickLook
+import PDFKit
 
-
-struct QuickLookPreview: UIViewControllerRepresentable {
+/// Renders a local PDF with PDFKit rather than Quick Look. An embedded
+/// QLPreviewController reaches for the navigation controller's bars to host
+/// its share and markup items, which this screen hides, and its white chrome
+/// fought the dark canvas. PDFView has no bar behaviour and takes the slate
+/// background. (The header bounce this screen used to have was the spinner's
+/// leaked repeat-forever animation, fixed in GoldSpinner.)
+struct PDFKitView: UIViewRepresentable {
     let url: URL
 
-    func makeUIViewController(context: Context) -> QLPreviewController {
-        let controller = QLPreviewController()
-        controller.dataSource = context.coordinator
-        return controller
+    func makeUIView(context: Context) -> PDFView {
+        let view = PDFView()
+        view.autoScales = true
+        view.displayMode = .singlePageContinuous
+        view.displayDirection = .vertical
+        view.backgroundColor = UIColor(Theme.slate950)
+        view.document = PDFDocument(url: url)
+        return view
     }
 
-    func updateUIViewController(_ controller: QLPreviewController, context: Context) {}
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(url: url)
-    }
-
-    final class Coordinator: NSObject, QLPreviewControllerDataSource {
-        let url: URL
-        init(url: URL) { self.url = url }
-
-        func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
-
-        func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
-            url as NSURL
+    func updateUIView(_ view: PDFView, context: Context) {
+        if view.document?.documentURL != url {
+            view.document = PDFDocument(url: url)
         }
     }
 }
@@ -62,7 +60,7 @@ struct PDFQuickLookView: View {
 
             Group {
                 if let localURL {
-                    QuickLookPreview(url: localURL)
+                    PDFKitView(url: localURL)
                         .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.feature, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: Theme.Radius.feature, style: .continuous)

@@ -12,7 +12,9 @@ import sys
 
 import _bootstrap  # noqa: F401
 
-from iwpipe import cktool, ledger
+import requests
+
+from iwpipe import cktool, ckws, ledger, netcheck
 
 
 def main() -> int:
@@ -44,7 +46,12 @@ def main() -> int:
         print(f"deleted {entry['recordName']} ({entry['name']})")
         return 0
 
-    records = client.query_records("Event", ["name", "date"], max_records=10000)
+    try:
+        records = client.query_records("Event", ["name", "date"], max_records=10000)
+    except (ckws.CKWSError, requests.RequestException) as error:
+        why = netcheck.brief(error) if netcheck.is_network_error(error) else str(error)[:200]
+        print(f"{environment}: could not read CloudKit ({why}); not reconciled")
+        return 1
     entries = {
         key: value
         for key, value in ledger.load().items()

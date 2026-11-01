@@ -7,15 +7,17 @@
     python bin/exclude.py --undo flowrestling:hurst-invitational:2026-11-01
 
 The argument is a source key or a piece of the event's name; a name that
-matches more than one event is listed instead of guessed. The event is
-deleted from every environment it was pushed to, and every future collect
-skips it. --undo lets it back in on the next run.
+matches more than one event is listed instead of guessed, and so is a key
+the source has since replaced with longer ones. The event is deleted from
+every environment it was pushed to, and every future collect skips it.
+--undo lets it back in on the next run.
 """
 from __future__ import annotations
 
 import argparse
 import glob
 import json
+import re
 import sys
 
 import _bootstrap  # noqa: F401
@@ -24,20 +26,49 @@ import requests
 
 from iwpipe import cktool, ckws, exclusions, ledger
 from iwpipe.config import DATA_DIR
+from iwpipe.schema import base_key
 from iwpipe.term import BOLD, DIM, GREEN, RED, RESET, YELLOW
+
+SOURCE_KEY = re.compile(r"^(pywrestling|flowrestling|trackwrestling):[^\s:]+:\d{4}-\d{2}-\d{2}(:\S+)?$")
 
 
 def newest_events():
+    """(every event ever collected by key, the keys in each source's newest file)."""
     seen = {}
+    current = {}
     for path in sorted(glob.glob(str(DATA_DIR / "events.*.json"))):
-        for event in json.load(open(path)).get("events", []):
+        payload = json.load(open(path))
+        events = payload.get("events", [])
+        for event in events:
             seen[event["sourceKey"]] = event
-    return seen
+        if events:
+            current[events[0]["sourceKey"].split(":", 1)[0]] = {e["sourceKey"] for e in events}
+    return seen, current
 
 
-def resolve(query: str, events):
+def successors(key: str, current) -> list[str]:
+    """Keys in the newest file that took this key's place.
+
+    Two listings sharing a name and a day each get a ":<id>" suffix, so last
+    week's bare key no longer names anything the source lists; excluding it
+    would be recorded and change nothing.
+    """
+    listed = current.get(key.split(":", 1)[0], set())
+    if key in listed:
+        return []
+    return sorted(k for k in listed if k != key and base_key(k) == key)
+
+
+def resolve(query: str, events, current=None):
     if query in events:
-        return [events[query]]
+        twins = successors(query, current or {})
+        return [events[k] for k in twins] if twins else [events[query]]
+    if SOURCE_KEY.match(query):
+        # A key is exact or it is wrong; never fall back to matching names.
+        return [
+            {"sourceKey": v["sourceKey"], "name": v["name"], "date": v.get("date", "")}
+            for v in ledger.load().values() if v["sourceKey"] == query
+        ][:1]
     needle = query.lower()
     hits = [e for e in events.values() if needle in e.get("name", "").lower()]
     if not hits:
@@ -79,11 +110,12 @@ def main() -> int:
     if not args.query:
         parser.error("give a source key or a name, or --list / --undo")
 
-    hits = resolve(args.query, newest_events())
+    events, current = newest_events()
+    hits = resolve(args.query, events, current)
     if not hits:
         print(f"{RED}no event matches{RESET} {args.query!r}")
         return 1
-    if len(hits) > 1:
+    if len(hits) > 1 or hits[0]["sourceKey"] != args.query and SOURCE_KEY.match(args.query):
         print(f"{YELLOW}{len(hits)} events match; use the exact key:{RESET}")
         for e in hits[:20]:
             print(f"  {e['sourceKey']:<60} {e.get('date', '')[:10]}  {e.get('name', '')[:40]}")

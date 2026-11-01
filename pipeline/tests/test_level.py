@@ -23,6 +23,18 @@ def test_adult_opens_are_not_youth():
     assert classify_level("Yukon Boys Open", "Yukon High School") is None
 
 
+def test_dual_meets():
+    from iwpipe.level import is_dual
+
+    assert is_dual("Alta @ Bountiful")
+    assert is_dual("Arroyo  (El Monte) @ Alhambra  (Alhambra)")
+    assert is_dual("Oswego (H.S.) @ Oswego (East)")
+    assert not is_dual("Tobin Duals")
+    assert not is_dual("IGHSAU 2A Reg. Duals 1 @")
+    assert not is_dual("@ West Iredell")
+    assert not is_dual("Imperial Valley vs Santa Ana")
+
+
 def test_placeholders():
     from iwpipe.level import is_placeholder
 
@@ -31,6 +43,16 @@ def test_placeholders():
     assert not is_placeholder("IHSA 1A Regional 4")
     assert not is_placeholder("Northwest Bigfoot Battle")
     assert not is_placeholder("Takedown in the Den")
+
+
+def test_listings_an_organizer_marked_for_deletion_are_placeholders():
+    from iwpipe.level import is_placeholder
+
+    for name in ("delete", "Delete Delete Delete", "Bobcat JV-Delete", "Cougar Open- Delete",
+                 "2026 Atomic Winter - Delete", "STP Hold - Please Set Invisible", "RS Dual Test"):
+        assert is_placeholder(name), name
+    for name in ("Stranglehold Classic", "Testa Memorial Duals", "Contest of Champions", "Hold the Line Open"):
+        assert not is_placeholder(name), name
 
 
 def test_tba_venue_is_a_note_not_a_skip():

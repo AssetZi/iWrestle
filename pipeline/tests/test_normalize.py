@@ -114,3 +114,24 @@ def test_ledger_notes_use_the_final_key(tmp_path, monkeypatch):
     collect_cli.annotate_from_ledger(event)
     assert "already in production" in event["review"]["notes"]
     assert not any(n.startswith("possible duplicate") for n in event["review"]["notes"])
+
+
+def test_a_corrected_name_survives_collect_and_clears_the_year_flag(monkeypatch, tmp_path):
+    from iwpipe import exclusions, renames
+
+    key = "flowrestling:2026-bgs-brawl-1-concord-nh:2027-03-27"
+    monkeypatch.setattr(ledger, "LEDGER_PATH", tmp_path / "pushed.json")
+    monkeypatch.setattr(exclusions, "EXCLUDED_PATH", tmp_path / "excluded.json")
+    monkeypatch.setattr(renames, "RENAMED_PATH", tmp_path / "renamed.json")
+    renames.RENAMED_PATH.write_text('{"%s": "2027 BGS Brawl #1 - Concord NH"}' % key)
+
+    event = schema.blank_event("flowrestling")
+    event.update(sourceKey=key, name="2026 BGS Brawl #1 - Concord NH", date="2027-03-27T13:00:00Z")
+    collect_cli.flag_oddities(event)
+    assert any(n.startswith("name says") for n in event["review"]["notes"])
+
+    collect_cli.annotate_from_ledger(event)
+
+    assert event["name"] == "2027 BGS Brawl #1 - Concord NH"
+    assert event["sourceKey"] == key
+    assert not any(n.startswith("name says") for n in event["review"]["notes"])

@@ -34,7 +34,7 @@ import _bootstrap  # noqa: F401
 
 import requests
 
-from iwpipe import cktool, ckws, ledger, schema
+from iwpipe import cktool, ckws, ledger, netcheck, schema
 from iwpipe.assets import event_asset_dir
 from iwpipe.term import BOLD, DIM, GREEN, RED, RESET, YELLOW
 
@@ -43,6 +43,10 @@ from iwpipe.term import BOLD, DIM, GREEN, RED, RESET, YELLOW
 # than the minimum, so a small source can still lose a handful.
 REMOVAL_CAP_FRACTION = 0.10
 REMOVAL_CAP_MIN = 5
+# Development is the sandbox, and a small source (Track has a few dozen
+# events pushed) loses a fifth of its listings in an ordinary week.
+REMOVAL_CAP_FRACTION_DEVELOPMENT = 0.30
+REMOVAL_CAP_MIN_DEVELOPMENT = 15
 # Re-pushing more than this many existing events in one run means the
 # content hash changed for a reason other than the events changing (a
 # template change, a cache wipe). It is allowed, but not by accident.
@@ -90,7 +94,7 @@ def push_one(event, environment, client, *, dry_run, replace_record=None):
     return name, content_hash
 
 
-RETIRE_NOTES = ("excluded:", "college-level event", "adult-level event")
+RETIRE_NOTES = ("excluded:", "college-level event", "adult-level event", "cancelled or placeholder listing", "dual meet")
 
 
 def retired(events, environment, already, *, record=True):
@@ -127,6 +131,8 @@ def removal_cap(source, environment):
         1 for v in ledger.load().values()
         if v["environment"] == environment and v["sourceKey"].startswith(f"{source}:")
     )
+    if environment == cktool.DEVELOPMENT:
+        return max(REMOVAL_CAP_MIN_DEVELOPMENT, int(REMOVAL_CAP_FRACTION_DEVELOPMENT * entries))
     return max(REMOVAL_CAP_MIN, int(REMOVAL_CAP_FRACTION * entries))
 
 
@@ -213,7 +219,8 @@ def _run(args, environment, client) -> int:
     # Listings absent from the source for MISS_LIMIT runs are cancelled.
     removals = ledger.due_for_removal(source, environment) if args.replace else []
     # And a pushed event that this file now sets aside for good (excluded by
-    # hand, or reclassified as college or adult) comes down as well.
+    # hand, reclassified as college or adult, or renamed "Delete" by its
+    # organizer) comes down as well.
     if args.replace:
         removals += retired(
             payload["events"], environment, {r["sourceKey"] for r in removals},
@@ -273,7 +280,9 @@ def _run(args, environment, client) -> int:
     pushed = 0
     failed = 0
     moved = 0
-    for event in queue:
+    unreachable = 0  # failures in a row that never reached CloudKit
+    network_down = False
+    for position, event in enumerate(queue):
         replacing_record = event.pop("_replace", None)
         forget = event.pop("_forget", None)
         verb = "move" if forget else "replace" if replacing_record else "push"
@@ -284,9 +293,24 @@ def _run(args, environment, client) -> int:
                 replace_record=replacing_record,
             )
         except (ckws.CKWSError, requests.RequestException) as error:
-            print(f"  {RED}failed{RESET}: {str(error)[:200]}")
             failed += 1
+            if not netcheck.is_network_error(error):
+                print(f"  {RED}failed{RESET}: {str(error)[:200]}")
+                unreachable = 0
+                continue
+            print(f"  {RED}failed{RESET}: {netcheck.brief(error)}")
+            unreachable += 1
+            if unreachable >= netcheck.GIVE_UP_AFTER:
+                left = len(queue) - position - 1
+                print(
+                    f"\n{RED}{BOLD}network unreachable{RESET}: {unreachable} pushes in a row never "
+                    f"reached CloudKit; stopping with {left} events and {len(removals)} removals not attempted. "
+                    "Nothing is lost: run the push again once the connection is back."
+                )
+                network_down = True
+                break
             continue
+        unreachable = 0
         if args.dry_run:
             continue
         ledger.record(
@@ -301,7 +325,7 @@ def _run(args, environment, client) -> int:
         print(f"  {GREEN}{'moved' if forget else 'replaced' if replacing_record else 'created'}{RESET} {record_name}")
 
     removed = 0
-    for entry in removals:
+    for entry in ([] if network_down else removals):
         why = entry.get("reason") or f"gone from source {entry['missCount']} runs"
         print(f"{BOLD}remove{RESET} {entry['date']}  {entry['name'][:50]}  ({why})")
         if args.dry_run:
@@ -320,10 +344,12 @@ def _run(args, environment, client) -> int:
     extras = ""
     if moved:
         extras += f", {moved} moved"
-    if removals:
+    if removals and not network_down:
         extras += f", {len(removals) if args.dry_run else removed} removed"
     if failed:
         extras += f", {failed} failed"
+    if network_down:
+        extras += ", stopped: network unreachable"
     if blocked:
         extras += f", {blocked} removals blocked by the cap"
     if args.dry_run:

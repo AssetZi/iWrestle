@@ -9,6 +9,7 @@ Lifecycle of one entry, and the function that drives each edge:
     collect  ──seen──▶ mark_misses clears missCount
              ──gone──▶ mark_misses  missCount+1 ──(MISS_LIMIT)──▶ due_for_removal ──▶ push deletes
              ──moved─▶ find_moved: new key created, old record deleted (push)
+             ──renamed▶ find_renamed: the same, for a name that changed in place
     push     ──college/adult/excluded──▶ mark_retiring retireCount+1 ──(RETIRE_LIMIT)──▶ push deletes
 
 Every write goes through `lock()`: two pushes sharing this file would
@@ -22,6 +23,7 @@ import fcntl
 import json
 import math
 import os
+import re
 from contextlib import contextmanager
 from datetime import date, datetime, timezone
 from typing import Any, Iterator
@@ -210,7 +212,7 @@ def find_similar(source_key: str, name_slug: str, day: str, location: dict[str, 
 # --- Listings that vanished from their source -----------------------------------
 # A cancelled tournament is simply gone from the next scrape. One absence
 # could be a flaky page, so a record is only removed after this many runs
-# in a row without it.
+# in a row without it, each on a different day.
 MISS_LIMIT = 2
 # A scrape that returns fewer than this share of what the ledger holds for
 # the source is a broken scrape, not a wave of cancellations.
@@ -239,7 +241,7 @@ def looks_partial(source: str, seen_count: int, today: str) -> tuple[bool, int]:
 
 
 def mark_misses(source: str, seen_keys: set[str], today: str) -> list[dict[str, Any]]:
-    """Count, per upcoming entry of `source`, the runs it has been absent.
+    """Count, per upcoming entry of `source`, the days it has been absent.
 
     Entries seen this run go back to zero. Entries already in the past are
     left alone: the source stops listing them and that means nothing.
@@ -254,8 +256,11 @@ def mark_misses(source: str, seen_keys: set[str], today: str) -> list[dict[str, 
             entry.pop("missCount", None)
             entry.pop("lastMissedAt", None)
             continue
-        entry["missCount"] = entry.get("missCount", 0) + 1
-        entry["lastMissedAt"] = today[:10]
+        # A second run on one day (after a failed push, say) saw the same
+        # absence, not a second one.
+        if entry.get("lastMissedAt") != today[:10]:
+            entry["missCount"] = entry.get("missCount", 0) + 1
+            entry["lastMissedAt"] = today[:10]
         missing.append(entry)
     save(entries)
     return missing
@@ -323,3 +328,50 @@ def find_moved(source: str, name_slug: str, day: str, seen_keys: set[str], today
         if old_day and old_day != day and old_day >= today[:10] and base_key(key).endswith(f":{name_slug}:{old_day}"):
             found.append(key)
     return found
+
+
+# A renamed listing sits at the same gym on the same day; a geocode of one
+# address does not wander further than this.
+RENAME_KM = 0.5
+# Share of name words two listings must have in common to be one event
+# renamed. "Classic - HS Boys" and "Classic - HS Girls" fall short of it.
+RENAME_OVERLAP = 0.75
+_YEAR_TOKEN = re.compile(r"20\d\d")
+
+
+def _name_words(name_slug: str) -> set[str]:
+    return {word for word in name_slug.split("-") if word and not _YEAR_TOKEN.fullmatch(word)}
+
+
+def find_renamed(
+    source: str, name_slug: str, day: str, location: dict[str, float] | None,
+    seen_keys: set[str], today: str,
+) -> list[str]:
+    """Keys from the same source, day and gym whose name is nearly this one.
+
+    A site that renames a listing ("SCWC Boys Tournament" gaining a "2026")
+    gives it a new key; the old listing is no longer on the site (it is not
+    in `seen_keys`). Left alone that is a removal and a new event, and a
+    wave of renames trips the removal cap. Best match first.
+    """
+    words = _name_words(name_slug)
+    if not words or not day or day < today[:10]:
+        return []
+    scored: dict[str, float] = {}
+    for entry in load().values():
+        key = entry["sourceKey"]
+        if key in seen_keys or _source_of(entry) != source or entry.get("date") != day:
+            continue
+        other = _name_words(base_key(key).split(":")[1])
+        if not other:
+            continue
+        overlap = len(words & other) / len(words | other)
+        if location and entry.get("location"):
+            if _km(location, entry["location"]) > RENAME_KM:
+                continue
+            if overlap < RENAME_OVERLAP and not (words <= other or other <= words):
+                continue
+        elif overlap < 1:
+            continue  # nowhere to compare: only the year may differ
+        scored[key] = max(overlap, scored.get(key, 0))
+    return sorted(scored, key=lambda key: (-scored[key], key))

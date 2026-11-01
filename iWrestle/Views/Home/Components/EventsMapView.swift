@@ -101,14 +101,15 @@ struct UserLocationDot: View {
                 .frame(width: 12, height: 12)
                 .scaleEffect(pulse ? 3.2 : 1)
                 .opacity(pulse ? 0 : 1)
+                // Scoped to the halo so the repeat-forever animation cannot
+                // leak into the transaction the dot first appears in.
+                .animation(Motion.easeOut(2).repeatForever(autoreverses: false), value: pulse)
             Circle()
                 .fill(Theme.slate300)
                 .frame(width: 12, height: 12)
                 .overlay(Circle().strokeBorder(.white, lineWidth: 2.5))
         }
-        .onAppear {
-            withAnimation(Motion.easeOut(2).repeatForever(autoreverses: false)) { pulse = true }
-        }
+        .onAppear { pulse = true }
     }
 }
 

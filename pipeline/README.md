@@ -189,6 +189,13 @@ the note `excluded: <reason>`. `python bin/exclude.py --list` shows the
 list, `--undo <key>` lets one back in. The list lives in
 `data/excluded.json` and is committed.
 
+## Correcting a name
+
+A source sometimes lists an event under last season's name ("2026 BGS Brawl"
+dated 2027). Put the source key and the corrected name in
+`data/renamed.json` (committed): every collect then uses that name, drops
+the `name says ...` flag, and keeps the same key, so it stays one record.
+
 ## Duplicates
 
 Each event gets a natural key: `source:name-slug:YYYY-MM-DD`. Successful

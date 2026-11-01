@@ -10,6 +10,7 @@ pipeline/data/*
 !pipeline/data/pushed.json
 !pipeline/data/geocache.json
 !pipeline/data/excluded.json
+!pipeline/data/renamed.json
 
 # Xcode
 xcuserdata/

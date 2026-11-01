@@ -164,13 +164,13 @@ def test_a_listing_gone_from_its_source_is_removed_only_with_replace(tmp_path, m
 
 
 def test_mass_removals_are_blocked_by_the_cap(tmp_path, monkeypatch):
-    """Eight of ten entries gone at once is a broken scrape, not eight cancellations."""
+    """Eighteen of twenty entries gone at once is a broken scrape, not eighteen cancellations."""
     import push as push_cli
 
     client = _wire(tmp_path, monkeypatch)
-    for i in range(10):
+    for i in range(20):
         ledger.record(f"pywrestling:e{i}:2026-11-07", "development", f"R{i}", f"E{i}", day="2026-11-07")
-    kept = {f"pywrestling:e{i}:2026-11-07" for i in (8, 9)}
+    kept = {f"pywrestling:e{i}:2026-11-07" for i in (18, 19)}
     ledger.mark_misses("pywrestling", kept, "2026-09-07")
     ledger.mark_misses("pywrestling", kept, "2026-09-14")
     file = tmp_path / "events.json"
@@ -182,9 +182,9 @@ def test_mass_removals_are_blocked_by_the_cap(tmp_path, monkeypatch):
     assert ledger.get("pywrestling:e0:2026-11-07", "development")
 
     # A person can raise the cap for one run.
-    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace", "--max-removals", "8"])
+    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace", "--max-removals", "18"])
     assert push_cli.main() == 0
-    assert len([c for c in client.calls if c[0] == "delete"]) == 8
+    assert len([c for c in client.calls if c[0] == "delete"]) == 18
 
 
 def test_a_pushed_event_reclassified_as_college_is_retired_after_two_runs(tmp_path, monkeypatch):
@@ -233,3 +233,80 @@ def test_no_key_means_no_push(tmp_path, monkeypatch):
     schema.dump(file, "pywrestling", [_event(tmp_path)])
     monkeypatch.setattr(sys, "argv", ["push", str(file)])
     assert push_cli.main() == 1
+
+
+def test_development_allows_a_larger_share_of_removals_than_production(tmp_path, monkeypatch):
+    import push as push_cli
+
+    _wire(tmp_path, monkeypatch)
+    for environment in ("development", "production"):
+        for i in range(40):
+            ledger.record(f"trackwrestling:e{i}:2026-11-07", environment, f"R{i}", f"E{i}", day="2026-11-07")
+
+    assert push_cli.removal_cap("trackwrestling", cktool.DEVELOPMENT) == 15
+    assert push_cli.removal_cap("trackwrestling", cktool.PRODUCTION) == 5
+
+
+def test_a_dead_connection_stops_the_push_instead_of_failing_every_event(tmp_path, monkeypatch, capsys):
+    import push as push_cli
+    import requests
+
+    client = _wire(tmp_path, monkeypatch)
+
+    def unreachable(record_type, fields):
+        client.calls.append(("create",))
+        raise requests.ConnectionError("HTTPSConnectionPool(host='api.apple-cloudkit.com', port=443): Failed to resolve")
+
+    client.create_record = unreachable
+    ledger.record("pywrestling:gone:2026-11-07", "development", "GONE", "Gone", day="2026-11-07")
+    ledger.mark_misses("pywrestling", set(), "2026-09-07")
+    ledger.mark_misses("pywrestling", set(), "2026-09-14")
+    events = [_event(tmp_path, name=f"Event {n}", key=f"pywrestling:event-{n}:2026-10-17") for n in range(8)]
+    file = tmp_path / "events.json"
+    schema.dump(file, "pywrestling", events)
+
+    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace"])
+    assert push_cli.main() == 1
+    # Three tries, then it stops; the removal waits for a run that can reach CloudKit.
+    assert client.calls == [("create",)] * 3
+    assert ledger.get("pywrestling:gone:2026-11-07", "development")
+    out = capsys.readouterr().out
+    assert "network unreachable" in out and "5 events and 1 removals not attempted" in out
+
+
+def test_one_failed_request_among_good_ones_does_not_stop_the_push(tmp_path, monkeypatch):
+    import push as push_cli
+    import requests
+
+    client = _wire(tmp_path, monkeypatch)
+    real = client.create_record
+
+    def flaky(record_type, fields):
+        if len(client.calls) % 2 == 0:
+            client.calls.append(("create",))
+            raise requests.ConnectionError("reset")
+        return real(record_type, fields)
+
+    client.create_record = flaky
+    events = [_event(tmp_path, name=f"Event {n}", key=f"pywrestling:event-{n}:2026-10-17") for n in range(8)]
+    file = tmp_path / "events.json"
+    schema.dump(file, "pywrestling", events)
+    monkeypatch.setattr(sys, "argv", ["push", str(file)])
+    assert push_cli.main() == 1
+    assert len(client.calls) == 8
+
+
+def test_a_pushed_listing_renamed_delete_is_retired_after_two_runs(tmp_path, monkeypatch):
+    import push as push_cli
+
+    client = _wire(tmp_path, monkeypatch)
+    event = _event(tmp_path, name="Bobcat JV-Delete", key="pywrestling:bobcat-jv:2026-10-17")
+    ledger.record(event["sourceKey"], "development", "OLD", "Bobcat JV", day="2026-10-17")
+    event["review"] = {"status": schema.STATUS_SKIP, "notes": ["cancelled or placeholder listing"]}
+    file = tmp_path / "events.json"
+    schema.dump(file, "pywrestling", [event])
+    monkeypatch.setattr(sys, "argv", ["push", str(file), "--replace"])
+    push_cli.main()
+    assert client.calls == []
+    push_cli.main()
+    assert client.calls == [("delete", "OLD")]
