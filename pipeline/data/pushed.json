@@ -51991,19 +51991,6 @@
     "recordName": "D13FA1E2-B0DB-437D-B780-8A7FDBE68CA1",
     "sourceKey": "flowrestling:aina-smith-memorial-2026:2026-11-06"
   },
-  "production:flowrestling:air-force-vs-army:2026-11-15": {
-    "contentHash": "42a37f1d30cbb76a",
-    "date": "2026-11-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3908285,
-      "longitude": -73.9570602
-    },
-    "name": "Air Force vs Army",
-    "pushedAt": "2026-10-26T17:40:25+00:00",
-    "recordName": "891FC417-9BF5-489C-90AD-BD1EFD004448",
-    "sourceKey": "flowrestling:air-force-vs-army:2026-11-15"
-  },
   "production:flowrestling:albany-girls-tournament:2026-12-05": {
     "contentHash": "53641bb4b85793f1",
     "date": "2026-12-05",
@@ -52016,19 +52003,6 @@
     "pushedAt": "2026-09-07T10:00:37+00:00",
     "recordName": "68A91095-1EF0-472B-AF41-113ADC5CAE83",
     "sourceKey": "flowrestling:albany-girls-tournament:2026-12-05"
-  },
-  "production:flowrestling:albion-vs-tiffin-university:2027-02-06": {
-    "contentHash": "9b598802501a9a21",
-    "date": "2027-02-06",
-    "environment": "production",
-    "location": {
-      "latitude": 41.1202122,
-      "longitude": -83.1916362
-    },
-    "name": "Albion vs Tiffin University",
-    "pushedAt": "2026-10-26T17:41:57+00:00",
-    "recordName": "43B13ECF-F68C-4E9F-AD65-24167CCDDE0C",
-    "sourceKey": "flowrestling:albion-vs-tiffin-university:2027-02-06"
   },
   "production:flowrestling:all-arizona-freshman-tournament:2027-01-30": {
     "contentHash": "9c460837f55fa8d5",
@@ -52069,19 +52043,6 @@
     "recordName": "3F0E9664-EF92-46CC-87A7-A9CA23C389E4",
     "sourceKey": "flowrestling:allen-duals:2027-01-23"
   },
-  "production:flowrestling:allen-vs-newberry:2027-02-06": {
-    "contentHash": "1185ff462ce8a094",
-    "date": "2027-02-06",
-    "environment": "production",
-    "location": {
-      "latitude": 34.2858689,
-      "longitude": -81.6216609
-    },
-    "name": "Allen vs Newberry",
-    "pushedAt": "2026-10-26T17:41:59+00:00",
-    "recordName": "CA427EC3-9879-4CF7-9DE2-28C10D1AF78E",
-    "sourceKey": "flowrestling:allen-vs-newberry:2027-02-06"
-  },
   "production:flowrestling:alma-open:2027-01-16": {
     "contentHash": "98c3215c93cb5767",
     "date": "2027-01-16",
@@ -52094,19 +52055,6 @@
     "pushedAt": "2026-10-13T09:52:43+00:00",
     "recordName": "5E5BD35E-979F-486E-A556-4DECD837667D",
     "sourceKey": "flowrestling:alma-open:2027-01-16"
-  },
-  "production:flowrestling:alma-vs-tiffin-university:2026-12-11": {
-    "contentHash": "4d85bfcdb1f7e7e0",
-    "date": "2026-12-11",
-    "environment": "production",
-    "location": {
-      "latitude": 41.1202122,
-      "longitude": -83.1916362
-    },
-    "name": "Alma vs Tiffin University",
-    "pushedAt": "2026-10-26T17:40:51+00:00",
-    "recordName": "2D50431F-C12E-4563-8924-CAFE7798F80A",
-    "sourceKey": "flowrestling:alma-vs-tiffin-university:2026-12-11"
   },
   "production:flowrestling:altoona-jc-orr-and-sons:2027-01-03": {
     "contentHash": "0e1e15a4b217b6ee",
@@ -52146,19 +52094,6 @@
     "pushedAt": "2026-09-07T09:24:12+00:00",
     "recordName": "C010EA43-8AC9-4252-AC7B-DE4BEFAEF4FF",
     "sourceKey": "flowrestling:ambush-duals:2026-12-30"
-  },
-  "production:flowrestling:american-vs-drexel:2027-01-30": {
-    "contentHash": "22e4a4571839daf3",
-    "date": "2027-01-30",
-    "environment": "production",
-    "location": {
-      "latitude": 39.9562379,
-      "longitude": -75.1905607
-    },
-    "name": "American vs Drexel",
-    "pushedAt": "2026-10-26T17:41:50+00:00",
-    "recordName": "C4A57542-B352-49E0-87C8-3B13E9D47442",
-    "sourceKey": "flowrestling:american-vs-drexel:2027-01-30"
   },
   "production:flowrestling:ames-little-cyclone-clash:2027-01-10": {
     "contentHash": "93501489fe2fd909",
@@ -52303,19 +52238,6 @@
     "recordName": "FAF53F2D-F5EF-463A-A04F-8A7C106648F0",
     "sourceKey": "flowrestling:app-state-invite-open-2026:2026-11-15"
   },
-  "production:flowrestling:app-state-vs-north-carolina:2026-12-20:2u8qblM7zMpbpKZs": {
-    "contentHash": "41bc9057b298632a",
-    "date": "2026-12-20",
-    "environment": "production",
-    "location": {
-      "latitude": 35.9459408,
-      "longitude": -79.0797613
-    },
-    "name": "App State vs North Carolina",
-    "pushedAt": "2026-10-05T17:48:46+00:00",
-    "recordName": "4887FC8E-67C4-49E3-9EEA-B34A4009A500",
-    "sourceKey": "flowrestling:app-state-vs-north-carolina:2026-12-20:2u8qblM7zMpbpKZs"
-  },
   "production:flowrestling:appalachian-anarchy:2026-12-20": {
     "contentHash": "b4bccac7fed0373e",
     "date": "2026-12-20",
@@ -52420,32 +52342,6 @@
     "recordName": "9ED2AFF9-E991-43C2-9081-F57859823F5A",
     "sourceKey": "flowrestling:arizona-christian-university-arizona-christian-university:2026-10-21"
   },
-  "production:flowrestling:arizona-st-vs-lehigh:2027-02-19": {
-    "contentHash": "5fd236e89178b3c1",
-    "date": "2027-02-19",
-    "environment": "production",
-    "location": {
-      "latitude": 40.6062719,
-      "longitude": -75.3745885
-    },
-    "name": "Arizona St vs Lehigh",
-    "pushedAt": "2026-10-26T17:42:11+00:00",
-    "recordName": "F8DB608B-5426-4705-95EF-AF1B266F095B",
-    "sourceKey": "flowrestling:arizona-st-vs-lehigh:2027-02-19"
-  },
-  "production:flowrestling:arizona-st-vs-wyoming:2027-01-08": {
-    "contentHash": "2bb864f8f36565b9",
-    "date": "2027-01-08",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3124923,
-      "longitude": -105.5699617
-    },
-    "name": "Arizona St vs Wyoming",
-    "pushedAt": "2026-10-05T17:49:25+00:00",
-    "recordName": "33826445-E980-4A8F-83B7-873B56592208",
-    "sourceKey": "flowrestling:arizona-st-vs-wyoming:2027-01-08"
-  },
   "production:flowrestling:arkansas-dual-state-tournament:2027-02-12": {
     "contentHash": "071dfa440b9a3580",
     "date": "2027-02-12",
@@ -52500,19 +52396,6 @@
     "recordName": "D58BBF39-196C-4419-B6A0-9877A981235D",
     "sourceKey": "flowrestling:arlington-john-jay-east-fishkill:2027-01-25"
   },
-  "production:flowrestling:army-vs-lehigh:2027-01-29": {
-    "contentHash": "d0fc6416b6185c4c",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 40.6062719,
-      "longitude": -75.3745885
-    },
-    "name": "Army vs Lehigh",
-    "pushedAt": "2026-10-26T17:41:47+00:00",
-    "recordName": "B3329CC6-4BA6-4ECD-8FCD-FF59594E460F",
-    "sourceKey": "flowrestling:army-vs-lehigh:2027-01-29"
-  },
   "production:flowrestling:arsen-s-battle:2026-12-19": {
     "contentHash": "02a331976ff32705",
     "date": "2026-12-19",
@@ -52538,32 +52421,6 @@
     "pushedAt": "2026-10-05T17:48:19+00:00",
     "recordName": "4E4CFDD6-C366-4187-B5F8-464309B2688F",
     "sourceKey": "flowrestling:art-kraft-memorial-2026:2026-12-12"
-  },
-  "production:flowrestling:ashland-vs-kentucky-wesleyan:2027-01-23": {
-    "contentHash": "53e2c21dd98f3262",
-    "date": "2027-01-23",
-    "environment": "production",
-    "location": {
-      "latitude": 37.7627502,
-      "longitude": -87.1262182
-    },
-    "name": "Ashland vs Kentucky Wesleyan",
-    "pushedAt": "2026-10-26T17:41:45+00:00",
-    "recordName": "78955832-2B49-463B-A0A7-8282A56204EE",
-    "sourceKey": "flowrestling:ashland-vs-kentucky-wesleyan:2027-01-23"
-  },
-  "production:flowrestling:ashland-vs-thomas-more:2027-01-10": {
-    "contentHash": "48d006a51fa4c9ec",
-    "date": "2027-01-10",
-    "environment": "production",
-    "location": {
-      "latitude": 39.0216667,
-      "longitude": -84.5680762
-    },
-    "name": "Ashland vs Thomas More",
-    "pushedAt": "2026-10-26T17:41:30+00:00",
-    "recordName": "37DD2078-F864-4D0B-BA05-C60DE65F3CEC",
-    "sourceKey": "flowrestling:ashland-vs-thomas-more:2027-01-10"
   },
   "production:flowrestling:athena-s-pageant:2027-01-23": {
     "contentHash": "5f9a9383e3d2150f",
@@ -52643,32 +52500,6 @@
     "recordName": "CCCA853B-9FB4-4B30-A1E8-0B6B3B9F4627",
     "sourceKey": "flowrestling:avctl-div-1-boys-league-duals:2027-01-21"
   },
-  "production:flowrestling:averett-vs-roanoke:2027-01-03": {
-    "contentHash": "6cbf4dcc08c1d17b",
-    "date": "2027-01-03",
-    "environment": "production",
-    "location": {
-      "latitude": 37.2968883,
-      "longitude": -80.0565047
-    },
-    "name": "Averett vs Roanoke",
-    "pushedAt": "2026-10-26T17:41:17+00:00",
-    "recordName": "342FEACF-E69A-478A-AA13-C1483481B2BE",
-    "sourceKey": "flowrestling:averett-vs-roanoke:2027-01-03"
-  },
-  "production:flowrestling:averett-vs-shenandoah:2027-01-22": {
-    "contentHash": "c4ed835538fe6ffe",
-    "date": "2027-01-22",
-    "environment": "production",
-    "location": {
-      "latitude": 39.1638903,
-      "longitude": -78.1537932
-    },
-    "name": "Averett vs Shenandoah",
-    "pushedAt": "2026-10-26T17:41:43+00:00",
-    "recordName": "4B09B161-AFD3-4D52-8CF5-0DA9CC1295CD",
-    "sourceKey": "flowrestling:averett-vs-shenandoah:2027-01-22"
-  },
   "production:flowrestling:awc-mini-raider-tournament:2026-11-14": {
     "contentHash": "bfe3a6df6ef7f4bd",
     "date": "2026-11-14",
@@ -52720,32 +52551,6 @@
     "pushedAt": "2026-09-07T09:36:10+00:00",
     "recordName": "BF76BA6E-4A1D-46EE-9B50-4EC9BB30A04B",
     "sourceKey": "flowrestling:bald-eagle-girls-varsity-jr-high:2027-01-23"
-  },
-  "production:flowrestling:baldwin-wallace-vs-cwru:2027-01-15": {
-    "contentHash": "11e5111e31a3ae0f",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.5008782,
-      "longitude": -81.6063691
-    },
-    "name": "Baldwin Wallace vs CWRU",
-    "pushedAt": "2026-10-26T17:49:30+00:00",
-    "recordName": "B2894C2D-479A-4A9D-B75C-28D7CE7F67F3",
-    "sourceKey": "flowrestling:baldwin-wallace-vs-cwru:2027-01-15"
-  },
-  "production:flowrestling:baldwin-wallace-vs-wilmington:2027-01-08": {
-    "contentHash": "5da6608edba9ae12",
-    "date": "2027-01-08",
-    "environment": "production",
-    "location": {
-      "latitude": 39.4408304,
-      "longitude": -83.8170945
-    },
-    "name": "Baldwin Wallace vs Wilmington",
-    "pushedAt": "2026-10-26T17:49:20+00:00",
-    "recordName": "F42D1B0E-C0D3-484F-A10D-7DCD7B3EDE91",
-    "sourceKey": "flowrestling:baldwin-wallace-vs-wilmington:2027-01-08"
   },
   "production:flowrestling:banner-county-jh-wrestling-invite:2026-10-30": {
     "contentHash": "0dc2d4962d6110d3",
@@ -53332,32 +53137,6 @@
     "recordName": "8661C6A2-1706-4B56-8B53-5685F9444623",
     "sourceKey": "flowrestling:big-red-rumble-jv-7-9-2027:2027-01-09"
   },
-  "production:flowrestling:binghamton-vs-drexel:2027-01-17": {
-    "contentHash": "e24d9863a13abcab",
-    "date": "2027-01-17",
-    "environment": "production",
-    "location": {
-      "latitude": 39.9562379,
-      "longitude": -75.1905607
-    },
-    "name": "Binghamton vs Drexel",
-    "pushedAt": "2026-10-26T17:49:39+00:00",
-    "recordName": "E9A39C64-E568-46C3-AC1F-D8CCB9F8255D",
-    "sourceKey": "flowrestling:binghamton-vs-drexel:2027-01-17"
-  },
-  "production:flowrestling:binghamton-vs-hofstra:2027-02-13": {
-    "contentHash": "3b8470c558d936b9",
-    "date": "2027-02-13",
-    "environment": "production",
-    "location": {
-      "latitude": 40.713634,
-      "longitude": -73.6044551
-    },
-    "name": "Binghamton vs Hofstra",
-    "pushedAt": "2026-10-13T10:00:38+00:00",
-    "recordName": "1822186F-72AF-433C-945C-51153D00F780",
-    "sourceKey": "flowrestling:binghamton-vs-hofstra:2027-02-13"
-  },
   "production:flowrestling:bishop-amat-classic:2026-12-19": {
     "contentHash": "8f70d565dd828f16",
     "date": "2026-12-19",
@@ -53735,19 +53514,6 @@
     "recordName": "7D84F06F-9C34-4719-8E88-01E001A87D40",
     "sourceKey": "flowrestling:bridgeport-hs-boys-invite-26:2026-12-19"
   },
-  "production:flowrestling:bridgewater-ma-vs-southern-maine:2026-11-07": {
-    "contentHash": "55bdc26747f0e93a",
-    "date": "2026-11-07",
-    "environment": "production",
-    "location": {
-      "latitude": 43.6827099,
-      "longitude": -70.4496513
-    },
-    "name": "Bridgewater (MA) vs Southern Maine",
-    "pushedAt": "2026-10-26T17:47:40+00:00",
-    "recordName": "4C4DBD0E-45BE-452D-B22E-44012ED205DC",
-    "sourceKey": "flowrestling:bridgewater-ma-vs-southern-maine:2026-11-07"
-  },
   "production:flowrestling:bristol-brawl-valhalla-wrestling:2027-01-10": {
     "contentHash": "5e926eb1ddba5368",
     "date": "2027-01-10",
@@ -53851,32 +53617,6 @@
     "pushedAt": "2026-10-26T17:40:54+00:00",
     "recordName": "6617BA34-A95E-4172-B529-EC7233A191C9",
     "sourceKey": "flowrestling:bucyrus-39th-annual-pool-tournament:2026-12-12"
-  },
-  "production:flowrestling:buffalo-vs-clarion:2027-02-06": {
-    "contentHash": "cb7a8789690c4841",
-    "date": "2027-02-06",
-    "environment": "production",
-    "location": {
-      "latitude": 41.2063768,
-      "longitude": -79.3804006
-    },
-    "name": "Buffalo vs Clarion",
-    "pushedAt": "2026-10-26T17:50:08+00:00",
-    "recordName": "C422EE33-FA9F-4DEC-9C83-65ED3519CFF3",
-    "sourceKey": "flowrestling:buffalo-vs-clarion:2027-02-06"
-  },
-  "production:flowrestling:buffalo-vs-hofstra:2027-01-23": {
-    "contentHash": "aea0031caf2be3a4",
-    "date": "2027-01-23",
-    "environment": "production",
-    "location": {
-      "latitude": 40.713634,
-      "longitude": -73.6044551
-    },
-    "name": "Buffalo vs Hofstra",
-    "pushedAt": "2026-10-13T10:00:16+00:00",
-    "recordName": "D3465BCF-7287-46C7-A788-CE7152BAF02C",
-    "sourceKey": "flowrestling:buffalo-vs-hofstra:2027-01-23"
   },
   "production:flowrestling:bulldog-bash-2-pre-season:2026-10-02": {
     "contentHash": "3193af857a764a4b",
@@ -54060,19 +53800,6 @@
     "recordName": "B9BEE8F7-C3B7-451E-B7AB-73D2A464B72E",
     "sourceKey": "flowrestling:carbon-county-invite-girls-varsity:2027-02-12"
   },
-  "production:flowrestling:carl-albert-state-vs-neo-a-m:2027-02-11": {
-    "contentHash": "f99aa8a2d5fd37de",
-    "date": "2027-02-11",
-    "environment": "production",
-    "location": {
-      "latitude": 36.877614,
-      "longitude": -94.865637
-    },
-    "name": "Carl Albert State vs NEO A&M",
-    "pushedAt": "2026-10-26T17:42:05+00:00",
-    "recordName": "DE3B90B3-5E30-464F-B1F0-EF6F99B67F34",
-    "sourceKey": "flowrestling:carl-albert-state-vs-neo-a-m:2027-02-11"
-  },
   "production:flowrestling:carlisle-booster-club-rumble-in-the-wac:2026-11-21": {
     "contentHash": "3defb025f4ac3410",
     "date": "2026-11-21",
@@ -54176,19 +53903,6 @@
     "pushedAt": "2026-09-07T09:50:36+00:00",
     "recordName": "4CA9C953-3C8F-4589-892E-60B794A4C5A3",
     "sourceKey": "flowrestling:ccc-conference-ct-tournament-2027:2027-02-05"
-  },
-  "production:flowrestling:cedar-crest-vs-wilkes:2027-01-24": {
-    "contentHash": "cc85315ed21dfc12",
-    "date": "2027-01-24",
-    "environment": "production",
-    "location": {
-      "latitude": 41.242415,
-      "longitude": -75.890678
-    },
-    "name": "Cedar Crest vs Wilkes",
-    "pushedAt": "2026-10-26T17:49:58+00:00",
-    "recordName": "C8FCC2CF-4EF1-41A7-A4F0-F22484AF3DAD",
-    "sourceKey": "flowrestling:cedar-crest-vs-wilkes:2027-01-24"
   },
   "production:flowrestling:cedar-valley-fall-classic-2026:2026-10-25": {
     "contentHash": "8ccc9b6e024641be",
@@ -54636,19 +54350,6 @@
     "recordName": "1EA3C7A5-9632-4A4A-8A06-485CE93BD534",
     "sourceKey": "flowrestling:cjs-open-tournament:2026-11-07"
   },
-  "production:flowrestling:clackamas-vs-north-idaho:2026-10-31": {
-    "contentHash": "441bc11ebce0e418",
-    "date": "2026-10-31",
-    "environment": "production",
-    "location": {
-      "latitude": 47.6764696,
-      "longitude": -116.7988978
-    },
-    "name": "Clackamas vs North Idaho",
-    "pushedAt": "2026-10-26T17:43:19+00:00",
-    "recordName": "9037A803-E888-414E-B5BB-D13E25382C12",
-    "sourceKey": "flowrestling:clackamas-vs-north-idaho:2026-10-31"
-  },
   "production:flowrestling:clarion-open:2026-11-01": {
     "contentHash": "938d81603011f055",
     "date": "2026-11-01",
@@ -54937,19 +54638,6 @@
     "recordName": "A3E6FCA2-5225-42D8-83D9-33DCAA4603B3",
     "sourceKey": "flowrestling:combat-x-northeast-duals-and-youth-individual:2026-11-22"
   },
-  "production:flowrestling:concordia-wis-vs-linfield:2026-12-13": {
-    "contentHash": "405a89600a9a67f7",
-    "date": "2026-12-13",
-    "environment": "production",
-    "location": {
-      "latitude": 45.2001653,
-      "longitude": -123.1974053
-    },
-    "name": "Concordia (Wis.) vs Linfield",
-    "pushedAt": "2026-09-07T09:48:12+00:00",
-    "recordName": "F518D210-D5AB-489C-9F9B-AEACFA3C0B72",
-    "sourceKey": "flowrestling:concordia-wis-vs-linfield:2026-12-13"
-  },
   "production:flowrestling:conflict-at-cleveland:2027-01-08": {
     "contentHash": "7993f331e7cd29ea",
     "date": "2027-01-08",
@@ -55027,32 +54715,6 @@
     "pushedAt": "2026-09-07T09:40:10+00:00",
     "recordName": "4AE3044B-3FE5-4C9E-961D-BA61F766DB37",
     "sourceKey": "flowrestling:corcoran-panthers-invitational-2027:2027-01-23"
-  },
-  "production:flowrestling:cornell-vs-army:2027-01-30": {
-    "contentHash": "0700ffbfcf679e11",
-    "date": "2027-01-30",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3908285,
-      "longitude": -73.9570602
-    },
-    "name": "Cornell vs Army",
-    "pushedAt": "2026-10-26T17:41:51+00:00",
-    "recordName": "16BC6CBD-63E5-42EB-96DA-70DCBCDA031B",
-    "sourceKey": "flowrestling:cornell-vs-army:2027-01-30"
-  },
-  "production:flowrestling:cornell-vs-northern-iowa:2027-02-14": {
-    "contentHash": "b6c55513778419bd",
-    "date": "2027-02-14",
-    "environment": "production",
-    "location": {
-      "latitude": 42.5147908,
-      "longitude": -92.4675722
-    },
-    "name": "Cornell vs Northern Iowa",
-    "pushedAt": "2026-10-13T09:57:02+00:00",
-    "recordName": "BDAC2906-7E37-4FD4-A817-49E24B9F2B09",
-    "sourceKey": "flowrestling:cornell-vs-northern-iowa:2027-02-14"
   },
   "production:flowrestling:corner-canyon-cup-duals-2026:2026-12-11": {
     "contentHash": "93a96fa66847fa2a",
@@ -55838,19 +55500,6 @@
     "recordName": "A7A8B8FA-713A-4C75-B3C2-EC5FCEC253AB",
     "sourceKey": "flowrestling:david-mariola-t-a-b-invitational:2027-01-22"
   },
-  "production:flowrestling:davis-elkins-vs-roanoke:2026-12-04": {
-    "contentHash": "b873b8dfc714fe70",
-    "date": "2026-12-04",
-    "environment": "production",
-    "location": {
-      "latitude": 37.2968883,
-      "longitude": -80.0565047
-    },
-    "name": "Davis & Elkins vs Roanoke",
-    "pushedAt": "2026-10-26T17:42:30+00:00",
-    "recordName": "5C468CEF-0EA7-445B-8F9A-5105AAED3749",
-    "sourceKey": "flowrestling:davis-elkins-vs-roanoke:2026-12-04"
-  },
   "production:flowrestling:davis-invite:2026-12-05": {
     "contentHash": "bfde58d0dfbee369",
     "date": "2026-12-05",
@@ -55915,45 +55564,6 @@
     "pushedAt": "2026-10-26T17:44:14+00:00",
     "recordName": "7DAB9A16-4C7E-4C49-BE53-982B67264BFA",
     "sourceKey": "flowrestling:del-norte-jv-invitational:2026-12-05"
-  },
-  "production:flowrestling:delaware-valley-vs-elizabethtown:2026-11-14": {
-    "contentHash": "fe67ae49b95a7974",
-    "date": "2026-11-14",
-    "environment": "production",
-    "location": {
-      "latitude": 40.1508222,
-      "longitude": -76.5906317
-    },
-    "name": "Delaware Valley vs Elizabethtown",
-    "pushedAt": "2026-10-26T17:42:19+00:00",
-    "recordName": "A7A46824-0F0F-4D27-9B38-EEEC5573E439",
-    "sourceKey": "flowrestling:delaware-valley-vs-elizabethtown:2026-11-14"
-  },
-  "production:flowrestling:delaware-valley-vs-wilkes:2026-11-13": {
-    "contentHash": "2320cb1d9c72ae29",
-    "date": "2026-11-13",
-    "environment": "production",
-    "location": {
-      "latitude": 41.242415,
-      "longitude": -75.890678
-    },
-    "name": "Delaware Valley vs Wilkes",
-    "pushedAt": "2026-10-26T17:47:46+00:00",
-    "recordName": "4D33CF49-0D66-43DA-933D-2A66956D5702",
-    "sourceKey": "flowrestling:delaware-valley-vs-wilkes:2026-11-13"
-  },
-  "production:flowrestling:delaware-valley-vs-wilkes:2026-11-14": {
-    "contentHash": "42772a48f1b011a8",
-    "date": "2026-11-14",
-    "environment": "production",
-    "location": {
-      "latitude": 41.242415,
-      "longitude": -75.890678
-    },
-    "name": "Delaware Valley vs Wilkes",
-    "pushedAt": "2026-10-26T17:47:47+00:00",
-    "recordName": "C115A9D2-6B9E-468B-8451-0236D3BA48CD",
-    "sourceKey": "flowrestling:delaware-valley-vs-wilkes:2026-11-14"
   },
   "production:flowrestling:deliddo-path-of-champions-26:2026-12-30": {
     "contentHash": "59c5d3b80a95430f",
@@ -56227,19 +55837,6 @@
     "pushedAt": "2026-10-26T17:48:24+00:00",
     "recordName": "EA997AAB-902A-4538-9A6E-ADFDEF15A863",
     "sourceKey": "flowrestling:downey-32:2026-12-04"
-  },
-  "production:flowrestling:drexel-vs-hofstra:2027-01-24": {
-    "contentHash": "dcec4e4d3dc449d3",
-    "date": "2027-01-24",
-    "environment": "production",
-    "location": {
-      "latitude": 40.713634,
-      "longitude": -73.6044551
-    },
-    "name": "Drexel vs Hofstra",
-    "pushedAt": "2026-10-13T10:00:21+00:00",
-    "recordName": "87D98670-A9B8-49AE-8B0B-D52893DDCC69",
-    "sourceKey": "flowrestling:drexel-vs-hofstra:2027-01-24"
   },
   "production:flowrestling:drury-open:2026-11-15": {
     "contentHash": "e6beb76348d512dc",
@@ -56527,19 +56124,6 @@
     "recordName": "FBC34AE7-9F99-445F-B12E-0427E88DCDDD",
     "sourceKey": "flowrestling:east-al-jh-jv-championships:2027-01-30"
   },
-  "production:flowrestling:east-boston-vs-hingham:2027-01-16": {
-    "contentHash": "f55547b28d9d30f5",
-    "date": "2027-01-16",
-    "environment": "production",
-    "location": {
-      "latitude": 42.20439140000001,
-      "longitude": -71.01995840000001
-    },
-    "name": "East Boston vs Hingham",
-    "pushedAt": "2026-10-05T17:54:02+00:00",
-    "recordName": "A775121A-AD13-4603-A402-F1FD923EF889",
-    "sourceKey": "flowrestling:east-boston-vs-hingham:2027-01-16"
-  },
   "production:flowrestling:east-high-ms-1:2026-10-28": {
     "contentHash": "9ec7cf2d9c5eee02",
     "date": "2026-10-28",
@@ -56670,19 +56254,6 @@
     "recordName": "72DBDAD4-8D61-4155-A8A2-8DF869803FB0",
     "sourceKey": "flowrestling:eastern-girls-oms-26-27-qualifier:2026-12-12"
   },
-  "production:flowrestling:eastern-vs-vtsu-castleton:2027-01-29": {
-    "contentHash": "821d31f755ba41c8",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 43.6072172,
-      "longitude": -73.1830313
-    },
-    "name": "Eastern vs VTSU-Castleton",
-    "pushedAt": "2026-10-26T17:43:10+00:00",
-    "recordName": "8329F57A-50D4-438C-8520-910AA35FB788",
-    "sourceKey": "flowrestling:eastern-vs-vtsu-castleton:2027-01-29"
-  },
   "production:flowrestling:eastside-invite-girls:2027-01-22": {
     "contentHash": "6ab99e59634a9b84",
     "date": "2027-01-22",
@@ -56787,19 +56358,6 @@
     "recordName": "2D31A6F1-8C46-42DE-8A9A-35989BA03045",
     "sourceKey": "flowrestling:ed-levenson-memorial-duals:2027-01-09"
   },
-  "production:flowrestling:edinboro-vs-clarion:2027-01-15": {
-    "contentHash": "e7239f895855eac7",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.2063768,
-      "longitude": -79.3804006
-    },
-    "name": "Edinboro vs Clarion",
-    "pushedAt": "2026-10-26T17:42:55+00:00",
-    "recordName": "D698CFCC-9221-4755-8FD4-0E84CD4F6327",
-    "sourceKey": "flowrestling:edinboro-vs-clarion:2027-01-15"
-  },
   "production:flowrestling:edmond-memorial-pre-turkey-open:2026-11-25": {
     "contentHash": "bb406e7392778163",
     "date": "2026-11-25",
@@ -56890,19 +56448,6 @@
     "pushedAt": "2026-09-22T12:42:49+00:00",
     "recordName": "6E57B7F0-908C-4240-9BBB-DBA426576C12",
     "sourceKey": "flowrestling:emmaus-battle-at-the-hive-tournament:2026-11-15"
-  },
-  "production:flowrestling:emory-henry-vs-newberry:2026-11-20": {
-    "contentHash": "11d99ad08b061b2c",
-    "date": "2026-11-20",
-    "environment": "production",
-    "location": {
-      "latitude": 34.2858689,
-      "longitude": -81.6216609
-    },
-    "name": "Emory & Henry vs Newberry",
-    "pushedAt": "2026-10-26T17:42:22+00:00",
-    "recordName": "1F5E3785-4DDF-4617-BCDE-460CA77831A1",
-    "sourceKey": "flowrestling:emory-henry-vs-newberry:2026-11-20"
   },
   "production:flowrestling:ems-girls:2026-12-11": {
     "contentHash": "9c9f649f46afbf60",
@@ -57061,32 +56606,6 @@
     "pushedAt": "2026-10-05T17:48:09+00:00",
     "recordName": "2637F155-99EC-4D5A-96D4-B5F28259C189",
     "sourceKey": "flowrestling:everett-area-southern-huntingdon-co:2026-12-11"
-  },
-  "production:flowrestling:f-m-college-vs-hofstra:2027-02-13": {
-    "contentHash": "6ab6d38ad65f211c",
-    "date": "2027-02-13",
-    "environment": "production",
-    "location": {
-      "latitude": 40.713634,
-      "longitude": -73.6044551
-    },
-    "name": "F&M College vs Hofstra",
-    "pushedAt": "2026-10-13T10:00:39+00:00",
-    "recordName": "11BED0C5-A74B-487C-87F0-12FE825C063C",
-    "sourceKey": "flowrestling:f-m-college-vs-hofstra:2027-02-13"
-  },
-  "production:flowrestling:f-m-college-vs-lehigh:2026-12-18": {
-    "contentHash": "c077db29e7452f5a",
-    "date": "2026-12-18",
-    "environment": "production",
-    "location": {
-      "latitude": 40.6062719,
-      "longitude": -75.3745885
-    },
-    "name": "F&M College vs Lehigh",
-    "pushedAt": "2026-10-26T17:49:02+00:00",
-    "recordName": "D5667208-ECD7-4850-A3DE-9D4A437BFF60",
-    "sourceKey": "flowrestling:f-m-college-vs-lehigh:2026-12-18"
   },
   "production:flowrestling:falcon-invitational-2027:2027-01-15": {
     "contentHash": "af8eca910223ce16",
@@ -57623,32 +57142,6 @@
     "recordName": "1E436193-89EB-4A8B-849E-1EEBD3927E87",
     "sourceKey": "flowrestling:fight-before-christmas-beginner-2026:2026-12-13"
   },
-  "production:flowrestling:findlay-vs-ashland:2026-12-10": {
-    "contentHash": "1a61030503ddb92b",
-    "date": "2026-12-10",
-    "environment": "production",
-    "location": {
-      "latitude": 40.8612558,
-      "longitude": -82.3200923
-    },
-    "name": "Findlay vs Ashland",
-    "pushedAt": "2026-10-26T17:40:48+00:00",
-    "recordName": "D8C85D7B-769A-4C50-9B8C-AF5A4F35C42C",
-    "sourceKey": "flowrestling:findlay-vs-ashland:2026-12-10"
-  },
-  "production:flowrestling:findlay-vs-lake-erie:2027-02-13": {
-    "contentHash": "f176d595210bee4c",
-    "date": "2027-02-13",
-    "environment": "production",
-    "location": {
-      "latitude": 41.7146947,
-      "longitude": -81.2494525
-    },
-    "name": "Findlay vs Lake Erie",
-    "pushedAt": "2026-10-26T17:43:14+00:00",
-    "recordName": "351967FA-8382-4361-A7A6-900799FD042E",
-    "sourceKey": "flowrestling:findlay-vs-lake-erie:2027-02-13"
-  },
   "production:flowrestling:forest-city-ms-wrestling-dec-15:2026-12-15": {
     "contentHash": "e3cce39c3797cdd1",
     "date": "2026-12-15",
@@ -57804,32 +57297,6 @@
     "pushedAt": "2026-10-26T17:50:31+00:00",
     "recordName": "A439D20D-998C-4490-88C4-8D4AEF416097",
     "sourceKey": "flowrestling:fritz-nielsen-wrestling-tournament:2026-12-13"
-  },
-  "production:flowrestling:gannon-vs-ashland:2027-02-06": {
-    "contentHash": "101f86ff53f1ab5d",
-    "date": "2027-02-06",
-    "environment": "production",
-    "location": {
-      "latitude": 40.8612558,
-      "longitude": -82.3200923
-    },
-    "name": "Gannon vs Ashland",
-    "pushedAt": "2026-10-26T17:41:57+00:00",
-    "recordName": "212EAA03-1113-4ACD-B792-0E1976DD9D74",
-    "sourceKey": "flowrestling:gannon-vs-ashland:2027-02-06"
-  },
-  "production:flowrestling:gannon-vs-cwru:2026-12-05": {
-    "contentHash": "2836de4c38d86535",
-    "date": "2026-12-05",
-    "environment": "production",
-    "location": {
-      "latitude": 41.5008782,
-      "longitude": -81.6063691
-    },
-    "name": "Gannon vs CWRU",
-    "pushedAt": "2026-10-26T17:48:37+00:00",
-    "recordName": "1675491F-0041-43C1-BE5E-C8374B7E1A6C",
-    "sourceKey": "flowrestling:gannon-vs-cwru:2026-12-05"
   },
   "production:flowrestling:garden-state-classic-individual-open:2026-11-29": {
     "contentHash": "2dd36d4a6d333898",
@@ -59027,58 +58494,6 @@
     "recordName": "A467D81A-FB56-4660-AB33-11AAE64160CE",
     "sourceKey": "flowrestling:glenn-alford-mem-day-of-the-dead-2026:2026-11-14"
   },
-  "production:flowrestling:glenville-state-vs-ashland:2027-02-13": {
-    "contentHash": "760dc0f7cc3516af",
-    "date": "2027-02-13",
-    "environment": "production",
-    "location": {
-      "latitude": 40.8612558,
-      "longitude": -82.3200923
-    },
-    "name": "Glenville State vs Ashland",
-    "pushedAt": "2026-10-26T17:42:07+00:00",
-    "recordName": "F5713272-D87C-4F3B-A070-AAF29131DDA4",
-    "sourceKey": "flowrestling:glenville-state-vs-ashland:2027-02-13"
-  },
-  "production:flowrestling:glenville-state-vs-findlay:2027-01-22": {
-    "contentHash": "71fd959f118fdd2d",
-    "date": "2027-01-22",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0542852,
-      "longitude": -83.6513041
-    },
-    "name": "Glenville State vs Findlay",
-    "pushedAt": "2026-10-26T17:49:47+00:00",
-    "recordName": "FDFE3203-FEA8-42D0-BE64-E9DDD2305E28",
-    "sourceKey": "flowrestling:glenville-state-vs-findlay:2027-01-22"
-  },
-  "production:flowrestling:glenville-state-vs-lake-erie:2026-12-12": {
-    "contentHash": "a969c5cec418cb77",
-    "date": "2026-12-12",
-    "environment": "production",
-    "location": {
-      "latitude": 41.7146947,
-      "longitude": -81.2494525
-    },
-    "name": "Glenville State vs Lake Erie",
-    "pushedAt": "2026-10-26T17:42:45+00:00",
-    "recordName": "CF036DB9-91C3-4BC6-92FF-048D8E27442F",
-    "sourceKey": "flowrestling:glenville-state-vs-lake-erie:2026-12-12"
-  },
-  "production:flowrestling:glenville-state-vs-tiffin-university:2027-01-22": {
-    "contentHash": "61274a45e7afecd3",
-    "date": "2027-01-22",
-    "environment": "production",
-    "location": {
-      "latitude": 41.1196085,
-      "longitude": -83.1877678
-    },
-    "name": "Glenville State vs Tiffin University",
-    "pushedAt": "2026-10-26T17:46:53+00:00",
-    "recordName": "C1A6495F-ECF1-4841-B0C6-DB897F4E8DFC",
-    "sourceKey": "flowrestling:glenville-state-vs-tiffin-university:2027-01-22"
-  },
   "production:flowrestling:gnwc-2027-holiday-hammer-tournament:2027-01-17": {
     "contentHash": "a23fb6b7ea06132f",
     "date": "2027-01-17",
@@ -59222,19 +58637,6 @@
     "recordName": "4B6D59FF-1EF7-4C32-84B1-37698854C5E9",
     "sourceKey": "flowrestling:grain-valley-youth-wrestling-tournament:2027-01-03"
   },
-  "production:flowrestling:grand-valley-vs-findlay:2026-12-13": {
-    "contentHash": "ed6cc2d8ab3a2708",
-    "date": "2026-12-13",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0542852,
-      "longitude": -83.6513041
-    },
-    "name": "Grand Valley vs Findlay",
-    "pushedAt": "2026-10-26T17:48:55+00:00",
-    "recordName": "EBD26181-970C-48B6-ACC9-5379D1326CA0",
-    "sourceKey": "flowrestling:grand-valley-vs-findlay:2026-12-13"
-  },
   "production:flowrestling:grand-view-open:2026-11-14": {
     "contentHash": "50e2bd958081fb15",
     "date": "2026-11-14",
@@ -59338,45 +58740,6 @@
     "pushedAt": "2026-09-07T09:41:41+00:00",
     "recordName": "4EF40B95-679D-4C0B-A29D-5018860B8712",
     "sourceKey": "flowrestling:grapple-on-the-gridiron-tn-2026:2026-09-05"
-  },
-  "production:flowrestling:greensboro-college-vs-roanoke:2027-01-28": {
-    "contentHash": "743b201e49c7001a",
-    "date": "2027-01-28",
-    "environment": "production",
-    "location": {
-      "latitude": 37.2968883,
-      "longitude": -80.0565047
-    },
-    "name": "Greensboro College vs Roanoke",
-    "pushedAt": "2026-10-26T17:50:00+00:00",
-    "recordName": "3651D92D-6E47-457A-A2A7-A02111CEED01",
-    "sourceKey": "flowrestling:greensboro-college-vs-roanoke:2027-01-28"
-  },
-  "production:flowrestling:greensboro-vs-averett:2027-01-14": {
-    "contentHash": "653276076b85a0b8",
-    "date": "2027-01-14",
-    "environment": "production",
-    "location": {
-      "latitude": 36.5968235,
-      "longitude": -79.4365646
-    },
-    "name": "Greensboro vs Averett",
-    "pushedAt": "2026-10-26T17:41:35+00:00",
-    "recordName": "521C9FEC-1606-4902-975C-ACB385EFFD2D",
-    "sourceKey": "flowrestling:greensboro-vs-averett:2027-01-14"
-  },
-  "production:flowrestling:greensboro-vs-lynchburg:2026-11-03": {
-    "contentHash": "b1218329c7dd5350",
-    "date": "2026-11-03",
-    "environment": "production",
-    "location": {
-      "latitude": 37.3980988,
-      "longitude": -79.1816587
-    },
-    "name": "Greensboro vs Lynchburg",
-    "pushedAt": "2026-10-26T17:47:29+00:00",
-    "recordName": "6CD4068F-9B77-4B21-8C86-674057F2BDD3",
-    "sourceKey": "flowrestling:greensboro-vs-lynchburg:2026-11-03"
   },
   "production:flowrestling:grinchfest-2026:2026-12-20": {
     "contentHash": "d5820352d889dc53",
@@ -59624,19 +58987,6 @@
     "pushedAt": "2026-10-05T18:04:43+00:00",
     "recordName": "A40C55AC-CED2-4C2D-8B04-2B0EDFFD74F4",
     "sourceKey": "flowrestling:heath-s-halloween-mayhem-2026:2026-11-08"
-  },
-  "production:flowrestling:heidelberg-vs-wilmington:2026-11-18": {
-    "contentHash": "b00f56d5791f4124",
-    "date": "2026-11-18",
-    "environment": "production",
-    "location": {
-      "latitude": 39.4408304,
-      "longitude": -83.8170945
-    },
-    "name": "Heidelberg vs Wilmington",
-    "pushedAt": "2026-10-26T17:47:59+00:00",
-    "recordName": "F37F56DE-BE30-4CAF-9A1E-109932635FC3",
-    "sourceKey": "flowrestling:heidelberg-vs-wilmington:2026-11-18"
   },
   "production:flowrestling:herder-middle-school-duals-2026:2026-11-06": {
     "contentHash": "2f33a673bfc11e1b",
@@ -59936,318 +59286,6 @@
     "pushedAt": "2026-10-26T17:44:11+00:00",
     "recordName": "5C0C59D0-F6CF-4FE8-8ED8-8228A94D0088",
     "sourceKey": "flowrestling:icc-conference-tournament:2026-12-05"
-  },
-  "production:flowrestling:ighsau-1a-reg-1:2027-01-29": {
-    "contentHash": "5d4c7c4de15d98c1",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0610247,
-      "longitude": -91.00679439999999
-    },
-    "name": "IGHSAU 1A Reg. 1 @",
-    "pushedAt": "2026-10-13T09:56:38+00:00",
-    "recordName": "BD71AC9E-E81E-4926-91CF-0F75D94F5AEB",
-    "sourceKey": "flowrestling:ighsau-1a-reg-1:2027-01-29"
-  },
-  "production:flowrestling:ighsau-1a-reg-2:2027-01-29": {
-    "contentHash": "dc95686c31d5cc2b",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0610247,
-      "longitude": -91.00679439999999
-    },
-    "name": "IGHSAU 1A Reg. 2 @",
-    "pushedAt": "2026-10-13T09:56:42+00:00",
-    "recordName": "413323D1-3C9A-447E-8FE4-F8544AA0152E",
-    "sourceKey": "flowrestling:ighsau-1a-reg-2:2027-01-29"
-  },
-  "production:flowrestling:ighsau-1a-reg-3:2027-01-29": {
-    "contentHash": "c32bf9e32ba49271",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0610247,
-      "longitude": -91.00679439999999
-    },
-    "name": "IGHSAU 1A Reg. 3 @",
-    "pushedAt": "2026-10-13T09:56:40+00:00",
-    "recordName": "95C0FF03-EF41-4805-93D5-E16B3491B38B",
-    "sourceKey": "flowrestling:ighsau-1a-reg-3:2027-01-29"
-  },
-  "production:flowrestling:ighsau-1a-reg-4:2027-01-29": {
-    "contentHash": "f57579932bdf321a",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0610247,
-      "longitude": -91.00679439999999
-    },
-    "name": "IGHSAU 1A Reg. 4 @",
-    "pushedAt": "2026-10-13T09:56:44+00:00",
-    "recordName": "852EEBB1-194E-4C4A-9B1C-B3E993233F62",
-    "sourceKey": "flowrestling:ighsau-1a-reg-4:2027-01-29"
-  },
-  "production:flowrestling:ighsau-1a-reg-5:2027-01-29": {
-    "contentHash": "12b918b22b339b56",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0610247,
-      "longitude": -91.00679439999999
-    },
-    "name": "IGHSAU 1A Reg. 5 @",
-    "pushedAt": "2026-10-13T09:56:37+00:00",
-    "recordName": "7E89AEAB-DE25-434A-8C0E-E5D387C050DB",
-    "sourceKey": "flowrestling:ighsau-1a-reg-5:2027-01-29"
-  },
-  "production:flowrestling:ighsau-1a-reg-6:2027-01-29": {
-    "contentHash": "e298c9a84706814a",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0610247,
-      "longitude": -91.00679439999999
-    },
-    "name": "IGHSAU 1A Reg. 6 @",
-    "pushedAt": "2026-10-13T09:56:43+00:00",
-    "recordName": "039681DD-F76B-4A1B-824D-F575C39BEAA3",
-    "sourceKey": "flowrestling:ighsau-1a-reg-6:2027-01-29"
-  },
-  "production:flowrestling:ighsau-1a-reg-7:2027-01-29": {
-    "contentHash": "ab839930baa86f72",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0610247,
-      "longitude": -91.00679439999999
-    },
-    "name": "IGHSAU 1A Reg. 7 @",
-    "pushedAt": "2026-10-13T09:56:36+00:00",
-    "recordName": "1B8E8F8B-5E3F-4AD7-87C5-6EDEA5F65DF5",
-    "sourceKey": "flowrestling:ighsau-1a-reg-7:2027-01-29"
-  },
-  "production:flowrestling:ighsau-1a-reg-8:2027-01-29": {
-    "contentHash": "a19c06f0767c2640",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0610247,
-      "longitude": -91.00679439999999
-    },
-    "name": "IGHSAU 1A Reg. 8 @",
-    "pushedAt": "2026-10-13T09:56:46+00:00",
-    "recordName": "C2A00FCD-2629-4BDA-89D4-AF6F2F2C7403",
-    "sourceKey": "flowrestling:ighsau-1a-reg-8:2027-01-29"
-  },
-  "production:flowrestling:ighsau-1a-reg-duals-1:2027-01-15": {
-    "contentHash": "b39bbb3e235a7ba6",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.68142,
-      "longitude": -91.5624606
-    },
-    "name": "IGHSAU 1A Reg. Duals 1 @",
-    "pushedAt": "2026-10-05T17:57:06+00:00",
-    "recordName": "478D078A-E0DE-42E1-B7AA-748581EBFA34",
-    "sourceKey": "flowrestling:ighsau-1a-reg-duals-1:2027-01-15"
-  },
-  "production:flowrestling:ighsau-1a-reg-duals-2:2027-01-15": {
-    "contentHash": "0397209bead3902f",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.68142,
-      "longitude": -91.5624606
-    },
-    "name": "IGHSAU 1A Reg. Duals 2 @",
-    "pushedAt": "2026-09-07T09:39:15+00:00",
-    "recordName": "5BE5B985-9933-4BFD-8A65-D6DD08229101",
-    "sourceKey": "flowrestling:ighsau-1a-reg-duals-2:2027-01-15"
-  },
-  "production:flowrestling:ighsau-1a-reg-duals-3:2027-01-15": {
-    "contentHash": "97c689ff7ccb5bc2",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.68142,
-      "longitude": -91.5624606
-    },
-    "name": "IGHSAU 1A Reg. Duals 3 @",
-    "pushedAt": "2026-09-07T09:39:17+00:00",
-    "recordName": "74521FA0-7B34-46F5-8CD9-F84005386DF3",
-    "sourceKey": "flowrestling:ighsau-1a-reg-duals-3:2027-01-15"
-  },
-  "production:flowrestling:ighsau-1a-reg-duals-4:2027-01-15": {
-    "contentHash": "5a005fe912ff2c92",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.68142,
-      "longitude": -91.5624606
-    },
-    "name": "IGHSAU 1A Reg. Duals 4 @",
-    "pushedAt": "2026-09-07T09:39:11+00:00",
-    "recordName": "D892E854-0232-4295-8924-3391B5A3AE67",
-    "sourceKey": "flowrestling:ighsau-1a-reg-duals-4:2027-01-15"
-  },
-  "production:flowrestling:ighsau-2a-reg-1:2027-01-29": {
-    "contentHash": "21543cae335ba63f",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0506995,
-      "longitude": -95.7308094
-    },
-    "name": "IGHSAU 2A Reg. 1 @",
-    "pushedAt": "2026-09-07T09:40:33+00:00",
-    "recordName": "6CDEBCAB-8B6F-471A-8B72-DC0EA493B02B",
-    "sourceKey": "flowrestling:ighsau-2a-reg-1:2027-01-29"
-  },
-  "production:flowrestling:ighsau-2a-reg-2:2027-01-29": {
-    "contentHash": "73732377ff04f4db",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0506995,
-      "longitude": -95.7308094
-    },
-    "name": "IGHSAU 2A Reg. 2 @",
-    "pushedAt": "2026-09-07T09:40:30+00:00",
-    "recordName": "5D350C03-EED1-4294-AD59-8A5FE8ABB772",
-    "sourceKey": "flowrestling:ighsau-2a-reg-2:2027-01-29"
-  },
-  "production:flowrestling:ighsau-2a-reg-3:2027-01-29": {
-    "contentHash": "ed5fd87456d1062f",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0506995,
-      "longitude": -95.7308094
-    },
-    "name": "IGHSAU 2A Reg. 3 @",
-    "pushedAt": "2026-09-07T09:40:27+00:00",
-    "recordName": "A6FB09FB-3DD9-43A9-8F13-4E45AB88A848",
-    "sourceKey": "flowrestling:ighsau-2a-reg-3:2027-01-29"
-  },
-  "production:flowrestling:ighsau-2a-reg-4:2027-01-29": {
-    "contentHash": "3f9204ed669b8d5b",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0506995,
-      "longitude": -95.7308094
-    },
-    "name": "IGHSAU 2A Reg. 4 @",
-    "pushedAt": "2026-09-07T09:40:30+00:00",
-    "recordName": "D0D17F4F-E9A6-4C18-A36A-0FC5EB8E1F58",
-    "sourceKey": "flowrestling:ighsau-2a-reg-4:2027-01-29"
-  },
-  "production:flowrestling:ighsau-2a-reg-5:2027-01-29": {
-    "contentHash": "92046e9e57a96079",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0506995,
-      "longitude": -95.7308094
-    },
-    "name": "IGHSAU 2A Reg. 5 @",
-    "pushedAt": "2026-09-07T09:40:20+00:00",
-    "recordName": "1EB02A44-5EB1-48F8-83FE-AEAC6E7FB501",
-    "sourceKey": "flowrestling:ighsau-2a-reg-5:2027-01-29"
-  },
-  "production:flowrestling:ighsau-2a-reg-6:2027-01-29": {
-    "contentHash": "43ed006a626f6e15",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0506995,
-      "longitude": -95.7308094
-    },
-    "name": "IGHSAU 2A Reg. 6 @",
-    "pushedAt": "2026-09-07T09:40:19+00:00",
-    "recordName": "0CD6808D-82AC-4E47-B4A3-5A0570E8DDFB",
-    "sourceKey": "flowrestling:ighsau-2a-reg-6:2027-01-29"
-  },
-  "production:flowrestling:ighsau-2a-reg-7:2027-01-29": {
-    "contentHash": "33ce6afd61484a21",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0506995,
-      "longitude": -95.7308094
-    },
-    "name": "IGHSAU 2A Reg. 7 @",
-    "pushedAt": "2026-09-07T09:40:26+00:00",
-    "recordName": "BB15CB8C-5363-4FFE-BB4C-F63EAE4B2F00",
-    "sourceKey": "flowrestling:ighsau-2a-reg-7:2027-01-29"
-  },
-  "production:flowrestling:ighsau-2a-reg-8:2027-01-29": {
-    "contentHash": "1ff4e74c50918580",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0506995,
-      "longitude": -95.7308094
-    },
-    "name": "IGHSAU 2A Reg. 8 @",
-    "pushedAt": "2026-09-07T09:40:24+00:00",
-    "recordName": "D0326BE9-B5D2-4866-B5EE-F1F32670A1D2",
-    "sourceKey": "flowrestling:ighsau-2a-reg-8:2027-01-29"
-  },
-  "production:flowrestling:ighsau-2a-reg-duals-1:2027-01-15": {
-    "contentHash": "42dbe38a1ac203cb",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.68142,
-      "longitude": -91.5624606
-    },
-    "name": "IGHSAU 2A Reg. Duals 1 @",
-    "pushedAt": "2026-09-07T09:39:10+00:00",
-    "recordName": "2DE3C77A-8F7B-46AC-A7FA-988860070F88",
-    "sourceKey": "flowrestling:ighsau-2a-reg-duals-1:2027-01-15"
-  },
-  "production:flowrestling:ighsau-2a-reg-duals-2:2027-01-15": {
-    "contentHash": "fda3ab71900c9b9c",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.68142,
-      "longitude": -91.5624606
-    },
-    "name": "IGHSAU 2A Reg. Duals 2 @",
-    "pushedAt": "2026-09-07T09:39:12+00:00",
-    "recordName": "F799B226-35BF-4116-B05D-B3210173EDAD",
-    "sourceKey": "flowrestling:ighsau-2a-reg-duals-2:2027-01-15"
-  },
-  "production:flowrestling:ighsau-2a-reg-duals-3:2027-01-15": {
-    "contentHash": "2974e0862d9ed067",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.68142,
-      "longitude": -91.5624606
-    },
-    "name": "IGHSAU 2A Reg. Duals 3 @",
-    "pushedAt": "2026-09-07T09:39:14+00:00",
-    "recordName": "65BDDDFF-0160-4829-B127-9DED036EA07B",
-    "sourceKey": "flowrestling:ighsau-2a-reg-duals-3:2027-01-15"
-  },
-  "production:flowrestling:ighsau-2a-reg-duals-4:2027-01-15": {
-    "contentHash": "6687085d979bd836",
-    "date": "2027-01-15",
-    "environment": "production",
-    "location": {
-      "latitude": 41.68142,
-      "longitude": -91.5624606
-    },
-    "name": "IGHSAU 2A Reg. Duals 4 @",
-    "pushedAt": "2026-09-07T09:39:12+00:00",
-    "recordName": "3538D6F0-762D-4EAE-9334-3175B2B4025E",
-    "sourceKey": "flowrestling:ighsau-2a-reg-duals-4:2027-01-15"
   },
   "production:flowrestling:ighsau-state-championships:2027-02-04": {
     "contentHash": "581c1e73f3428cfa",
@@ -60626,32 +59664,6 @@
     "recordName": "74510AE5-7212-44FF-84FD-FACB13C01681",
     "sourceKey": "flowrestling:ihsa-girls-regional-9:2027-01-16"
   },
-  "production:flowrestling:ihsaa-1a-regional-duals:2027-02-02": {
-    "contentHash": "399dcda892a268af",
-    "date": "2027-02-02",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0382456,
-      "longitude": -93.88062269999999
-    },
-    "name": "IHSAA 1A Regional Duals @",
-    "pushedAt": "2026-10-13T09:56:53+00:00",
-    "recordName": "A6A84BF6-37B6-48EA-B8C9-7B593B96D08E",
-    "sourceKey": "flowrestling:ihsaa-1a-regional-duals:2027-02-02"
-  },
-  "production:flowrestling:ihsaa-2a-regional-duals:2027-02-02": {
-    "contentHash": "dc237e31fa255d91",
-    "date": "2027-02-02",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0382456,
-      "longitude": -93.88062269999999
-    },
-    "name": "IHSAA 2A Regional Duals @",
-    "pushedAt": "2026-10-13T09:56:54+00:00",
-    "recordName": "3A6B8740-FDAF-4D50-8945-DD00D38BD58C",
-    "sourceKey": "flowrestling:ihsaa-2a-regional-duals:2027-02-02"
-  },
   "production:flowrestling:ihsaa-3a-district-i-ii:2027-02-20": {
     "contentHash": "2abd80bfa1f2a639",
     "date": "2027-02-20",
@@ -60716,19 +59728,6 @@
     "pushedAt": "2026-09-07T09:41:15+00:00",
     "recordName": "FBB517B7-4AF1-4AD5-8E44-A23A11A9DAF2",
     "sourceKey": "flowrestling:ihsaa-3a-district-vi:2027-02-18"
-  },
-  "production:flowrestling:ihsaa-3a-regional-duals:2027-02-02": {
-    "contentHash": "2f96506e6cf86376",
-    "date": "2027-02-02",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0382456,
-      "longitude": -93.88062269999999
-    },
-    "name": "IHSAA 3A Regional Duals @",
-    "pushedAt": "2026-10-13T09:56:55+00:00",
-    "recordName": "09FF68C8-B3D9-4C0F-8EB0-9B64552EE251",
-    "sourceKey": "flowrestling:ihsaa-3a-regional-duals:2027-02-02"
   },
   "production:flowrestling:ihsaa-4a-district-i-ii:2027-02-21": {
     "contentHash": "aa2be43450252dc5",
@@ -61042,32 +60041,6 @@
     "recordName": "A179E9AC-F521-43D8-A736-B6926E6DF720",
     "sourceKey": "flowrestling:indiana-little-state:2026-12-05"
   },
-  "production:flowrestling:indiana-tech-vs-grand-valley:2026-12-12": {
-    "contentHash": "25a7133c8992275c",
-    "date": "2026-12-12",
-    "environment": "production",
-    "location": {
-      "latitude": 42.96699,
-      "longitude": -85.8897429
-    },
-    "name": "Indiana Tech vs Grand Valley",
-    "pushedAt": "2026-10-26T17:44:33+00:00",
-    "recordName": "C97006D7-8027-4EBD-A9FE-A5D393191937",
-    "sourceKey": "flowrestling:indiana-tech-vs-grand-valley:2026-12-12"
-  },
-  "production:flowrestling:indianapolis-vs-grand-valley:2026-12-12": {
-    "contentHash": "18a4d1249e326925",
-    "date": "2026-12-12",
-    "environment": "production",
-    "location": {
-      "latitude": 42.96699,
-      "longitude": -85.8897429
-    },
-    "name": "Indianapolis vs Grand Valley",
-    "pushedAt": "2026-10-26T17:44:32+00:00",
-    "recordName": "2FB9CE85-347B-4F66-B78B-09EF622D4F54",
-    "sourceKey": "flowrestling:indianapolis-vs-grand-valley:2026-12-12"
-  },
   "production:flowrestling:indianola-jv-tournament-jan-25:2027-01-25": {
     "contentHash": "e24b37831e07edac",
     "date": "2027-01-25",
@@ -61198,45 +60171,6 @@
     "recordName": "28B8C015-17A6-48F5-8F13-69AFA48CD031",
     "sourceKey": "flowrestling:iowa-river-rumble-2027:2027-01-10"
   },
-  "production:flowrestling:iowa-st-vs-northern-iowa:2027-02-13": {
-    "contentHash": "903ff78c2ccfe76b",
-    "date": "2027-02-13",
-    "environment": "production",
-    "location": {
-      "latitude": 42.5147908,
-      "longitude": -92.4675722
-    },
-    "name": "Iowa St vs Northern Iowa",
-    "pushedAt": "2026-10-13T09:57:01+00:00",
-    "recordName": "3C8BB1B5-37D2-4BD2-A673-C93D66C6524C",
-    "sourceKey": "flowrestling:iowa-st-vs-northern-iowa:2027-02-13"
-  },
-  "production:flowrestling:iowa-st-vs-utah-valley:2026-11-06": {
-    "contentHash": "1990cb1a62ff39b9",
-    "date": "2026-11-06",
-    "environment": "production",
-    "location": {
-      "latitude": 40.3238739,
-      "longitude": -111.8374108
-    },
-    "name": "Iowa St vs Utah Valley",
-    "pushedAt": "2026-10-26T17:43:28+00:00",
-    "recordName": "5187A353-73AC-4605-8410-53463E977861",
-    "sourceKey": "flowrestling:iowa-st-vs-utah-valley:2026-11-06"
-  },
-  "production:flowrestling:iowa-vs-lehigh:2027-01-30": {
-    "contentHash": "3d16106549f486b9",
-    "date": "2027-01-30",
-    "environment": "production",
-    "location": {
-      "latitude": 40.6062719,
-      "longitude": -75.3745885
-    },
-    "name": "Iowa vs Lehigh",
-    "pushedAt": "2026-10-26T17:45:27+00:00",
-    "recordName": "8DB9B03D-8703-437A-BC50-2477CA0B1681",
-    "sourceKey": "flowrestling:iowa-vs-lehigh:2027-01-30"
-  },
   "production:flowrestling:iron-county-youth-wrestling-2027:2027-01-03": {
     "contentHash": "8d0e7876f324bf0d",
     "date": "2027-01-03",
@@ -61314,45 +60248,6 @@
     "pushedAt": "2026-10-26T17:43:36+00:00",
     "recordName": "E69B4CA7-1664-4C88-BEC7-81EE5E5BDC61",
     "sourceKey": "flowrestling:irrigon-middle-school-girls-tournament:2026-11-07"
-  },
-  "production:flowrestling:ithaca-vs-nyu:2027-01-30": {
-    "contentHash": "8fdc0e0afb7a1ec6",
-    "date": "2027-01-30",
-    "environment": "production",
-    "location": {
-      "latitude": 40.726672,
-      "longitude": -73.9976028
-    },
-    "name": "Ithaca vs NYU",
-    "pushedAt": "2026-10-26T17:45:26+00:00",
-    "recordName": "97526F33-AC0E-4C17-868A-948147DE920D",
-    "sourceKey": "flowrestling:ithaca-vs-nyu:2027-01-30"
-  },
-  "production:flowrestling:ithaca-vs-wilkes:2027-02-12": {
-    "contentHash": "2b2cfd5aa787c5bd",
-    "date": "2027-02-12",
-    "environment": "production",
-    "location": {
-      "latitude": 41.242415,
-      "longitude": -75.890678
-    },
-    "name": "Ithaca vs Wilkes",
-    "pushedAt": "2026-10-26T17:45:39+00:00",
-    "recordName": "258E0123-9539-4E1E-BFED-8F9F87CE48DA",
-    "sourceKey": "flowrestling:ithaca-vs-wilkes:2027-02-12"
-  },
-  "production:flowrestling:ithaca-vs-wilkes:2027-02-13": {
-    "contentHash": "ebff28f2859ec8f8",
-    "date": "2027-02-13",
-    "environment": "production",
-    "location": {
-      "latitude": 41.242415,
-      "longitude": -75.890678
-    },
-    "name": "Ithaca vs Wilkes",
-    "pushedAt": "2026-10-26T17:45:40+00:00",
-    "recordName": "32328B16-0EF5-4738-952C-79C73B742D14",
-    "sourceKey": "flowrestling:ithaca-vs-wilkes:2027-02-13"
   },
   "production:flowrestling:ivl-2026-girls-district-tournament:2026-11-18": {
     "contentHash": "2bf79c540fa60739",
@@ -61666,19 +60561,6 @@
     "recordName": "3FDCCD30-E7A6-4D5D-B393-5E0D363D7F1C",
     "sourceKey": "flowrestling:john-smith-open:2026-11-21"
   },
-  "production:flowrestling:johns-hopkins-vs-elizabethtown:2026-12-05": {
-    "contentHash": "c5acd41105bc1fb8",
-    "date": "2026-12-05",
-    "environment": "production",
-    "location": {
-      "latitude": 40.1508222,
-      "longitude": -76.5906317
-    },
-    "name": "Johns Hopkins vs Elizabethtown",
-    "pushedAt": "2026-10-26T17:42:36+00:00",
-    "recordName": "007E3D05-E980-4A19-8EAB-814A3F6BD4AA",
-    "sourceKey": "flowrestling:johns-hopkins-vs-elizabethtown:2026-12-05"
-  },
   "production:flowrestling:johnson-ms-invite:2026-10-31": {
     "contentHash": "1afb3eccaf1dbfaa",
     "date": "2026-10-31",
@@ -61861,32 +60743,6 @@
     "recordName": "C15EA64C-5BEF-457F-A007-2D18F3BF2464",
     "sourceKey": "flowrestling:jv-indian-2026:2026-12-04"
   },
-  "production:flowrestling:jwu-providence-vs-lynchburg:2026-11-20": {
-    "contentHash": "41c9932d9bc0ffbb",
-    "date": "2026-11-20",
-    "environment": "production",
-    "location": {
-      "latitude": 37.3980988,
-      "longitude": -79.1816587
-    },
-    "name": "JWU-Providence vs Lynchburg",
-    "pushedAt": "2026-10-26T17:48:03+00:00",
-    "recordName": "4396F9B5-8092-4453-B974-EE2E11135B9C",
-    "sourceKey": "flowrestling:jwu-providence-vs-lynchburg:2026-11-20"
-  },
-  "production:flowrestling:jwu-providence-vs-ric:2027-01-07": {
-    "contentHash": "e0cc0f976c619468",
-    "date": "2027-01-07",
-    "environment": "production",
-    "location": {
-      "latitude": 41.842385,
-      "longitude": -71.466891
-    },
-    "name": "JWU-Providence vs RIC",
-    "pushedAt": "2026-10-26T17:44:58+00:00",
-    "recordName": "34CA6E7C-DC8D-4B24-B85A-ABA44893FA47",
-    "sourceKey": "flowrestling:jwu-providence-vs-ric:2027-01-07"
-  },
   "production:flowrestling:kalama-rubber-chicken-2027-boys:2027-01-23": {
     "contentHash": "05c6453daefb70b8",
     "date": "2027-01-23",
@@ -61938,19 +60794,6 @@
     "pushedAt": "2026-10-05T18:05:23+00:00",
     "recordName": "87BE2064-2D73-4D49-85D3-8C4D5636312F",
     "sourceKey": "flowrestling:kc-stampede:2026-12-17"
-  },
-  "production:flowrestling:kean-university-vs-shenandoah:2026-11-21": {
-    "contentHash": "f17cceb8ad93518a",
-    "date": "2026-11-21",
-    "environment": "production",
-    "location": {
-      "latitude": 39.1638903,
-      "longitude": -78.1537932
-    },
-    "name": "Kean University vs Shenandoah",
-    "pushedAt": "2026-10-26T17:46:40+00:00",
-    "recordName": "8959254B-786E-4E84-BF83-9AC7CB9E89A2",
-    "sourceKey": "flowrestling:kean-university-vs-shenandoah:2026-11-21"
   },
   "production:flowrestling:kearney-crane-classic-2027:2027-01-23": {
     "contentHash": "37210339a8772543",
@@ -62303,58 +61146,6 @@
     "recordName": "0B51C5FB-9F9E-4D5B-ADEC-88A16DEE3548",
     "sourceKey": "flowrestling:king-queen-of-the-castle:2026-12-22"
   },
-  "production:flowrestling:king-s-pa-vs-wilkes:2027-02-06": {
-    "contentHash": "577d90bdd5d2111b",
-    "date": "2027-02-06",
-    "environment": "production",
-    "location": {
-      "latitude": 41.242415,
-      "longitude": -75.890678
-    },
-    "name": "King's (PA) vs Wilkes",
-    "pushedAt": "2026-10-26T17:50:09+00:00",
-    "recordName": "EF514243-0FA1-438E-BD70-CD55AA2F96C8",
-    "sourceKey": "flowrestling:king-s-pa-vs-wilkes:2027-02-06"
-  },
-  "production:flowrestling:king-tn-vs-lehigh:2027-01-02": {
-    "contentHash": "61260d81ff308ef2",
-    "date": "2027-01-02",
-    "environment": "production",
-    "location": {
-      "latitude": 40.6062719,
-      "longitude": -75.3745885
-    },
-    "name": "King (TN) vs Lehigh",
-    "pushedAt": "2026-10-26T17:49:18+00:00",
-    "recordName": "C47B22B7-A278-4E0B-B19A-09A028AE1E8D",
-    "sourceKey": "flowrestling:king-tn-vs-lehigh:2027-01-02"
-  },
-  "production:flowrestling:king-tn-vs-newberry:2026-11-19": {
-    "contentHash": "fcd448ec1b23e411",
-    "date": "2026-11-19",
-    "environment": "production",
-    "location": {
-      "latitude": 34.2858689,
-      "longitude": -81.6216609
-    },
-    "name": "King (TN) vs Newberry",
-    "pushedAt": "2026-10-26T17:47:59+00:00",
-    "recordName": "CA904BDC-895D-445E-8A74-502F3DE94921",
-    "sourceKey": "flowrestling:king-tn-vs-newberry:2026-11-19"
-  },
-  "production:flowrestling:king-vs-newberry:2026-11-19": {
-    "contentHash": "bbd1845153efdffa",
-    "date": "2026-11-19",
-    "environment": "production",
-    "location": {
-      "latitude": 34.2858689,
-      "longitude": -81.6216609
-    },
-    "name": "King vs Newberry",
-    "pushedAt": "2026-10-26T17:48:02+00:00",
-    "recordName": "F14222DC-A16D-439C-860F-A404F10A2109",
-    "sourceKey": "flowrestling:king-vs-newberry:2026-11-19"
-  },
   "production:flowrestling:ksa-holiday-classic-girls-ibt:2026-12-29": {
     "contentHash": "fbc9c5295f01bedb",
     "date": "2026-12-29",
@@ -62695,19 +61486,6 @@
     "recordName": "EC2455C8-0BE3-42FD-8E91-DF0D71710E4C",
     "sourceKey": "flowrestling:lafayette-lion-pride-invitational-girls:2026-11-07"
   },
-  "production:flowrestling:lake-erie-vs-ashland:2027-01-09": {
-    "contentHash": "c1f8810189e5378a",
-    "date": "2027-01-09",
-    "environment": "production",
-    "location": {
-      "latitude": 40.8612558,
-      "longitude": -82.3200923
-    },
-    "name": "Lake Erie vs Ashland",
-    "pushedAt": "2026-10-26T17:41:26+00:00",
-    "recordName": "90CA033A-4B57-45E3-A69F-77D7C8C1633E",
-    "sourceKey": "flowrestling:lake-erie-vs-ashland:2027-01-09"
-  },
   "production:flowrestling:lancer-open:2026-11-21": {
     "contentHash": "64103f0ac6fe1203",
     "date": "2026-11-21",
@@ -62733,19 +61511,6 @@
     "pushedAt": "2026-10-26T17:43:57+00:00",
     "recordName": "E2A4F5EE-DD7E-442B-BEAC-ED9D7571389B",
     "sourceKey": "flowrestling:lander-valley-middle-school-invite-2026:2026-11-21"
-  },
-  "production:flowrestling:lander-vs-newberry:2027-01-16": {
-    "contentHash": "6653456eea69d910",
-    "date": "2027-01-16",
-    "environment": "production",
-    "location": {
-      "latitude": 34.2858689,
-      "longitude": -81.6216609
-    },
-    "name": "Lander vs Newberry",
-    "pushedAt": "2026-10-26T17:49:35+00:00",
-    "recordName": "47DDD16E-BA0C-42D3-9DBB-7468A6A50509",
-    "sourceKey": "flowrestling:lander-vs-newberry:2027-01-16"
   },
   "production:flowrestling:laramie-middle-school-invite:2026-10-17": {
     "contentHash": "ab8dce115fbb6d9c",
@@ -63059,19 +61824,6 @@
     "recordName": "1CE15DB9-FE17-45F4-AF8D-CF79AFF39B03",
     "sourceKey": "flowrestling:lobos-invitational:2026-11-20"
   },
-  "production:flowrestling:lock-haven-vs-lehigh:2027-01-23": {
-    "contentHash": "a8dba67ada53bcf3",
-    "date": "2027-01-23",
-    "environment": "production",
-    "location": {
-      "latitude": 40.6062719,
-      "longitude": -75.3745885
-    },
-    "name": "Lock Haven vs Lehigh",
-    "pushedAt": "2026-10-26T17:49:48+00:00",
-    "recordName": "055360B2-C1DA-4D2C-83D8-FD2574CA518A",
-    "sourceKey": "flowrestling:lock-haven-vs-lehigh:2027-01-23"
-  },
   "production:flowrestling:logan-luft-memorial-wrestling-tournament:2026-11-07": {
     "contentHash": "194c81dab01a3fb2",
     "date": "2026-11-07",
@@ -63084,19 +61836,6 @@
     "pushedAt": "2026-10-13T10:00:53+00:00",
     "recordName": "EF765732-B6E7-43F7-A848-2263B2585932",
     "sourceKey": "flowrestling:logan-luft-memorial-wrestling-tournament:2026-11-07"
-  },
-  "production:flowrestling:long-island-vs-drexel:2026-12-13": {
-    "contentHash": "cf8418e4540d189c",
-    "date": "2026-12-13",
-    "environment": "production",
-    "location": {
-      "latitude": 39.9562379,
-      "longitude": -75.1905607
-    },
-    "name": "Long Island vs Drexel",
-    "pushedAt": "2026-10-26T17:44:42+00:00",
-    "recordName": "2D768A50-2CC0-4B4C-803E-2A6440645A13",
-    "sourceKey": "flowrestling:long-island-vs-drexel:2026-12-13"
   },
   "production:flowrestling:lou-bronzan-invitational:2026-12-29": {
     "contentHash": "625707e67ebd8de3",
@@ -63256,45 +61995,6 @@
     "recordName": "DFEA520B-9017-4E77-9CC9-AA0340BF977F",
     "sourceKey": "flowrestling:lynbrook-ladies-challenge-2027:2027-01-23"
   },
-  "production:flowrestling:lynchburg-vs-randolph:2027-01-29": {
-    "contentHash": "d1993c2730fbcc54",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 37.4376233,
-      "longitude": -79.1697538
-    },
-    "name": "Lynchburg vs Randolph",
-    "pushedAt": "2026-10-26T17:50:01+00:00",
-    "recordName": "6E65D5DF-2A3B-4BB9-9C1D-B385D3D82789",
-    "sourceKey": "flowrestling:lynchburg-vs-randolph:2027-01-29"
-  },
-  "production:flowrestling:lynchburg-vs-roanoke:2026-11-13": {
-    "contentHash": "a0a0f256c8dd3fba",
-    "date": "2026-11-13",
-    "environment": "production",
-    "location": {
-      "latitude": 37.2968883,
-      "longitude": -80.0565047
-    },
-    "name": "Lynchburg vs Roanoke",
-    "pushedAt": "2026-10-26T17:47:44+00:00",
-    "recordName": "D546D1F8-AF96-4585-9B4B-39F52F31E3CF",
-    "sourceKey": "flowrestling:lynchburg-vs-roanoke:2026-11-13"
-  },
-  "production:flowrestling:lynchburg-vs-shenandoah:2027-01-24": {
-    "contentHash": "c409b710d3ad9cbe",
-    "date": "2027-01-24",
-    "environment": "production",
-    "location": {
-      "latitude": 39.1638903,
-      "longitude": -78.1537932
-    },
-    "name": "Lynchburg vs Shenandoah",
-    "pushedAt": "2026-10-26T17:46:55+00:00",
-    "recordName": "2FA3A26D-C4E2-4342-8FAA-B42BC736D50F",
-    "sourceKey": "flowrestling:lynchburg-vs-shenandoah:2027-01-24"
-  },
   "production:flowrestling:macarthur-open-lawton-mac:2026-11-07": {
     "contentHash": "a94e96f863c7d74d",
     "date": "2026-11-07",
@@ -63386,32 +62086,6 @@
     "recordName": "55C1BCB3-C979-4F0B-AA50-A5778B5661C7",
     "sourceKey": "flowrestling:mariner-iof:2027-01-03"
   },
-  "production:flowrestling:marion-jh-boys-dual-vs-bc-indee:2026-12-08": {
-    "contentHash": "9043bd8dfaee6f34",
-    "date": "2026-12-08",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0310733,
-      "longitude": -91.59555879999999
-    },
-    "name": "Marion JH Boys Dual-vs-BC & Indee",
-    "pushedAt": "2026-10-05T17:55:57+00:00",
-    "recordName": "4F6227B3-61AD-443A-8D41-5B3EECA25B4A",
-    "sourceKey": "flowrestling:marion-jh-boys-dual-vs-bc-indee:2026-12-08"
-  },
-  "production:flowrestling:marion-jh-girls-dual-vs-indee-solon-wd:2027-02-25": {
-    "contentHash": "58890030dcc3df0a",
-    "date": "2027-02-25",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0310733,
-      "longitude": -91.59555879999999
-    },
-    "name": "Marion JH Girls Dual-vs-Indee/Solon/WD",
-    "pushedAt": "2026-10-05T17:58:16+00:00",
-    "recordName": "BA61B90F-5F00-4CA3-8222-87A97E2AEBAE",
-    "sourceKey": "flowrestling:marion-jh-girls-dual-vs-indee-solon-wd:2027-02-25"
-  },
   "production:flowrestling:marion-wrestling-kids-classic:2026-12-13": {
     "contentHash": "25b274b22773a174",
     "date": "2026-12-13",
@@ -63450,19 +62124,6 @@
     "pushedAt": "2026-10-13T09:57:25+00:00",
     "recordName": "6ECAFBFD-6B11-403B-98A0-891CAD82B0A3",
     "sourceKey": "flowrestling:marlow-outlaw-open:2026-11-25"
-  },
-  "production:flowrestling:maryland-vs-drexel:2027-02-20": {
-    "contentHash": "835f5c7224694e0d",
-    "date": "2027-02-20",
-    "environment": "production",
-    "location": {
-      "latitude": 39.9562379,
-      "longitude": -75.1905607
-    },
-    "name": "Maryland vs Drexel",
-    "pushedAt": "2026-10-26T17:50:19+00:00",
-    "recordName": "639EEFE5-E72C-44C9-810F-776E7B5E9C2A",
-    "sourceKey": "flowrestling:maryland-vs-drexel:2027-02-20"
   },
   "production:flowrestling:mascoma-holiday-invitational:2026-12-26": {
     "contentHash": "9d594f3f84ce3cf0",
@@ -63554,19 +62215,6 @@
     "pushedAt": "2026-09-07T09:41:44+00:00",
     "recordName": "9E3F821A-36C2-4148-83F8-2593645E65C5",
     "sourceKey": "flowrestling:mayhem-on-main:2026-09-12"
-  },
-  "production:flowrestling:mcdaniel-vs-shenandoah:2027-01-17": {
-    "contentHash": "a1497065e274e0c5",
-    "date": "2027-01-17",
-    "environment": "production",
-    "location": {
-      "latitude": 39.1638903,
-      "longitude": -78.1537932
-    },
-    "name": "McDaniel vs Shenandoah",
-    "pushedAt": "2026-10-26T17:46:52+00:00",
-    "recordName": "DC3F2CEC-DEC6-4B88-A614-97BA32D82605",
-    "sourceKey": "flowrestling:mcdaniel-vs-shenandoah:2027-01-17"
   },
   "production:flowrestling:mcm-girls-invitational-2026-2027:2026-12-31": {
     "contentHash": "35dff1094c988a51",
@@ -64220,19 +62868,6 @@
     "recordName": "58C9D29F-9B8F-4B1B-A833-74021A7E0BEC",
     "sourceKey": "flowrestling:midland-warrior-open:2027-01-23"
   },
-  "production:flowrestling:midway-vs-thomas-more:2026-11-11": {
-    "contentHash": "67eb4ed567503967",
-    "date": "2026-11-11",
-    "environment": "production",
-    "location": {
-      "latitude": 39.0216667,
-      "longitude": -84.5680762
-    },
-    "name": "Midway vs Thomas More",
-    "pushedAt": "2026-10-26T17:47:42+00:00",
-    "recordName": "264E79B5-C80A-414F-87F1-752C8D7BCED0",
-    "sourceKey": "flowrestling:midway-vs-thomas-more:2026-11-11"
-  },
   "production:flowrestling:midwest-city-hs-open:2026-11-21": {
     "contentHash": "d877d38b4d79d074",
     "date": "2026-11-21",
@@ -64324,19 +62959,6 @@
     "recordName": "665E53DA-CE2B-40F9-BD08-F46A3ED0EF43",
     "sourceKey": "flowrestling:miles-city-middle-school-invite:2026-10-31"
   },
-  "production:flowrestling:millersville-vs-lake-erie:2027-01-17": {
-    "contentHash": "31e6fc7d24707d73",
-    "date": "2027-01-17",
-    "environment": "production",
-    "location": {
-      "latitude": 41.7146947,
-      "longitude": -81.2494525
-    },
-    "name": "Millersville vs Lake Erie",
-    "pushedAt": "2026-10-26T17:43:01+00:00",
-    "recordName": "F2F0959B-D039-4837-ABE2-0A0ACA902D3E",
-    "sourceKey": "flowrestling:millersville-vs-lake-erie:2027-01-17"
-  },
   "production:flowrestling:millikin-youth-open:2026-11-15": {
     "contentHash": "e8a22e88d15c828b",
     "date": "2026-11-15",
@@ -64416,32 +63038,6 @@
     "pushedAt": "2026-10-26T17:46:02+00:00",
     "recordName": "108D37F3-201C-46BC-8981-4C9B40640FCB",
     "sourceKey": "flowrestling:missouri-valley-michael-bonham-open:2026-11-29"
-  },
-  "production:flowrestling:missouri-vs-utah-valley:2027-02-05": {
-    "contentHash": "8d8abef258aef1a9",
-    "date": "2027-02-05",
-    "environment": "production",
-    "location": {
-      "latitude": 40.3238739,
-      "longitude": -111.8374108
-    },
-    "name": "Missouri vs Utah Valley",
-    "pushedAt": "2026-10-26T17:46:56+00:00",
-    "recordName": "46712B47-471D-4FF4-872C-DBD7AF92D389",
-    "sourceKey": "flowrestling:missouri-vs-utah-valley:2027-02-05"
-  },
-  "production:flowrestling:missouri-vs-wyoming:2027-02-06": {
-    "contentHash": "06a8d22d19018c72",
-    "date": "2027-02-06",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3124923,
-      "longitude": -105.5699617
-    },
-    "name": "Missouri vs Wyoming",
-    "pushedAt": "2026-10-05T18:06:16+00:00",
-    "recordName": "F6A7D6E0-E750-4541-AAD4-9115A6B3FB33",
-    "sourceKey": "flowrestling:missouri-vs-wyoming:2027-02-06"
   },
   "production:flowrestling:mitchell-youth-tournament:2027-01-17": {
     "contentHash": "7f8085c8e9613d93",
@@ -64547,32 +63143,6 @@
     "recordName": "5B7A8EF7-E40C-4409-A7A2-57E4F7D9580A",
     "sourceKey": "flowrestling:montezuma-youth-wrestling-tournament:2026-11-21"
   },
-  "production:flowrestling:morgan-st-vs-army:2027-02-21": {
-    "contentHash": "31a561231dd90319",
-    "date": "2027-02-21",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3908285,
-      "longitude": -73.9570602
-    },
-    "name": "Morgan St vs Army",
-    "pushedAt": "2026-10-26T17:42:13+00:00",
-    "recordName": "D5DA0714-2989-4668-93D7-906F05EC2E87",
-    "sourceKey": "flowrestling:morgan-st-vs-army:2027-02-21"
-  },
-  "production:flowrestling:morgan-st-vs-lehigh:2027-01-23": {
-    "contentHash": "e461a5faa9af56ef",
-    "date": "2027-01-23",
-    "environment": "production",
-    "location": {
-      "latitude": 40.6062719,
-      "longitude": -75.3745885
-    },
-    "name": "Morgan St vs Lehigh",
-    "pushedAt": "2026-10-26T17:49:48+00:00",
-    "recordName": "C9330CE8-A455-43DB-9EDB-E93DB1F5D162",
-    "sourceKey": "flowrestling:morgan-st-vs-lehigh:2027-01-23"
-  },
   "production:flowrestling:morgan-wrestling-club-jr-high-reg-2026:2026-11-15": {
     "contentHash": "41917a71b2c98552",
     "date": "2026-11-15",
@@ -64650,19 +63220,6 @@
     "pushedAt": "2026-10-26T17:47:06+00:00",
     "recordName": "A8924604-ABB2-4F42-A3F7-2CEE74146950",
     "sourceKey": "flowrestling:mount-pleasant-youth-wrestling-tournament:2026-11-29"
-  },
-  "production:flowrestling:mount-union-vs-otterbein:2026-12-01": {
-    "contentHash": "db33d18d92c0ee78",
-    "date": "2026-12-01",
-    "environment": "production",
-    "location": {
-      "latitude": 40.1304984,
-      "longitude": -82.9377909
-    },
-    "name": "Mount Union vs Otterbein",
-    "pushedAt": "2026-10-26T17:46:02+00:00",
-    "recordName": "7FE25B26-5FBC-4C89-8F4B-6EFCCF8ECC87",
-    "sourceKey": "flowrestling:mount-union-vs-otterbein:2026-12-01"
   },
   "production:flowrestling:mountaineer-youth-challenge-2026:2026-12-13": {
     "contentHash": "2abc1fc779f096f1",
@@ -64937,19 +63494,6 @@
     "recordName": "B85BEB4C-22E0-43A6-8ECC-1994040FC469",
     "sourceKey": "flowrestling:mt-san-antonio-community-college-santa-ana-college:2026-10-15"
   },
-  "production:flowrestling:muhlenberg-vs-wilkes:2027-01-21": {
-    "contentHash": "cb8fbad9dc1c705f",
-    "date": "2027-01-21",
-    "environment": "production",
-    "location": {
-      "latitude": 41.242415,
-      "longitude": -75.890678
-    },
-    "name": "Muhlenberg vs Wilkes",
-    "pushedAt": "2026-10-26T17:49:43+00:00",
-    "recordName": "0FB593DB-131A-491B-87F0-7CA21461D1E9",
-    "sourceKey": "flowrestling:muhlenberg-vs-wilkes:2027-01-21"
-  },
   "production:flowrestling:mules-mat-club-6th-annual:2027-01-17": {
     "contentHash": "2a0a15aad2fadd06",
     "date": "2027-01-17",
@@ -65092,32 +63636,6 @@
     "pushedAt": "2026-10-13T09:59:15+00:00",
     "recordName": "B01E699E-308D-404E-AF82-460FC321F521",
     "sourceKey": "flowrestling:national-middle-school-duals-2026:2026-11-14"
-  },
-  "production:flowrestling:navy-vs-army:2027-02-19": {
-    "contentHash": "88b9d4cd0f9b16f7",
-    "date": "2027-02-19",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3908285,
-      "longitude": -73.9570602
-    },
-    "name": "Navy vs Army",
-    "pushedAt": "2026-10-26T17:42:12+00:00",
-    "recordName": "6D196B6B-7E6D-481F-925D-6A16E6F40AF2",
-    "sourceKey": "flowrestling:navy-vs-army:2027-02-19"
-  },
-  "production:flowrestling:navy-vs-drexel:2027-01-23": {
-    "contentHash": "0876212107bceaa1",
-    "date": "2027-01-23",
-    "environment": "production",
-    "location": {
-      "latitude": 39.9562379,
-      "longitude": -75.1905607
-    },
-    "name": "Navy vs Drexel",
-    "pushedAt": "2026-10-26T17:49:54+00:00",
-    "recordName": "01DB22B9-22AC-46B6-B202-8AE52F8AAD12",
-    "sourceKey": "flowrestling:navy-vs-drexel:2027-01-23"
   },
   "production:flowrestling:nc-super-32-early-entry:2026-09-05": {
     "contentHash": "d6bfe505c51fdeed",
@@ -65613,19 +64131,6 @@
     "recordName": "2EC71299-E947-462A-A54A-ABC71A8BB340",
     "sourceKey": "flowrestling:nebraska-mat-jam-2027:2027-03-07"
   },
-  "production:flowrestling:nec-vs-uscga:2027-01-16": {
-    "contentHash": "25895fd76dec16c4",
-    "date": "2027-01-16",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3739133,
-      "longitude": -72.1007725
-    },
-    "name": "NEC vs USCGA",
-    "pushedAt": "2026-10-26T17:41:38+00:00",
-    "recordName": "C118E060-AA01-4ECA-8D72-9A82C1F3F7A0",
-    "sourceKey": "flowrestling:nec-vs-uscga:2027-01-16"
-  },
   "production:flowrestling:neshaminy-youth-wrestling-tournament:2026-12-06": {
     "contentHash": "bd7cbb77d01cd02a",
     "date": "2026-12-06",
@@ -65938,19 +64443,6 @@
     "recordName": "AF6AB989-DDBB-4BD3-A5C5-7BE706DC4AD9",
     "sourceKey": "flowrestling:njsiaa-region-2:2027-02-19"
   },
-  "production:flowrestling:noc-tonkawa-vs-neo-a-m:2027-02-04": {
-    "contentHash": "b6504f9e24399919",
-    "date": "2027-02-04",
-    "environment": "production",
-    "location": {
-      "latitude": 36.877614,
-      "longitude": -94.865637
-    },
-    "name": "NOC-Tonkawa vs NEO A&M",
-    "pushedAt": "2026-10-26T17:41:53+00:00",
-    "recordName": "15B64CD5-E013-4A43-A8FD-72E64DD0BC1B",
-    "sourceKey": "flowrestling:noc-tonkawa-vs-neo-a-m:2027-02-04"
-  },
   "production:flowrestling:north-alabama-pre-season-throwdown-2026:2026-09-19": {
     "contentHash": "2531852a5a6dca44",
     "date": "2026-09-19",
@@ -65964,19 +64456,6 @@
     "recordName": "42CF78A7-83F3-424F-B6B8-2F83A9BB3959",
     "sourceKey": "flowrestling:north-alabama-pre-season-throwdown-2026:2026-09-19"
   },
-  "production:flowrestling:north-attleborough-vs-hingham:2027-01-23": {
-    "contentHash": "b0b88ffca9f4d3d9",
-    "date": "2027-01-23",
-    "environment": "production",
-    "location": {
-      "latitude": 42.0675218,
-      "longitude": -71.0442995
-    },
-    "name": "North Attleborough vs Hingham",
-    "pushedAt": "2026-10-05T17:50:56+00:00",
-    "recordName": "5AAF558D-9255-4873-BAED-79099C79FAE2",
-    "sourceKey": "flowrestling:north-attleborough-vs-hingham:2027-01-23"
-  },
   "production:flowrestling:north-carolina-tournament-of-champions:2026-09-18": {
     "contentHash": "e58e3442958e323d",
     "date": "2026-09-18",
@@ -65989,19 +64468,6 @@
     "pushedAt": "2026-09-07T09:41:46+00:00",
     "recordName": "DA55E1CF-2A20-464F-A12A-291848643A9F",
     "sourceKey": "flowrestling:north-carolina-tournament-of-champions:2026-09-18"
-  },
-  "production:flowrestling:north-central-vs-chicago:2027-01-23": {
-    "contentHash": "c35efe81f08576c0",
-    "date": "2027-01-23",
-    "environment": "production",
-    "location": {
-      "latitude": 41.7940781,
-      "longitude": -87.6017122
-    },
-    "name": "North Central vs Chicago",
-    "pushedAt": "2026-10-26T17:49:49+00:00",
-    "recordName": "17C56D27-022E-4AA3-9638-DB44EA81C57B",
-    "sourceKey": "flowrestling:north-central-vs-chicago:2027-01-23"
   },
   "production:flowrestling:north-coast-classic-2027:2027-01-09": {
     "contentHash": "b4ea90b5eb4ab0f6",
@@ -66518,19 +64984,6 @@
     "recordName": "E557EC27-A7D0-4ACE-8195-18B24A8FB6BE",
     "sourceKey": "flowrestling:oh-vs-mi-girls-wrestling-exchange:2026-09-12"
   },
-  "production:flowrestling:ohio-northern-vs-baldwin-wallace:2027-02-12": {
-    "contentHash": "3043e0df20aaf21a",
-    "date": "2027-02-12",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3718157,
-      "longitude": -81.8479451
-    },
-    "name": "Ohio Northern vs Baldwin Wallace",
-    "pushedAt": "2026-10-26T17:46:33+00:00",
-    "recordName": "35EC14FF-02DB-434A-8558-0747F764CE18",
-    "sourceKey": "flowrestling:ohio-northern-vs-baldwin-wallace:2027-02-12"
-  },
   "production:flowrestling:oklahoma-open:2026-10-17": {
     "contentHash": "2a7e9ad00db1608a",
     "date": "2026-10-17",
@@ -66558,32 +65011,6 @@
     "pushedAt": "2026-10-05T18:02:33+00:00",
     "recordName": "15CFCAF7-B6BA-4940-862D-8126EA1A9045",
     "sourceKey": "flowrestling:oklahoma-st-utah-valley:2027-02-14"
-  },
-  "production:flowrestling:oklahoma-st-vs-northern-iowa:2027-01-30": {
-    "contentHash": "b178cf1a89f39828",
-    "date": "2027-01-30",
-    "environment": "production",
-    "location": {
-      "latitude": 42.5147908,
-      "longitude": -92.4675722
-    },
-    "name": "Oklahoma St vs Northern Iowa",
-    "pushedAt": "2026-10-13T09:56:47+00:00",
-    "recordName": "A46DAD98-6CBB-419C-BBC5-204EE3A8C633",
-    "sourceKey": "flowrestling:oklahoma-st-vs-northern-iowa:2027-01-30"
-  },
-  "production:flowrestling:oklahoma-vs-northern-iowa:2027-01-31": {
-    "contentHash": "f36ec78e516d7958",
-    "date": "2027-01-31",
-    "environment": "production",
-    "location": {
-      "latitude": 42.5147908,
-      "longitude": -92.4675722
-    },
-    "name": "Oklahoma vs Northern Iowa",
-    "pushedAt": "2026-10-13T09:56:51+00:00",
-    "recordName": "F1E2C287-833B-41E9-ABE0-5147ABD78FD3",
-    "sourceKey": "flowrestling:oklahoma-vs-northern-iowa:2027-01-31"
   },
   "production:flowrestling:okoboji-youth-tournament-2026:2026-12-06": {
     "contentHash": "b9c772f8c14a2be5",
@@ -67273,19 +65700,6 @@
     "pushedAt": "2026-10-26T17:46:06+00:00",
     "recordName": "76010B00-B6BC-4246-9C40-6016AEE5279B",
     "sourceKey": "flowrestling:olathe-jv-tourney:2026-12-05"
-  },
-  "production:flowrestling:oliver-ames-vs-hingham:2027-01-09": {
-    "contentHash": "18b205645484cb71",
-    "date": "2027-01-09",
-    "environment": "production",
-    "location": {
-      "latitude": 41.7422849,
-      "longitude": -71.15040259999999
-    },
-    "name": "Oliver Ames vs Hingham",
-    "pushedAt": "2026-10-05T17:49:31+00:00",
-    "recordName": "C598B5CD-15BC-47EC-8977-5564149F254B",
-    "sourceKey": "flowrestling:oliver-ames-vs-hingham:2027-01-09"
   },
   "production:flowrestling:oly-varsity-girls-wrestling-tour-2026:2026-12-05": {
     "contentHash": "aa3e5e78ab34e02b",
@@ -68028,19 +66442,6 @@
     "recordName": "B387A328-C368-4334-9573-A2238B3F7EAE",
     "sourceKey": "flowrestling:ovywl-championship:2026-11-29"
   },
-  "production:flowrestling:pacific-or-vs-linfield:2026-11-14": {
-    "contentHash": "45535ee3e574a051",
-    "date": "2026-11-14",
-    "environment": "production",
-    "location": {
-      "latitude": 45.2001653,
-      "longitude": -123.1974053
-    },
-    "name": "Pacific (OR) vs Linfield",
-    "pushedAt": "2026-09-07T09:42:02+00:00",
-    "recordName": "1A0CD9F6-EC24-49D8-A356-35E98878EE2B",
-    "sourceKey": "flowrestling:pacific-or-vs-linfield:2026-11-14"
-  },
   "production:flowrestling:paiswt-2027:2027-02-12": {
     "contentHash": "70935bb1f25c9a33",
     "date": "2027-02-12",
@@ -68222,32 +66623,6 @@
     "pushedAt": "2026-09-07T09:39:32+00:00",
     "recordName": "23B0CAE3-DECD-4B79-A22D-12B2CB40185F",
     "sourceKey": "flowrestling:penn-charter-invitational:2027-01-16"
-  },
-  "production:flowrestling:penn-st-vs-lehigh:2026-12-06": {
-    "contentHash": "4e9ec0307e5a16da",
-    "date": "2026-12-06",
-    "environment": "production",
-    "location": {
-      "latitude": 40.5840973,
-      "longitude": -75.3594173
-    },
-    "name": "Penn St vs Lehigh",
-    "pushedAt": "2026-10-26T17:48:38+00:00",
-    "recordName": "FA0D9D5A-C8F7-4033-9B94-55933AB76AC1",
-    "sourceKey": "flowrestling:penn-st-vs-lehigh:2026-12-06"
-  },
-  "production:flowrestling:penn-vs-hofstra:2027-01-10": {
-    "contentHash": "0825c93daf23d124",
-    "date": "2027-01-10",
-    "environment": "production",
-    "location": {
-      "latitude": 40.713634,
-      "longitude": -73.6044551
-    },
-    "name": "Penn vs Hofstra",
-    "pushedAt": "2026-10-13T10:00:03+00:00",
-    "recordName": "DED77826-4BD6-49BB-8B3B-FEE02C2A40A5",
-    "sourceKey": "flowrestling:penn-vs-hofstra:2027-01-10"
   },
   "production:flowrestling:penns-valley-elem-tournament:2027-01-17": {
     "contentHash": "08d783723c0cf56a",
@@ -68443,19 +66818,6 @@
     "pushedAt": "2026-09-22T12:47:51+00:00",
     "recordName": "71C1D9D4-88C9-4E44-80C1-F5FF7EDD336B",
     "sourceKey": "flowrestling:pirate-ships-n-duels-2026:2026-12-30"
-  },
-  "production:flowrestling:pittsburgh-johnstown-vs-ashland:2026-11-18": {
-    "contentHash": "81097cdc281039cd",
-    "date": "2026-11-18",
-    "environment": "production",
-    "location": {
-      "latitude": 40.8612558,
-      "longitude": -82.3200923
-    },
-    "name": "Pittsburgh Johnstown vs Ashland",
-    "pushedAt": "2026-10-26T17:40:26+00:00",
-    "recordName": "63733CE3-6C8D-48B0-83B4-ABD53B450B3D",
-    "sourceKey": "flowrestling:pittsburgh-johnstown-vs-ashland:2026-11-18"
   },
   "production:flowrestling:pjw-area-2-section-1-tournament:2027-02-07": {
     "contentHash": "96e52725506b9260",
@@ -68678,32 +67040,6 @@
     "recordName": "FF010264-D311-4FDA-9DE9-722A33D7867F",
     "sourceKey": "flowrestling:preseason-juggernaut-slam-ibt:2026-10-10"
   },
-  "production:flowrestling:princeton-vs-hofstra:2027-01-03": {
-    "contentHash": "7dfbd6906699759a",
-    "date": "2027-01-03",
-    "environment": "production",
-    "location": {
-      "latitude": 40.713634,
-      "longitude": -73.6044551
-    },
-    "name": "Princeton vs Hofstra",
-    "pushedAt": "2026-10-13T09:59:58+00:00",
-    "recordName": "6D40E8AA-4464-4631-906F-BCE66540FCCB",
-    "sourceKey": "flowrestling:princeton-vs-hofstra:2027-01-03"
-  },
-  "production:flowrestling:princeton-vs-lehigh:2027-01-24": {
-    "contentHash": "6fe61e9dbd4ebebe",
-    "date": "2027-01-24",
-    "environment": "production",
-    "location": {
-      "latitude": 40.6062719,
-      "longitude": -75.3745885
-    },
-    "name": "Princeton vs Lehigh",
-    "pushedAt": "2026-10-26T17:49:55+00:00",
-    "recordName": "C44874FE-B6B0-49B2-A885-5FF8FC19DF38",
-    "sourceKey": "flowrestling:princeton-vs-lehigh:2027-01-24"
-  },
   "production:flowrestling:pueblo-central-girls-invitational:2026-12-04": {
     "contentHash": "d2f06a4b86e4f3e3",
     "date": "2026-12-04",
@@ -68859,19 +67195,6 @@
     "pushedAt": "2026-10-26T17:46:05+00:00",
     "recordName": "D5B17F0A-A017-4AED-B5B1-B5C64D695EBE",
     "sourceKey": "flowrestling:queens-of-the-mat:2026-12-04"
-  },
-  "production:flowrestling:quincy-vs-grand-valley:2026-12-05": {
-    "contentHash": "18c946390274aaa0",
-    "date": "2026-12-05",
-    "environment": "production",
-    "location": {
-      "latitude": 42.96699,
-      "longitude": -85.8897429
-    },
-    "name": "Quincy vs Grand Valley",
-    "pushedAt": "2026-10-26T17:48:27+00:00",
-    "recordName": "59939666-2FFC-4ECB-9938-7F68BDE9BD6C",
-    "sourceKey": "flowrestling:quincy-vs-grand-valley:2026-12-05"
   },
   "production:flowrestling:raccoon-river-wrestling-adm-invite:2026-12-19": {
     "contentHash": "f0ad93386869649f",
@@ -69317,19 +67640,6 @@
     "recordName": "0B0254DE-1D2A-4261-80AB-CC5A325E6ABD",
     "sourceKey": "flowrestling:rising-knights-girls-youth-dual:2027-01-23"
   },
-  "production:flowrestling:rit-vs-wilkes:2026-11-07": {
-    "contentHash": "bc74b9e2b9b9c967",
-    "date": "2026-11-07",
-    "environment": "production",
-    "location": {
-      "latitude": 41.242415,
-      "longitude": -75.890678
-    },
-    "name": "RIT vs Wilkes",
-    "pushedAt": "2026-10-26T17:47:34+00:00",
-    "recordName": "0179EB2F-DE43-4222-BE4B-7C96CA07C8F4",
-    "sourceKey": "flowrestling:rit-vs-wilkes:2026-11-07"
-  },
   "production:flowrestling:river-hawk-round-robin-youth:2027-01-10": {
     "contentHash": "a4d17109f9efd9ee",
     "date": "2027-01-10",
@@ -69394,19 +67704,6 @@
     "pushedAt": "2026-09-07T09:54:00+00:00",
     "recordName": "4FCE8415-81F9-40F2-B2C9-90798EAB441A",
     "sourceKey": "flowrestling:roanoke-brawl-valhalla-wrestling:2026-11-08"
-  },
-  "production:flowrestling:roanoke-vs-randolph:2027-01-22": {
-    "contentHash": "b00b26a16e7ac1e4",
-    "date": "2027-01-22",
-    "environment": "production",
-    "location": {
-      "latitude": 37.4376233,
-      "longitude": -79.1697538
-    },
-    "name": "Roanoke vs Randolph",
-    "pushedAt": "2026-10-26T17:49:43+00:00",
-    "recordName": "BB51C755-BE45-4FC2-9854-C185D71236DD",
-    "sourceKey": "flowrestling:roanoke-vs-randolph:2027-01-22"
   },
   "production:flowrestling:roaring-rumble-2026:2026-11-22": {
     "contentHash": "34ca90337194c70e",
@@ -69693,58 +67990,6 @@
     "pushedAt": "2026-10-26T17:42:17+00:00",
     "recordName": "71B8C04A-3845-4520-992B-CF6CBE0F2812",
     "sourceKey": "flowrestling:russel-evans-panther-jv-invitational:2026-11-14"
-  },
-  "production:flowrestling:rutgers-vs-drexel:2026-12-05": {
-    "contentHash": "f65c91d3b6f26f26",
-    "date": "2026-12-05",
-    "environment": "production",
-    "location": {
-      "latitude": 39.9562379,
-      "longitude": -75.1905607
-    },
-    "name": "Rutgers vs Drexel",
-    "pushedAt": "2026-10-26T17:48:27+00:00",
-    "recordName": "4D392BAB-7862-47BB-8505-1B7538690D09",
-    "sourceKey": "flowrestling:rutgers-vs-drexel:2026-12-05"
-  },
-  "production:flowrestling:sacred-heart-vs-clarion:2027-01-17": {
-    "contentHash": "237892a81e886bd0",
-    "date": "2027-01-17",
-    "environment": "production",
-    "location": {
-      "latitude": 41.2063768,
-      "longitude": -79.3804006
-    },
-    "name": "Sacred Heart vs Clarion",
-    "pushedAt": "2026-10-26T17:49:40+00:00",
-    "recordName": "65D5D344-DF4A-48D1-BF69-F0703C8C4781",
-    "sourceKey": "flowrestling:sacred-heart-vs-clarion:2027-01-17"
-  },
-  "production:flowrestling:sacred-heart-vs-drexel:2027-01-16": {
-    "contentHash": "bff0b2e6b2cb1acf",
-    "date": "2027-01-16",
-    "environment": "production",
-    "location": {
-      "latitude": 39.9562379,
-      "longitude": -75.1905607
-    },
-    "name": "Sacred Heart vs Drexel",
-    "pushedAt": "2026-10-26T17:49:38+00:00",
-    "recordName": "726AE393-8AC9-4407-BF15-BC460CD23F19",
-    "sourceKey": "flowrestling:sacred-heart-vs-drexel:2027-01-16"
-  },
-  "production:flowrestling:sacred-heart-vs-hofstra:2026-10-31": {
-    "contentHash": "1b3310ecc8a58f09",
-    "date": "2026-10-31",
-    "environment": "production",
-    "location": {
-      "latitude": 40.713634,
-      "longitude": -73.6044551
-    },
-    "name": "Sacred Heart vs Hofstra",
-    "pushedAt": "2026-10-13T09:59:09+00:00",
-    "recordName": "2A40ECB2-C4B7-4A1B-8855-1A61E6C680FA",
-    "sourceKey": "flowrestling:sacred-heart-vs-hofstra:2026-10-31"
   },
   "production:flowrestling:san-jose-state-university-mission-college:2026-10-15": {
     "contentHash": "f9728f3d08d7e46a",
@@ -70175,32 +68420,6 @@
     "recordName": "49A29579-B3D3-413B-B412-AFA12C19ACE3",
     "sourceKey": "flowrestling:sherwood-showdown-2026:2026-12-12"
   },
-  "production:flowrestling:shippensburg-vs-elizabethtown:2026-12-13": {
-    "contentHash": "06f5381c157c3610",
-    "date": "2026-12-13",
-    "environment": "production",
-    "location": {
-      "latitude": 40.1508222,
-      "longitude": -76.5906317
-    },
-    "name": "Shippensburg vs Elizabethtown",
-    "pushedAt": "2026-10-26T17:42:48+00:00",
-    "recordName": "8E590040-22F8-4559-B958-3F3B7696E116",
-    "sourceKey": "flowrestling:shippensburg-vs-elizabethtown:2026-12-13"
-  },
-  "production:flowrestling:shorter-vs-newberry:2027-01-28": {
-    "contentHash": "9aaf90e7440634c4",
-    "date": "2027-01-28",
-    "environment": "production",
-    "location": {
-      "latitude": 34.2858689,
-      "longitude": -81.6216609
-    },
-    "name": "Shorter vs Newberry",
-    "pushedAt": "2026-10-26T17:50:00+00:00",
-    "recordName": "720A0596-FAA2-4313-8FF0-988F1F1C06A1",
-    "sourceKey": "flowrestling:shorter-vs-newberry:2027-01-28"
-  },
   "production:flowrestling:sidney-girls-invite-2027:2027-01-08": {
     "contentHash": "bb420700ef411171",
     "date": "2027-01-08",
@@ -70239,19 +68458,6 @@
     "pushedAt": "2026-10-13T09:59:51+00:00",
     "recordName": "09B40385-3C2C-4111-B515-1DFF0690F6A6",
     "sourceKey": "flowrestling:sierra-nevada:2026-12-29"
-  },
-  "production:flowrestling:simon-fraser-vs-north-idaho:2026-11-22": {
-    "contentHash": "caf78e3f9617d074",
-    "date": "2026-11-22",
-    "environment": "production",
-    "location": {
-      "latitude": 47.6764696,
-      "longitude": -116.7988978
-    },
-    "name": "Simon Fraser vs North Idaho",
-    "pushedAt": "2026-10-26T17:43:59+00:00",
-    "recordName": "9C978511-8A74-4472-A85A-E2845B45A9F8",
-    "sourceKey": "flowrestling:simon-fraser-vs-north-idaho:2026-11-22"
   },
   "production:flowrestling:sioux-city-east-girls-middle-school:2026-11-17": {
     "contentHash": "120a00c0935d8542",
@@ -70370,19 +68576,6 @@
     "recordName": "9FE00B2B-710B-433E-A5CE-798E756053D1",
     "sourceKey": "flowrestling:somerset-cpa-south-juggernaut-2:2026-10-17"
   },
-  "production:flowrestling:south-dakota-st-vs-wyoming:2027-01-31": {
-    "contentHash": "3eb9c530f8b081d8",
-    "date": "2027-01-31",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3124923,
-      "longitude": -105.5699617
-    },
-    "name": "South Dakota St vs Wyoming",
-    "pushedAt": "2026-10-05T18:06:11+00:00",
-    "recordName": "DCF6ABD1-9539-4FE1-8D95-F6BA08F54062",
-    "sourceKey": "flowrestling:south-dakota-st-vs-wyoming:2027-01-31"
-  },
   "production:flowrestling:south-fayette-king-of-the-ring-tournament:2027-01-23": {
     "contentHash": "4f06cf37de12e888",
     "date": "2027-01-23",
@@ -70460,45 +68653,6 @@
     "pushedAt": "2026-10-05T18:04:22+00:00",
     "recordName": "868B0426-0B99-427A-B794-C91952254FBA",
     "sourceKey": "flowrestling:southern-regionals-ram-tough-youth-wrestling-tournament:2027-01-24"
-  },
-  "production:flowrestling:southern-virginia-vs-averett:2026-11-19": {
-    "contentHash": "d298a110b1754a8e",
-    "date": "2026-11-19",
-    "environment": "production",
-    "location": {
-      "latitude": 36.5968235,
-      "longitude": -79.4365646
-    },
-    "name": "Southern Virginia vs Averett",
-    "pushedAt": "2026-10-26T17:40:27+00:00",
-    "recordName": "D087EA09-88FC-4D89-B5FF-02CAA036607C",
-    "sourceKey": "flowrestling:southern-virginia-vs-averett:2026-11-19"
-  },
-  "production:flowrestling:southern-virginia-vs-lynchburg:2027-01-09": {
-    "contentHash": "3b56af0d5f47faca",
-    "date": "2027-01-09",
-    "environment": "production",
-    "location": {
-      "latitude": 37.3980988,
-      "longitude": -79.1816587
-    },
-    "name": "Southern Virginia vs Lynchburg",
-    "pushedAt": "2026-10-26T17:49:23+00:00",
-    "recordName": "AE06C960-1DE7-47DD-B90B-76478A871BAF",
-    "sourceKey": "flowrestling:southern-virginia-vs-lynchburg:2027-01-09"
-  },
-  "production:flowrestling:southern-virginia-vs-shenandoah:2026-12-11": {
-    "contentHash": "af62860a82569e0a",
-    "date": "2026-12-11",
-    "environment": "production",
-    "location": {
-      "latitude": 39.1638903,
-      "longitude": -78.1537932
-    },
-    "name": "Southern Virginia vs Shenandoah",
-    "pushedAt": "2026-10-26T17:46:42+00:00",
-    "recordName": "04227794-D8AA-4062-BB88-FDAA9CB72844",
-    "sourceKey": "flowrestling:southern-virginia-vs-shenandoah:2026-12-11"
   },
   "production:flowrestling:southridge-smackdown-2027:2027-01-30": {
     "contentHash": "050a2c2af86ceb87",
@@ -70684,19 +68838,6 @@
     "recordName": "A9B12901-FDDE-4E56-BDD7-070C558EBC47",
     "sourceKey": "flowrestling:st-edmund-duals:2026-12-12"
   },
-  "production:flowrestling:st-francis-episcopal-school:2027-01-21": {
-    "contentHash": "d213cd6dbda26bd9",
-    "date": "2027-01-21",
-    "environment": "production",
-    "location": {
-      "latitude": 29.7583164,
-      "longitude": -95.5184495
-    },
-    "name": "* @ St Francis Episcopal School",
-    "pushedAt": "2026-10-05T17:54:11+00:00",
-    "recordName": "830AD0FA-2CCC-4991-A2C4-E9193091632A",
-    "sourceKey": "flowrestling:st-francis-episcopal-school:2027-01-21"
-  },
   "production:flowrestling:stafford-invitational:2027-02-13": {
     "contentHash": "61f07248d687e96d",
     "date": "2027-02-13",
@@ -70841,19 +68982,6 @@
     "pushedAt": "2026-09-07T09:36:52+00:00",
     "recordName": "BAD59454-0E40-4C8F-AAD0-97B1419AACDB",
     "sourceKey": "flowrestling:super-32-early-entry:2027-08-01"
-  },
-  "production:flowrestling:sussex-county-vs-scranton:2027-01-24": {
-    "contentHash": "6440249b573ac46e",
-    "date": "2027-01-24",
-    "environment": "production",
-    "location": {
-      "latitude": 41.4050247,
-      "longitude": -75.6565955
-    },
-    "name": "Sussex County vs Scranton",
-    "pushedAt": "2026-10-26T17:49:57+00:00",
-    "recordName": "6ADEBE71-15BE-45D9-9945-DDC31BCED363",
-    "sourceKey": "flowrestling:sussex-county-vs-scranton:2027-01-24"
   },
   "production:flowrestling:swc-conference-tournament-2027:2027-02-13": {
     "contentHash": "1c4b8040173e910a",
@@ -71023,19 +69151,6 @@
     "pushedAt": "2026-10-13T09:56:05+00:00",
     "recordName": "DFC96459-9E80-4406-8FDF-8E7E2576BE38",
     "sourceKey": "flowrestling:the-brittany-david-invitational:2026-12-28"
-  },
-  "production:flowrestling:the-citadel-vs-army:2027-02-07": {
-    "contentHash": "e89036e6a5dbb03c",
-    "date": "2027-02-07",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3908285,
-      "longitude": -73.9570602
-    },
-    "name": "The Citadel vs Army",
-    "pushedAt": "2026-10-26T17:42:03+00:00",
-    "recordName": "57A35488-D2E0-4455-AECD-5B2682BAD2BD",
-    "sourceKey": "flowrestling:the-citadel-vs-army:2027-02-07"
   },
   "production:flowrestling:the-cobra-pit-classic-2026:2026-09-05": {
     "contentHash": "f5588965c2d7ecdf",
@@ -71219,32 +69334,6 @@
     "recordName": "42E9C275-EBE4-4CBD-A3F1-23B7112A265F",
     "sourceKey": "flowrestling:the-ultimate-warrior-wrestling:2026-12-29"
   },
-  "production:flowrestling:thomas-more-vs-kentucky-wesleyan:2027-01-08": {
-    "contentHash": "a7c3b8890b65f972",
-    "date": "2027-01-08",
-    "environment": "production",
-    "location": {
-      "latitude": 37.7627502,
-      "longitude": -87.1262182
-    },
-    "name": "Thomas More vs Kentucky Wesleyan",
-    "pushedAt": "2026-10-26T17:49:21+00:00",
-    "recordName": "C2154C3A-DCE1-43E8-8953-0C5158E18498",
-    "sourceKey": "flowrestling:thomas-more-vs-kentucky-wesleyan:2027-01-08"
-  },
-  "production:flowrestling:thomas-more-vs-tiffin-university:2027-02-12": {
-    "contentHash": "f0b42220443161ca",
-    "date": "2027-02-12",
-    "environment": "production",
-    "location": {
-      "latitude": 41.1196085,
-      "longitude": -83.1877678
-    },
-    "name": "Thomas More vs Tiffin University",
-    "pushedAt": "2026-10-26T17:46:58+00:00",
-    "recordName": "137E1CEA-E97C-4C3F-A204-EE9755A4E041",
-    "sourceKey": "flowrestling:thomas-more-vs-tiffin-university:2027-02-12"
-  },
   "production:flowrestling:thrill-in-madill-jh:2027-01-15": {
     "contentHash": "f13209871cb4b6d9",
     "date": "2027-01-15",
@@ -71322,45 +69411,6 @@
     "pushedAt": "2026-09-22T12:45:33+00:00",
     "recordName": "AB175F29-ADBA-499F-AA30-3FC3230B7A72",
     "sourceKey": "flowrestling:tie-dyes-takedowns-invitational-girls:2026-12-12"
-  },
-  "production:flowrestling:tiffin-university-vs-ashland:2026-12-12": {
-    "contentHash": "5f78b4b604d08930",
-    "date": "2026-12-12",
-    "environment": "production",
-    "location": {
-      "latitude": 40.8612558,
-      "longitude": -82.3200923
-    },
-    "name": "Tiffin University vs Ashland",
-    "pushedAt": "2026-10-26T17:40:52+00:00",
-    "recordName": "33784018-BEA0-4917-9024-06094111CDBD",
-    "sourceKey": "flowrestling:tiffin-university-vs-ashland:2026-12-12"
-  },
-  "production:flowrestling:tiffin-university-vs-findlay:2027-02-12": {
-    "contentHash": "f5de1c3d7a1e9885",
-    "date": "2027-02-12",
-    "environment": "production",
-    "location": {
-      "latitude": 41.0542852,
-      "longitude": -83.6513041
-    },
-    "name": "Tiffin University vs Findlay",
-    "pushedAt": "2026-10-26T17:46:57+00:00",
-    "recordName": "AD55B3A4-564C-44A3-8B39-D591B31DD03E",
-    "sourceKey": "flowrestling:tiffin-university-vs-findlay:2027-02-12"
-  },
-  "production:flowrestling:tiffin-university-vs-lake-erie:2026-12-04": {
-    "contentHash": "13ae5a85e59ba91f",
-    "date": "2026-12-04",
-    "environment": "production",
-    "location": {
-      "latitude": 41.7146947,
-      "longitude": -81.2494525
-    },
-    "name": "Tiffin University vs Lake Erie",
-    "pushedAt": "2026-10-26T17:42:34+00:00",
-    "recordName": "0084B86B-4BE9-4B6A-B3C2-01C13DEDEB41",
-    "sourceKey": "flowrestling:tiffin-university-vs-lake-erie:2026-12-04"
   },
   "production:flowrestling:tiger-holiday-classic-2026:2026-12-21": {
     "contentHash": "df649b395da6f392",
@@ -73833,32 +71883,6 @@
     "recordName": "A50A0CD6-5064-4679-A75D-A94E78EE6474",
     "sourceKey": "flowrestling:unt-fall-brawl-open:2026-11-14"
   },
-  "production:flowrestling:upper-cape-vs-hingham:2026-12-23": {
-    "contentHash": "7b2c18c5ff2247bb",
-    "date": "2026-12-23",
-    "environment": "production",
-    "location": {
-      "latitude": 42.1823349,
-      "longitude": -70.9437975
-    },
-    "name": "Upper Cape vs Hingham",
-    "pushedAt": "2026-10-05T18:03:10+00:00",
-    "recordName": "256B50BE-60FC-427B-B3FA-562E80ABCB43",
-    "sourceKey": "flowrestling:upper-cape-vs-hingham:2026-12-23"
-  },
-  "production:flowrestling:upper-iowa-vs-grand-valley:2027-01-30": {
-    "contentHash": "e6cda499265c1be0",
-    "date": "2027-01-30",
-    "environment": "production",
-    "location": {
-      "latitude": 42.96699,
-      "longitude": -85.8897429
-    },
-    "name": "Upper Iowa vs Grand Valley",
-    "pushedAt": "2026-10-26T17:45:24+00:00",
-    "recordName": "073453C2-ACEA-4FBC-B5E0-E6BB82CB0C20",
-    "sourceKey": "flowrestling:upper-iowa-vs-grand-valley:2027-01-30"
-  },
   "production:flowrestling:upper-perk-braves-43rd-annual-wrestling-tournament:2027-02-20": {
     "contentHash": "fdf603cc3b43dfbd",
     "date": "2027-02-20",
@@ -73953,19 +71977,6 @@
     "pushedAt": "2026-10-05T18:03:41+00:00",
     "recordName": "D676C3B1-E2E8-4F39-8880-770CE25805C9",
     "sourceKey": "flowrestling:utah-valley-northern-colo:2027-01-24"
-  },
-  "production:flowrestling:utah-valley-vs-wyoming:2027-01-22": {
-    "contentHash": "fe9878c68536fa82",
-    "date": "2027-01-22",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3124923,
-      "longitude": -105.5699617
-    },
-    "name": "Utah Valley vs Wyoming",
-    "pushedAt": "2026-10-05T18:03:37+00:00",
-    "recordName": "C54E2FD0-CAEC-4EC0-BF88-2B1F680C1911",
-    "sourceKey": "flowrestling:utah-valley-vs-wyoming:2027-01-22"
   },
   "production:flowrestling:valkyrie-girls-open:2026-11-28": {
     "contentHash": "0fb133b0e410327a",
@@ -74138,19 +72149,6 @@
     "recordName": "B653D1B1-8DA6-4B9B-98C4-598887DAA31D",
     "sourceKey": "flowrestling:viper-pit-nationals-open-2027:2027-04-04"
   },
-  "production:flowrestling:virginia-tech-vs-lehigh:2026-11-06": {
-    "contentHash": "1d888a95d5ba65a6",
-    "date": "2026-11-06",
-    "environment": "production",
-    "location": {
-      "latitude": 40.5840973,
-      "longitude": -75.3594173
-    },
-    "name": "Virginia Tech vs Lehigh",
-    "pushedAt": "2026-10-26T17:47:32+00:00",
-    "recordName": "72B6BEDD-F7B5-4FBC-8E7A-6F962CC46844",
-    "sourceKey": "flowrestling:virginia-tech-vs-lehigh:2026-11-06"
-  },
   "production:flowrestling:vms-wrestling-invite:2026-11-03": {
     "contentHash": "61a07c6693747318",
     "date": "2026-11-03",
@@ -74176,19 +72174,6 @@
     "pushedAt": "2026-09-07T09:54:25+00:00",
     "recordName": "9B7EF882-7CE0-4D14-968A-ADE4C34256C4",
     "sourceKey": "flowrestling:vol-brawl-valhalla-wrestling:2027-01-31"
-  },
-  "production:flowrestling:vs:2027-01-09": {
-    "contentHash": "135a7a1a722a31f8",
-    "date": "2027-01-09",
-    "environment": "production",
-    "location": {
-      "latitude": 41.1202122,
-      "longitude": -83.1916362
-    },
-    "name": "vs",
-    "pushedAt": "2026-10-26T17:46:50+00:00",
-    "recordName": "D3F46214-6543-435F-8E53-BFC378528613",
-    "sourceKey": "flowrestling:vs:2027-01-09"
   },
   "production:flowrestling:vulc-tourney-2:2027-06-01": {
     "contentHash": "06c3821cd955a7b7",
@@ -74567,45 +72552,6 @@
     "recordName": "C749B1FB-DE30-46D9-834D-A5F344F7094B",
     "sourceKey": "flowrestling:west-high-school-2:2026-11-10"
   },
-  "production:flowrestling:west-iredell:2026-12-08": {
-    "contentHash": "7e6d2f9b21c0d353",
-    "date": "2026-12-08",
-    "environment": "production",
-    "location": {
-      "latitude": 35.5334093,
-      "longitude": -81.119812
-    },
-    "name": "@ West Iredell",
-    "pushedAt": "2026-10-26T17:44:25+00:00",
-    "recordName": "5EA91025-7467-4A86-B08B-0DE85A6FF338",
-    "sourceKey": "flowrestling:west-iredell:2026-12-08"
-  },
-  "production:flowrestling:west-liberty-vs-ashland:2027-02-04": {
-    "contentHash": "3ddc5afc97706b13",
-    "date": "2027-02-04",
-    "environment": "production",
-    "location": {
-      "latitude": 40.8612558,
-      "longitude": -82.3200923
-    },
-    "name": "West Liberty vs Ashland",
-    "pushedAt": "2026-10-26T17:41:54+00:00",
-    "recordName": "6C561070-FD51-4F8A-8243-19142EC1470F",
-    "sourceKey": "flowrestling:west-liberty-vs-ashland:2027-02-04"
-  },
-  "production:flowrestling:west-liberty-vs-grand-valley:2027-01-24": {
-    "contentHash": "b2a81522568c868f",
-    "date": "2027-01-24",
-    "environment": "production",
-    "location": {
-      "latitude": 42.96699,
-      "longitude": -85.8897429
-    },
-    "name": "West Liberty vs Grand Valley",
-    "pushedAt": "2026-10-26T17:49:59+00:00",
-    "recordName": "85C53989-C301-4F93-9AFF-1D7C281B4FF3",
-    "sourceKey": "flowrestling:west-liberty-vs-grand-valley:2027-01-24"
-  },
   "production:flowrestling:west-liberty-youth-wrestling-tournament:2026-11-29": {
     "contentHash": "38ba7558ba0022f0",
     "date": "2026-11-29",
@@ -74657,58 +72603,6 @@
     "pushedAt": "2026-09-22T12:47:20+00:00",
     "recordName": "A1DFEE50-199E-4F7D-9877-3D758FDB99BB",
     "sourceKey": "flowrestling:west-middle-school-2:2026-11-06"
-  },
-  "production:flowrestling:west-virginia-vs-utah-valley:2026-11-19": {
-    "contentHash": "257b83d44fcd53d2",
-    "date": "2026-11-19",
-    "environment": "production",
-    "location": {
-      "latitude": 40.3238739,
-      "longitude": -111.8374108
-    },
-    "name": "West Virginia vs Utah Valley",
-    "pushedAt": "2026-10-26T17:46:40+00:00",
-    "recordName": "E7C4BF7C-EBCB-4435-AC5E-5FA2F903773A",
-    "sourceKey": "flowrestling:west-virginia-vs-utah-valley:2026-11-19"
-  },
-  "production:flowrestling:west-virginia-vs-wyoming:2027-01-29": {
-    "contentHash": "9f332ac56ba6c14f",
-    "date": "2027-01-29",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3124923,
-      "longitude": -105.5699617
-    },
-    "name": "West Virginia vs Wyoming",
-    "pushedAt": "2026-10-05T18:06:08+00:00",
-    "recordName": "5BCCE3C7-1B6F-4F4D-9CF9-DBC765481DE9",
-    "sourceKey": "flowrestling:west-virginia-vs-wyoming:2027-01-29"
-  },
-  "production:flowrestling:westchester-vs-scranton:2027-01-24": {
-    "contentHash": "fefc408cfb114429",
-    "date": "2027-01-24",
-    "environment": "production",
-    "location": {
-      "latitude": 41.4050247,
-      "longitude": -75.6565955
-    },
-    "name": "Westchester vs Scranton",
-    "pushedAt": "2026-10-26T17:49:56+00:00",
-    "recordName": "FB5AEFE3-A43F-4C9F-809E-30120C4EB7F4",
-    "sourceKey": "flowrestling:westchester-vs-scranton:2027-01-24"
-  },
-  "production:flowrestling:western-wyoming-vs-wyoming:2026-11-01": {
-    "contentHash": "b976968c63f75147",
-    "date": "2026-11-01",
-    "environment": "production",
-    "location": {
-      "latitude": 41.3124923,
-      "longitude": -105.5699617
-    },
-    "name": "Western Wyoming vs Wyoming",
-    "pushedAt": "2026-10-05T18:04:39+00:00",
-    "recordName": "B1D4B185-FA20-4BD8-B9D1-7AD899CCA959",
-    "sourceKey": "flowrestling:western-wyoming-vs-wyoming:2026-11-01"
   },
   "production:flowrestling:westside-wrestling-club-youth-tournament:2027-01-17": {
     "contentHash": "f05453e5dc341dfd",
@@ -74879,19 +72773,6 @@
     "recordName": "E621429F-1335-4F1F-989D-9B7DD468012D",
     "sourceKey": "flowrestling:wildcat-open-2027:2027-02-21"
   },
-  "production:flowrestling:wilkes-vs-scranton:2027-01-16": {
-    "contentHash": "6751516fe11acdbd",
-    "date": "2027-01-16",
-    "environment": "production",
-    "location": {
-      "latitude": 41.4050247,
-      "longitude": -75.6565955
-    },
-    "name": "Wilkes vs Scranton",
-    "pushedAt": "2026-10-26T17:49:34+00:00",
-    "recordName": "B81FC08D-D59D-46D5-A143-E9734C2D493A",
-    "sourceKey": "flowrestling:wilkes-vs-scranton:2027-01-16"
-  },
   "production:flowrestling:willadsen-jv-invite:2027-01-30": {
     "contentHash": "eab4c1c68bd27a69",
     "date": "2027-01-30",
@@ -74917,19 +72798,6 @@
     "pushedAt": "2026-10-13T09:57:35+00:00",
     "recordName": "7307B53B-B788-443B-9A49-44FC16F4C0B7",
     "sourceKey": "flowrestling:willamette-girls-oms-26-27-qualifier:2026-12-12"
-  },
-  "production:flowrestling:wilmington-vs-otterbein:2027-02-02": {
-    "contentHash": "91e20be8494748b4",
-    "date": "2027-02-02",
-    "environment": "production",
-    "location": {
-      "latitude": 40.1304984,
-      "longitude": -82.9377909
-    },
-    "name": "Wilmington vs Otterbein",
-    "pushedAt": "2026-10-26T17:46:31+00:00",
-    "recordName": "AC2D1FC9-66B9-45BA-AC8C-CB3F1DDDE58C",
-    "sourceKey": "flowrestling:wilmington-vs-otterbein:2027-02-02"
   },
   "production:flowrestling:wind-river-middle-school-invitational:2026-10-24": {
     "contentHash": "f5ca5403c2bfb63f",
@@ -74995,32 +72863,6 @@
     "pushedAt": "2026-10-05T17:59:40+00:00",
     "recordName": "C16F91C5-9DE2-4A5B-9E5D-24491D5910E8",
     "sourceKey": "flowrestling:wirt-county-tiger-roar-on-the-river:2026-12-06"
-  },
-  "production:flowrestling:wisconsin-vs-utah-valley:2026-12-19": {
-    "contentHash": "64f71b68b348398e",
-    "date": "2026-12-19",
-    "environment": "production",
-    "location": {
-      "latitude": 40.3238739,
-      "longitude": -111.8374108
-    },
-    "name": "Wisconsin vs Utah Valley",
-    "pushedAt": "2026-10-26T17:46:47+00:00",
-    "recordName": "D8E4BD80-CF93-4636-A607-D36E2193B1DF",
-    "sourceKey": "flowrestling:wisconsin-vs-utah-valley:2026-12-19"
-  },
-  "production:flowrestling:wittenberg-vs-wilmington:2027-02-08": {
-    "contentHash": "9bdb57532105976b",
-    "date": "2027-02-08",
-    "environment": "production",
-    "location": {
-      "latitude": 39.4408304,
-      "longitude": -83.8170945
-    },
-    "name": "Wittenberg vs Wilmington",
-    "pushedAt": "2026-10-26T17:50:12+00:00",
-    "recordName": "CF69436B-96B9-4EDC-ABFC-32F3F3C57010",
-    "sourceKey": "flowrestling:wittenberg-vs-wilmington:2027-02-08"
   },
   "production:flowrestling:wlv-spencer-cole-invitation:2027-01-29": {
     "contentHash": "f751ac715fd46d5d",
@@ -75255,19 +73097,6 @@
     "pushedAt": "2026-09-07T09:54:03+00:00",
     "recordName": "2CE98E18-E014-4318-891F-2A3F053E5D33",
     "sourceKey": "flowrestling:wyoming-valley-west-spartan-classic:2026-11-14"
-  },
-  "production:flowrestling:wyoming-vs-northern-iowa:2027-01-16": {
-    "contentHash": "7690cdbb30d8cacd",
-    "date": "2027-01-16",
-    "environment": "production",
-    "location": {
-      "latitude": 42.5147908,
-      "longitude": -92.4675722
-    },
-    "name": "Wyoming vs Northern Iowa",
-    "pushedAt": "2026-10-13T09:56:23+00:00",
-    "recordName": "3E14BDBC-5C3B-4895-9B94-0F8EC1AF6384",
-    "sourceKey": "flowrestling:wyoming-vs-northern-iowa:2027-01-16"
   },
   "production:flowrestling:yellow-jacket-open:2026-11-07": {
     "contentHash": "f67951c0199da90a",
