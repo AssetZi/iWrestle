@@ -36257,7 +36257,7 @@
     "sourceKey": "flowrestling:yukon-ladies-open:2026-11-14"
   },
   "development:pywrestling:athens-little-cats-wrestling-classic:2026-12-06": {
-    "contentHash": "328f6c57a6c95b20",
+    "contentHash": "1cb54cc8a9bc7593",
     "date": "2026-12-06",
     "environment": "development",
     "location": {
@@ -36265,8 +36265,8 @@
       "longitude": -76.527207
     },
     "name": "Athens Little Cats Wrestling Classic",
-    "pushedAt": "2026-09-05T09:24:54+00:00",
-    "recordName": "B3A49D13-7BBD-4B4C-AA27-255CEA357E52",
+    "pushedAt": "2026-11-02T14:30:39+00:00",
+    "recordName": "E59B0E3E-7A7E-4990-94D5-480DC29B3B5E",
     "sourceKey": "pywrestling:athens-little-cats-wrestling-classic:2026-12-06"
   },
   "development:pywrestling:battle-for-the-bullet-open:2026-12-13": {
@@ -36309,7 +36309,7 @@
     "sourceKey": "pywrestling:beaver-brawl:2026-11-28"
   },
   "development:pywrestling:bloody-run-brawl:2026-12-12": {
-    "contentHash": "5b8781f1d9921ecd",
+    "contentHash": "18024cb08352bfdf",
     "date": "2026-12-12",
     "environment": "development",
     "location": {
@@ -36317,8 +36317,8 @@
       "longitude": -78.3733484
     },
     "name": "Bloody Run Brawl",
-    "pushedAt": "2026-10-05T16:43:28+00:00",
-    "recordName": "A0023FBC-5BAF-4CC3-8820-C846DAF0DD5A",
+    "pushedAt": "2026-11-02T14:29:33+00:00",
+    "recordName": "B1C73483-7FD7-4814-A21E-5B52E6374600",
     "sourceKey": "pywrestling:bloody-run-brawl:2026-12-12"
   },
   "development:pywrestling:blue-devil-new-years:2026-12-31": {
@@ -36411,6 +36411,19 @@
     "pushedAt": "2026-10-05T12:16:39+00:00",
     "recordName": "DC694EBA-9718-406C-8F57-565645EDDD5A",
     "sourceKey": "pywrestling:chet-thompson-memorial:2027-01-03"
+  },
+  "development:pywrestling:chip-aumilller-brawl:2027-01-10": {
+    "contentHash": "1c6ec16271b122dc",
+    "date": "2027-01-10",
+    "environment": "development",
+    "location": {
+      "latitude": 40.593661,
+      "longitude": -77.594502
+    },
+    "name": "Chip Aumilller Brawl",
+    "pushedAt": "2026-11-02T14:29:35+00:00",
+    "recordName": "232E57F9-D36E-4F42-88DE-A14611DC1A43",
+    "sourceKey": "pywrestling:chip-aumilller-brawl:2027-01-10"
   },
   "development:pywrestling:coal-cracker-open:2026-12-19": {
     "contentHash": "fb1b4bfaf96e4c33",
@@ -36581,6 +36594,19 @@
     "recordName": "179E3D2C-FBCC-4F29-A08D-F829996B718F",
     "sourceKey": "pywrestling:greenville-winter-brawl:2026-12-18"
   },
+  "development:pywrestling:groundhog-classic-novice-1st-year-tournament:2027-01-17": {
+    "contentHash": "6ac9c1bdb075a3f0",
+    "date": "2027-01-17",
+    "environment": "development",
+    "location": {
+      "latitude": 40.9449187,
+      "longitude": -78.9702403
+    },
+    "name": "Groundhog Classic Novice & 1St Year Tournament",
+    "pushedAt": "2026-11-02T14:31:00+00:00",
+    "recordName": "967C0B30-B39E-482B-8E98-F0DA41F0B741",
+    "sourceKey": "pywrestling:groundhog-classic-novice-1st-year-tournament:2027-01-17"
+  },
   "development:pywrestling:halloween-classic:2026-10-24": {
     "contentHash": "e0db741148823586",
     "date": "2026-10-24",
@@ -36595,7 +36621,7 @@
     "sourceKey": "pywrestling:halloween-classic:2026-10-24"
   },
   "development:pywrestling:harold-beal-memorial-tournament:2026-12-19": {
-    "contentHash": "d2609763d68db723",
+    "contentHash": "af9ab2ffdbd55f9e",
     "date": "2026-12-19",
     "environment": "development",
     "location": {
@@ -36603,8 +36629,8 @@
       "longitude": -79.6067035
     },
     "name": "Harold Beal Memorial Tournament",
-    "pushedAt": "2026-09-05T09:25:07+00:00",
-    "recordName": "12FD95D5-0279-4FC6-9CB6-042415CA5302",
+    "pushedAt": "2026-11-02T14:30:58+00:00",
+    "recordName": "0FA003D1-009A-400A-8645-8BED65D965F3",
     "sourceKey": "pywrestling:harold-beal-memorial-tournament:2026-12-19"
   },
   "development:pywrestling:harold-winshel-memorial-round-robin:2026-09-12": {
@@ -36673,7 +36699,7 @@
     "sourceKey": "pywrestling:larry-fornicola-wrestling-tournament:2026-12-19"
   },
   "development:pywrestling:lebanon-girls-champ-camp:2026-11-07": {
-    "contentHash": "9b922c175899d7b6",
+    "contentHash": "c93ae03b7798eeee",
     "date": "2026-11-07",
     "environment": "development",
     "location": {
@@ -36681,8 +36707,8 @@
       "longitude": -76.4196485
     },
     "name": "Lebanon Girls Champ Camp",
-    "pushedAt": "2026-09-05T09:24:42+00:00",
-    "recordName": "2BFE0C45-0653-46B5-98AF-2EC115FCEA18",
+    "pushedAt": "2026-11-02T14:29:36+00:00",
+    "recordName": "EBBB8511-1DEC-4BA8-A0E7-CF450CBA9E76",
     "sourceKey": "pywrestling:lebanon-girls-champ-camp:2026-11-07"
   },
   "development:pywrestling:lebanon-wrestling-tournament:2027-01-10": {
@@ -36712,7 +36738,7 @@
     "sourceKey": "pywrestling:line-mountain-round-robin:2026-12-19"
   },
   "development:pywrestling:little-lions-round-robin:2027-01-09": {
-    "contentHash": "d8e797344f9296d8",
+    "contentHash": "979d28bc67465648",
     "date": "2027-01-09",
     "environment": "development",
     "location": {
@@ -36720,8 +36746,8 @@
       "longitude": -78.644741
     },
     "name": "Little Lions Round Robin",
-    "pushedAt": "2026-10-05T12:16:43+00:00",
-    "recordName": "F437283D-8C14-4B7B-B1A7-7710EEB77C70",
+    "pushedAt": "2026-11-02T14:31:01+00:00",
+    "recordName": "4DD4786F-3BC8-4BAE-B232-B0FA2313BCDF",
     "sourceKey": "pywrestling:little-lions-round-robin:2027-01-09"
   },
   "development:pywrestling:madison-dq-open:2026-11-08": {
@@ -36777,7 +36803,7 @@
     "sourceKey": "pywrestling:mat-town-usa-fall-classic:2026-10-18"
   },
   "development:pywrestling:mid-penn-future-varsity-classic:2027-01-10": {
-    "contentHash": "40fd44b2c3e8dfc0",
+    "contentHash": "2ff6a976d85b5e6b",
     "date": "2027-01-10",
     "environment": "development",
     "location": {
@@ -36785,8 +36811,8 @@
       "longitude": -76.5838366
     },
     "name": "Mid Penn Future Varsity Classic",
-    "pushedAt": "2026-10-05T16:06:42+00:00",
-    "recordName": "FA0394D6-D34E-431F-8B47-A4E52714EB03",
+    "pushedAt": "2026-11-02T14:29:40+00:00",
+    "recordName": "51B2BA9D-892C-4BEA-87DE-D0E9F6F9DFDA",
     "sourceKey": "pywrestling:mid-penn-future-varsity-classic:2027-01-10"
   },
   "development:pywrestling:mt-lion-mayhem:2026-11-22": {
@@ -36802,18 +36828,31 @@
     "recordName": "2FE75F13-0606-4537-B190-8CBC9FA364E1",
     "sourceKey": "pywrestling:mt-lion-mayhem:2026-11-22"
   },
-  "development:pywrestling:new-year-wrestulution:2027-01-17": {
-    "contentHash": "e09712e8f9805840",
-    "date": "2027-01-17",
+  "development:pywrestling:new-year-wrestulution:2027-01-16": {
+    "contentHash": "f3751dc40f60160f",
+    "date": "2027-01-16",
     "environment": "development",
     "location": {
       "latitude": 41.3330592,
       "longitude": -75.9667826
     },
     "name": "New Year Wrestulution",
-    "pushedAt": "2026-10-26T14:31:07+00:00",
-    "recordName": "8D89507A-9D1B-4E2D-A8C3-8E1E1B45C872",
-    "sourceKey": "pywrestling:new-year-wrestulution:2027-01-17"
+    "pushedAt": "2026-11-02T14:29:39+00:00",
+    "recordName": "2D6D3E8A-608A-421B-9A98-EF8AE7253662",
+    "sourceKey": "pywrestling:new-year-wrestulution:2027-01-16"
+  },
+  "development:pywrestling:north-east-novice-tournament:2027-01-17": {
+    "contentHash": "7f99bba79c712149",
+    "date": "2027-01-17",
+    "environment": "development",
+    "location": {
+      "latitude": 42.2243778,
+      "longitude": -79.8292137
+    },
+    "name": "North East Novice Tournament",
+    "pushedAt": "2026-11-02T14:30:42+00:00",
+    "recordName": "F512A725-1BF3-4C84-BE9D-9B895B38B49D",
+    "sourceKey": "pywrestling:north-east-novice-tournament:2027-01-17"
   },
   "development:pywrestling:northern-lebanon-youth-open:2027-01-17": {
     "contentHash": "2d6b2a260ae330db",
@@ -36855,7 +36894,7 @@
     "sourceKey": "pywrestling:preseason-bulldog-brawl:2026-11-22"
   },
   "development:pywrestling:raider-holiday-duals:2026-12-20": {
-    "contentHash": "8d99cd6e34cad9e7",
+    "contentHash": "b03a67d64e50fa66",
     "date": "2026-12-20",
     "environment": "development",
     "location": {
@@ -36863,8 +36902,8 @@
       "longitude": -75.0563485
     },
     "name": "Raider Holiday Duals",
-    "pushedAt": "2026-10-05T12:16:40+00:00",
-    "recordName": "355B6CFD-D353-4737-9743-3ACC2644030B",
+    "pushedAt": "2026-11-02T14:29:37+00:00",
+    "recordName": "431559C5-122D-4CAA-B403-F335F0C38DF3",
     "sourceKey": "pywrestling:raider-holiday-duals:2026-12-20"
   },
   "development:pywrestling:randy-watts-warrior-run-classic:2026-12-19": {
@@ -36972,7 +37011,7 @@
     "sourceKey": "pywrestling:sledgehammer-open-girls-tournament:2027-01-16"
   },
   "development:pywrestling:slippery-rock-novice-tournament:2027-01-10": {
-    "contentHash": "74f9cb2e828eba22",
+    "contentHash": "0d279a796fa55511",
     "date": "2027-01-10",
     "environment": "development",
     "location": {
@@ -36980,8 +37019,8 @@
       "longitude": -80.0482884
     },
     "name": "Slippery Rock Novice Tournament",
-    "pushedAt": "2026-10-26T14:31:09+00:00",
-    "recordName": "C0E06D61-92DA-4B53-A0C0-4C50AA9A33AA",
+    "pushedAt": "2026-11-02T14:30:41+00:00",
+    "recordName": "9D1FEC44-ADC1-4B7E-A493-84D0A8168DCE",
     "sourceKey": "pywrestling:slippery-rock-novice-tournament:2027-01-10"
   },
   "development:pywrestling:steubenville-battle-for-the-belt:2026-11-15": {
@@ -37209,12 +37248,12 @@
     "contentHash": "5658e8b4df89ad55",
     "date": "2026-11-08",
     "environment": "development",
-    "lastMissedAt": "2026-10-26",
+    "lastMissedAt": "2026-11-02",
     "location": {
       "latitude": 39.840346,
       "longitude": -75.707923
     },
-    "missCount": 1,
+    "missCount": 2,
     "name": "Wrestle Away Diabetes",
     "pushedAt": "2026-10-05T12:16:37+00:00",
     "recordName": "8323BE88-53E4-405C-972E-52F70CBCA2D9",
@@ -73830,10 +73869,12 @@
     "contentHash": "e09712e8f9805840",
     "date": "2027-01-17",
     "environment": "production",
+    "lastMissedAt": "2026-11-02",
     "location": {
       "latitude": 41.3330592,
       "longitude": -75.9667826
     },
+    "missCount": 1,
     "name": "New Year Wrestulution",
     "pushedAt": "2026-10-26T17:37:33+00:00",
     "recordName": "7D537596-CB8F-41B9-A2F7-0DF850DC8E6B",
@@ -74233,12 +74274,12 @@
     "contentHash": "5658e8b4df89ad55",
     "date": "2026-11-08",
     "environment": "production",
-    "lastMissedAt": "2026-10-26",
+    "lastMissedAt": "2026-11-02",
     "location": {
       "latitude": 39.840346,
       "longitude": -75.707923
     },
-    "missCount": 1,
+    "missCount": 2,
     "name": "Wrestle Away Diabetes",
     "pushedAt": "2026-10-05T17:45:45+00:00",
     "recordName": "F4707ED6-D413-438A-BAC4-702BA0650D40",
