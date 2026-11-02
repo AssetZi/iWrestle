@@ -211,6 +211,15 @@ def test_a_pushed_event_reclassified_as_college_is_retired_after_two_runs(tmp_pa
     event["review"]["notes"] = ["excluded: college open"]
     assert [f["recordName"] for f in push_cli.retired([event], "development", set())] == ["REC1"]
 
+    # A dual meet is read off the name alone: at once too, and the dry run says so.
+    ledger.clear_retiring({event["sourceKey"]}, "development")
+    event["review"]["notes"] = ["dual meet"]
+    assert [f["recordName"] for f in push_cli.retired([event], "development", set(), record=False)] == ["REC1"]
+    assert "retireCount" not in ledger.get(event["sourceKey"], "development")
+    found = push_cli.retired([event], "development", set())
+    assert [f["recordName"] for f in found] == ["REC1"]
+    assert found[0]["reason"] == "dual meet"
+
 
 def test_a_second_push_is_refused_while_one_runs(tmp_path, monkeypatch):
     import push as push_cli

@@ -49,10 +49,14 @@ PLACEHOLDER = re.compile(
     re.I,
 )
 TBA_ADDRESS = re.compile(r"\btba\b|\btbd\b", re.I)
-# A dual meet is one school hosting another: "Alta @ Bountiful". Brock keeps
-# them out of the directory (2026-10-26). A dual tournament ("Tobin Duals")
-# has no "@", and "IGHSAU 2A Reg. Duals 1 @" names no opponent, so both stay.
-DUAL = re.compile(r"^[^@]*\w[^@]* @ [^@]*\w[^@]*$")
+# A dual meet is one team against another: "Alta @ Bountiful", "Air Force
+# vs Army", "Wilson Area Hs vs. Salisbury Twp Hs". Brock keeps them out of the
+# directory (2026-10-26), and on 2026-11-02 made the rule the name alone: any
+# "@" or any "vs" is a dual, whatever else the name says. That takes listings
+# like "@ West Iredell" and "IGHSAU 1A Reg. 1 @" (a host never named) along
+# with it. A dual tournament ("Tobin Duals", "PIAA Interscholastic Duals")
+# has neither and stays.
+DUAL = re.compile(r"@|\bvs\.?\b", re.I)
 
 
 def is_placeholder(name: str) -> bool:
@@ -62,8 +66,8 @@ def is_placeholder(name: str) -> bool:
 
 
 def is_dual(name: str) -> bool:
-    """One team at another's gym, named "<team> @ <team>"."""
-    return bool(DUAL.match(" ".join((name or "").split())))
+    """One team against another: an "@" or a "vs" anywhere in the name."""
+    return bool(DUAL.search(name or ""))
 
 
 def venue_is_tba(address: str) -> bool:

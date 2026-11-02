@@ -248,6 +248,17 @@ open/invitational/duals family, and no youth marker anywhere. Those events
 become `Open` and are skipped with the note `college-level event`. Set
 `INCLUDE_COLLEGE=1` in `.env` to keep them.
 
+### Dual meets
+
+One team against another is not a directory event. The rule is the name
+alone (`is_dual` in `iwpipe/level.py`): any `@` or any `vs` in it, so
+`Alta @ Bountiful`, `Air Force vs Army` and a host-less `IGHSAU 1A Reg. 1 @`
+are all skipped with the note `dual meet`, at collect and by `make recheck`.
+A dual tournament (`Tobin Duals`) has neither and stays. A dual that was
+pushed before the rule caught it comes down on the next push to that
+environment: unlike a level reclassification, a name cannot flicker, so there
+is no two-run wait.
+
 ### Scale
 
 A national run collects several hundred events. The first one is slow

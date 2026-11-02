@@ -276,11 +276,13 @@ def due_for_removal(source: str, environment: str) -> list[dict[str, Any]]:
 
 
 # --- Pushed events a later run sets aside for good ------------------------------
-# Reclassified as college or adult, or excluded by hand. One classification
-# can be a fluke (the detail text that carried the youth marker failed to
-# load), so like a miss it has to happen twice running. An exclusion is a
-# person's decision and takes effect at once.
+# Reclassified as college or adult, read as a dual meet, or excluded by hand.
+# A level classification can be a fluke (the detail text that carried the
+# youth marker failed to load), so like a miss it has to happen twice running.
+# An exclusion is a person's decision, and a dual meet is read off the name
+# alone, which cannot flicker: both take effect at once.
 RETIRE_LIMIT = 2
+AT_ONCE = ("excluded:", "dual meet")
 
 
 def mark_retiring(source_key: str, environment: str, reason: str) -> int:
@@ -289,7 +291,7 @@ def mark_retiring(source_key: str, environment: str, reason: str) -> int:
     entry = entries.get(entry_key(source_key, environment))
     if entry is None:
         return 0
-    if reason.startswith("excluded:"):
+    if reason.startswith(AT_ONCE):
         entry["retireCount"] = RETIRE_LIMIT
     else:
         entry["retireCount"] = entry.get("retireCount", 0) + 1

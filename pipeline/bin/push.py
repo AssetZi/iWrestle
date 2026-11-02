@@ -101,8 +101,9 @@ def retired(events, environment, already, *, record=True):
     """Ledger entries for pushed events this file now sets aside for good.
 
     A reclassification has to hold for RETIRE_LIMIT runs running before
-    the record comes down; an exclusion is a person's call and counts at
-    once. With record=False (dry run) nothing is counted, only reported.
+    the record comes down; an exclusion is a person's call and a dual meet
+    is read off the name, so both count at once. With record=False (dry
+    run) nothing is counted, only reported.
     """
     found = []
     for event in events:
@@ -118,7 +119,7 @@ def retired(events, environment, already, *, record=True):
         if record:
             count = ledger.mark_retiring(event["sourceKey"], environment, reason)
         else:
-            count = ledger.RETIRE_LIMIT if reason.startswith("excluded:") else entry.get("retireCount", 0) + 1
+            count = ledger.RETIRE_LIMIT if reason.startswith(ledger.AT_ONCE) else entry.get("retireCount", 0) + 1
         if count >= ledger.RETIRE_LIMIT:
             found.append({**entry, "missCount": 0, "reason": reason})
         else:

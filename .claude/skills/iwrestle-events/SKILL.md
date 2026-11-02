@@ -36,7 +36,7 @@ Decide which one you are in before doing anything.
 4. **Triage, until it settles.** `triage.py apply` applies Brock's rules to the events collect flagged: it excludes them (deleting each from CloudKit wherever it was pushed, production included) and records corrected names. Capture the "would exclude" list with reasons, the "would rename" list, the "remains for Brock" list, and the OK/FAIL lines.
    - If its last line is `== changed: run make recheck`, run `make recheck > <scratchpad>/recheck<N>.log 2>&1` (a minute; no scraping), then `triage.py apply` again. Freeing one copy of a duplicate often surfaces another pair, so repeat until it prints `== unchanged`, at most three passes. If a fourth would still change something, stop and list what the plan still wants.
    - A line starting `!!` means a source was not collected this run and its lines come from an older file. Say so in the report; do not treat its numbers as today's.
-   - A college dual under "remains" or in the report (a "Team @ Team" name with no high-school marker): list the college names so Brock can add them to `COLLEGES` in triage.py. Do not edit triage.py during a run.
+   - Do not edit triage.py during a run. Duals never reach triage (collect skips any "@" or "vs" name), so a "Team @ Team" or "Team vs Team" name under "remains" means the rule missed it: quote it in the report.
 5. **Numbers.** `triage.py report` (add `--all` to list every event needing a decision). From the routine log and each recheck log:
    - `grep -nE "^== |^collected|blocked|gone from|^pushed|^enriched|^tokens|^states|^development:|not created|scrape looks partial|removals wanted|retiring|re-pushed|network unreachable|ANTHROPIC|Traceback" <log>`
    - per source, the count of `  created`, `  replaced`, `  moved`, `  removed` lines: `awk '/^== /{s=$2} /^  (created|replaced|moved|removed)/{c[s" "$1]++} END{for(k in c)print k,c[k]}' <log>`
@@ -79,7 +79,7 @@ Applied by triage.py, to flagged events only (rules given 2026-09-22 and 2026-10
 What the pipeline settles before triage sees it:
 
 - A listing named "Delete", "... - Delete", "Hold - Please Set Invisible" or "... Test" is a placeholder: skipped at collect, and taken down after two runs if it was already pushed.
-- A dual meet, named "<team> @ <team>", is not listed (Brock, 2026-10-26): skipped at collect (and by `make recheck`) as "dual meet", and taken down after two runs if it was already pushed. A dual tournament ("Tobin Duals") has no "@" and stays. Triage may still print duals as same-date duplicates; they are on their way out either way.
+- A dual meet is not listed (Brock, 2026-10-26; rule widened 2026-11-02): any name with an "@" or a "vs" in it ("Alta @ Bountiful", "Air Force vs Army", "@ West Iredell", "IGHSAU 1A Reg. 1 @") is skipped at collect (and by `make recheck`) as "dual meet", and taken down on the next push to each environment it was pushed to, with no two-run wait. A dual tournament ("Tobin Duals") has neither and stays. Triage may still print duals as same-date duplicates; they are on their way out either way.
 - A listing renamed in place (same day, same gym, nearly the same name) is pushed as a move, noted `renamed from <old name>`. It counts under "moved", not as a removal plus a new event.
 - A listing gone from its source for two runs on different days is removed.
 

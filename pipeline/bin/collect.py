@@ -75,7 +75,7 @@ def classify_divisions_and_level(event) -> None:
 
 
 def flag_dual(event) -> None:
-    """A dual meet ("Alta @ Bountiful") is not listed in the directory."""
+    """A dual meet ("Alta @ Bountiful", "Air Force vs Army") is not listed."""
     if level.is_dual(event.get("name", "")):
         schema.note(event, "dual meet")
         event["review"]["status"] = schema.STATUS_SKIP

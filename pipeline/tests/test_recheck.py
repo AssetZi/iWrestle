@@ -61,10 +61,14 @@ def test_a_copy_whose_partner_is_still_pushed_stays_set_aside(monkeypatch, tmp_p
 
 def test_a_dual_meet_is_set_aside_and_stays_set_aside(monkeypatch, tmp_path):
     dual = _event(FLO, "Everett @ Bedford", schema.STATUS_APPROVED, [])
+    versus = _event(PYW, "Everett vs. Bedford", schema.STATUS_APPROVED, [])
 
-    after = _run(tmp_path, monkeypatch, [dual])[FLO]
-    assert after["review"]["status"] == schema.STATUS_SKIP
-    assert after["review"]["notes"] == ["dual meet"]
+    after = _run(tmp_path, monkeypatch, [dual, versus])
+    assert after[FLO]["review"]["status"] == schema.STATUS_SKIP
+    assert after[FLO]["review"]["notes"] == ["dual meet"]
+    assert after[PYW]["review"]["status"] == schema.STATUS_SKIP
+    assert after[PYW]["review"]["notes"] == ["dual meet"]
+    after = after[FLO]
 
     path = tmp_path / "events.pywrestling.20261005.json"
     monkeypatch.setattr(sys, "argv", ["recheck.py", str(path)])

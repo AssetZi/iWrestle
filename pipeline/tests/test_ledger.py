@@ -178,6 +178,8 @@ def test_a_reclassification_has_to_hold_for_two_runs(monkeypatch, tmp_path):
     assert "retireCount" not in ledger.get(key, "development")
     # An exclusion is a person's decision: it counts at once.
     assert ledger.mark_retiring(key, "development", "excluded: college open") >= ledger.RETIRE_LIMIT
+    ledger.clear_retiring({key}, "development")
+    assert ledger.mark_retiring(key, "development", "dual meet") >= ledger.RETIRE_LIMIT
     assert ledger.mark_retiring("pywrestling:nope:2026-01-01", "development", "college-level event") == 0
 
 
