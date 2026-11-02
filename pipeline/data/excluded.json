@@ -19,6 +19,11 @@
     "name": "2025 Cody MS Invitational",
     "reason": "invitational"
   },
+  "flowrestling:2025-husky-girls-invitational:2026-11-21": {
+    "at": "2026-11-02T21:18:35+00:00",
+    "name": "2025 Husky Girls Invitational",
+    "reason": "invitational"
+  },
   "flowrestling:2026-adm-tiger-varsity-invitational:2027-01-16": {
     "at": "2026-10-12T16:46:08+00:00",
     "name": "2026 ADM Tiger Varsity Invitational",
@@ -28,6 +33,21 @@
     "at": "2026-10-12T13:26:08+00:00",
     "name": "2026 Appalachian State Open",
     "reason": "college open"
+  },
+  "flowrestling:2026-bott-fright-night-duals-girls-k8:2026-11-07": {
+    "at": "2026-11-02T21:18:40+00:00",
+    "name": "2026 BOTT: Fright Night Duals (Girls K8)",
+    "reason": "same-date duplicate of pywrestling:fright-night-duals-tournament:2026-11-07"
+  },
+  "flowrestling:2026-bott-fright-night-duals-hs:2026-11-07": {
+    "at": "2026-11-02T21:18:41+00:00",
+    "name": "2026 BOTT: Fright Night Duals (HS)",
+    "reason": "same-date duplicate of pywrestling:fright-night-duals-tournament:2026-11-07"
+  },
+  "flowrestling:2026-bott-fright-night-duals-k6:2026-11-07": {
+    "at": "2026-11-02T21:18:40+00:00",
+    "name": "2026 BOTT: Fright Night Duals (K6)",
+    "reason": "same-date duplicate of pywrestling:fright-night-duals-tournament:2026-11-07"
   },
   "flowrestling:2026-bott-warriors-duals-hs:2026-10-17": {
     "at": "2026-10-12T16:46:29+00:00",
@@ -68,6 +88,21 @@
     "at": "2026-09-22T11:20:48+00:00",
     "name": "2026 Buc Brawl (Girls Division)",
     "reason": "duplicate of flowrestling:2026-buc-brawl-girls-division:2026-11-21"
+  },
+  "flowrestling:2026-doug-parker:2026-11-21:2mULrs508k3uVnty": {
+    "at": "2026-11-02T21:18:41+00:00",
+    "name": "2026 Doug Parker",
+    "reason": "same-date duplicate of flowrestling:2026-doug-parker:2026-11-21"
+  },
+  "flowrestling:2026-east-brunswick-bear-invitational:2026-12-28:2i35VUSm2GzLJuui": {
+    "at": "2026-11-02T21:18:33+00:00",
+    "name": "2026 East Brunswick Bear Invitational",
+    "reason": "invitational"
+  },
+  "flowrestling:2026-florida-jv-state-invitational:2027-02-05": {
+    "at": "2026-11-02T21:18:36+00:00",
+    "name": "2026 Florida JV State Invitational",
+    "reason": "invitational"
   },
   "flowrestling:2026-gte-cougars-classic:2026-11-08": {
     "at": "2026-10-05T16:38:38+00:00",
@@ -129,6 +164,11 @@
     "name": "2026 - PA 2026 Turkey Takedown",
     "reason": "same-date duplicate of pywrestling:turkey-takedown-round-robin:2026-11-29 (Brock 2026-10-05)"
   },
+  "flowrestling:2026-pa-carabello-classic:2026-12-05": {
+    "at": "2026-11-02T21:18:41+00:00",
+    "name": "2026 - PA-Carabello Classic",
+    "reason": "same-date duplicate of pywrestling:governor-mifflin-carabello-classic:2026-12-05"
+  },
   "flowrestling:2026-piaa-district-iv-central-section:2027-02-20:2vwHSRtrkrpyA9im": {
     "at": "2026-09-22T11:20:37+00:00",
     "name": "2026 PIAA District IV Central Section",
@@ -163,6 +203,11 @@
     "at": "2026-10-05T16:38:46+00:00",
     "name": "2027 - 10th Annual Cedars Youth Wrestling Tournament",
     "reason": "same-date duplicate of pywrestling:lebanon-wrestling-tournament:2027-01-10 (Brock 2026-10-05)"
+  },
+  "flowrestling:2027-baldwin-county-championships-ms-jv:2027-01-08:2uPdiDv39ujdqRMe": {
+    "at": "2026-11-02T21:18:42+00:00",
+    "name": "2027 Baldwin County Championships MS/JV",
+    "reason": "same-date duplicate of flowrestling:2027-baldwin-county-championships-ms-jv:2027-01-08"
   },
   "flowrestling:2027-brandywine-battle-for-the-bullet-novice:2027-02-20:2ij0ktp5YmL5f2dJ": {
     "at": "2026-09-22T11:20:50+00:00",
@@ -629,6 +674,11 @@
     "name": "Clarkstown South @ Arlington",
     "reason": "same-date duplicate of flowrestling:clarkstown-south-arlington:2027-01-05"
   },
+  "flowrestling:coal-cracker-open-2026:2026-12-19": {
+    "at": "2026-11-02T21:18:40+00:00",
+    "name": "Coal Cracker Open 2026",
+    "reason": "same-date duplicate of pywrestling:coal-cracker-open:2026-12-19"
+  },
   "flowrestling:college-station-a-m-consolidated-college-station:2027-01-20:2vmfhOHSJp8eJ8XX": {
     "at": "2026-09-22T11:20:22+00:00",
     "name": "College Station A&M Consolidated @ College Station",
@@ -954,6 +1004,11 @@
     "name": "Gateway Hs @ Fox Chapel Area Hs",
     "reason": "same-date duplicate of flowrestling:gateway-hs-fox-chapel-area-hs:2026-12-10"
   },
+  "flowrestling:gauntlet-at-the-vine:2026-12-09:2jPmFWuU1GXc9k1l": {
+    "at": "2026-11-02T21:24:13+00:00",
+    "name": "Gauntlet at the Vine",
+    "reason": "same-date duplicate of flowrestling:gauntlet-at-the-vine:2026-12-09"
+  },
   "flowrestling:ghsa-division-4-area-1:2027-01-29:2hlK0flsPq10pWWL": {
     "at": "2026-10-12T16:46:26+00:00",
     "name": "GHSA Division 4 Area 1",
@@ -983,6 +1038,11 @@
     "at": "2026-10-26T15:35:46+00:00",
     "name": "Golden Valley  (Bakersfield) @ East Bakersfield",
     "reason": "same-date duplicate of flowrestling:golden-valley-bakersfield-east-bakersfield:2027-01-19"
+  },
+  "flowrestling:gordon-rushville-jh-invite-2027:2026-11-06": {
+    "at": "2026-11-02T21:18:34+00:00",
+    "name": "Gordon-Rushville JH Invite 2027",
+    "reason": "invitational"
   },
   "flowrestling:grand-island-north-tonawanda:2026-12-10:2g5rD1Hr0VrpgivS": {
     "at": "2026-10-26T15:35:48+00:00",
@@ -1138,6 +1198,11 @@
     "at": "2026-10-05T16:03:45+00:00",
     "name": "Iowa St. @ Lock Haven",
     "reason": "college event"
+  },
+  "flowrestling:iron-sharpens-iron-thanksgiving-inv:2026-11-28:2kXoCX6GBOTQZpDW": {
+    "at": "2026-11-02T21:24:14+00:00",
+    "name": "Iron Sharpens Iron Thanksgiving Inv",
+    "reason": "same-date duplicate of flowrestling:iron-sharpens-iron-thanksgiving-inv:2026-11-28"
   },
   "flowrestling:ithaca-buffalo-st:2027-01-29": {
     "at": "2026-09-22T11:20:02+00:00",
@@ -1959,6 +2024,11 @@
     "name": "Southwestern Oregon Community College @ College of the Redwoods",
     "reason": "college event"
   },
+  "flowrestling:spokane-open:2026-11-22": {
+    "at": "2026-11-02T21:18:38+00:00",
+    "name": "Spokane Open",
+    "reason": "same-date duplicate of flowrestling:spokane-open:2026-11-22:2nw6E59Iyio6VFxF"
+  },
   "flowrestling:st-andrews-h-s-concord-h-s:2027-01-19:2cbg2pgP10ste5wf": {
     "at": "2026-10-26T15:44:23+00:00",
     "name": "St Andrews H S @ Concord H S",
@@ -1973,6 +2043,11 @@
     "at": "2026-10-26T15:44:26+00:00",
     "name": "St. John The Baptist @ St. Anthonys",
     "reason": "same-date duplicate of flowrestling:st-john-the-baptist-st-anthonys:2027-01-21"
+  },
+  "flowrestling:stafford-invitational:2027-02-06": {
+    "at": "2026-11-02T21:18:37+00:00",
+    "name": "Stafford Invitational",
+    "reason": "invitational"
   },
   "flowrestling:stanley-county-faulkton-area:2026-12-22:2HPsmbysmV3Xjhz7": {
     "at": "2026-10-26T15:44:18+00:00",
@@ -2143,6 +2218,11 @@
     "at": "2026-10-26T15:44:29+00:00",
     "name": "Valencia  (Placentia) @ Santa Ana",
     "reason": "same-date duplicate of flowrestling:valencia-placentia-santa-ana:2027-01-26"
+  },
+  "flowrestling:vms-wrestling-invite:2026-11-05": {
+    "at": "2026-11-02T21:18:33+00:00",
+    "name": "VMS Wrestling Invite",
+    "reason": "invitational"
   },
   "flowrestling:wallenpaupack-area-hs-west-scranton-hs:2027-01-21:2YsRdRUT3SKGkTw1": {
     "at": "2026-10-26T15:35:26+00:00",
