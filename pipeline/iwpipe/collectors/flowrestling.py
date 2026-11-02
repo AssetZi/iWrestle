@@ -27,6 +27,7 @@ from typing import Any
 
 import requests
 
+from .. import level
 from ..config import DATA_DIR, EVENT_TZ, MONTHS_AHEAD
 from ..schema import blank_event, note
 
@@ -373,6 +374,7 @@ def collect(
     cache = _load_detail_cache() if not fixture else None
     events: list[dict[str, Any]] = []
     seen: set[str] = set()
+    wanted: set[str] = set()
     try:
         for item in raw:
             if not fixture and not _in_window(item, today):
@@ -387,9 +389,18 @@ def collect(
             seen.add(identity)
             if not fixture:
                 core = CORE_ID.search(item.get("url") or "")
-                detail = fetch_detail(session, core.group(1), cache) if core else None
-                if detail:
-                    apply_detail(event, detail)
+                if level.is_dual(event["name"]) or level.is_placeholder(event["name"]):
+                    # Set aside on the name alone, so the contact and street
+                    # address would never be shown: half the national
+                    # listing is duals, and this is half the detail traffic.
+                    note(event, "event details not fetched, set aside by name")
+                elif core:
+                    wanted.add(core.group(1))
+                    detail = fetch_detail(session, core.group(1), cache)
+                    if detail:
+                        apply_detail(event, detail)
+                    else:
+                        note(event, "event details unavailable")
                 else:
                     note(event, "event details unavailable")
             events.append(event)
@@ -397,5 +408,18 @@ def collect(
                 break
     finally:
         if cache is not None:
+            if not limit:
+                _prune_detail_cache(cache, wanted, today)
             _save_detail_cache(cache)
     return events
+
+
+def _prune_detail_cache(cache: dict[str, Any], wanted: set[str], now: datetime) -> None:
+    """Drop expired entries for events this run no longer asked about
+    (past, cancelled, or now set aside by name), so the file stops growing."""
+    for core_id in list(cache):
+        if core_id in wanted:
+            continue
+        fetched = datetime.fromisoformat(cache[core_id].get("fetchedAt", "1970-01-01T00:00:00+00:00"))
+        if now - fetched >= timedelta(days=DETAIL_TTL_DAYS):
+            del cache[core_id]
