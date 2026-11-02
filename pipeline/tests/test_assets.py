@@ -119,3 +119,18 @@ def test_rendering_the_same_event_twice_gives_identical_bytes(tmp_path):
     first = render_image_flyer(event, banner, tmp_path / "c.pdf").read_bytes()
     second = render_image_flyer(event, banner, tmp_path / "d.pdf").read_bytes()
     assert first == second
+
+
+def test_a_dropped_download_is_skipped_not_raised(monkeypatch):
+    """A flyer whose connection resets mid-file used to crash enrich for the whole source."""
+    import requests
+
+    from iwpipe import assets
+
+    class Cut:
+        def iter_content(self, size):
+            yield b"%PDF-1.4 "
+            raise requests.exceptions.ChunkedEncodingError("Connection broken: ConnectionResetError(54)")
+
+    monkeypatch.setattr(assets, "get", lambda session, url, **kw: Cut())
+    assert assets._download(None, "https://example.com/flyer.pdf", 10_000_000) is None
