@@ -149,11 +149,16 @@ def _download(session: requests.Session, url: str, limit: int) -> bytes | None:
     except Exception:
         return None
     chunks, total = [], 0
-    for chunk in response.iter_content(65536):
-        total += len(chunk)
-        if total > limit:
-            return None
-        chunks.append(chunk)
+    try:
+        for chunk in response.iter_content(65536):
+            total += len(chunk)
+            if total > limit:
+                return None
+            chunks.append(chunk)
+    except requests.RequestException:
+        # The site cut the connection mid-file (a reset, a timeout). One
+        # bad flyer is not worth the rest of the source's enrichment.
+        return None
     return b"".join(chunks)
 
 
