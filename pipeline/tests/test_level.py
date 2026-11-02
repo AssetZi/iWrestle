@@ -26,13 +26,16 @@ def test_adult_opens_are_not_youth():
 def test_dual_meets():
     from iwpipe.level import is_dual
 
-    assert is_dual("Alta @ Bountiful")
-    assert is_dual("Arroyo  (El Monte) @ Alhambra  (Alhambra)")
-    assert is_dual("Oswego (H.S.) @ Oswego (East)")
-    assert not is_dual("Tobin Duals")
-    assert not is_dual("IGHSAU 2A Reg. Duals 1 @")
-    assert not is_dual("@ West Iredell")
-    assert not is_dual("Imperial Valley vs Santa Ana")
+    # Any "@" or "vs" in the name (Brock, 2026-11-02).
+    for name in ("Alta @ Bountiful", "Arroyo  (El Monte) @ Alhambra  (Alhambra)",
+                 "Oswego (H.S.) @ Oswego (East)", "IGHSAU 2A Reg. Duals 1 @", "@ West Iredell",
+                 "Tri @NW and Page", "* @ St Francis Episcopal School",
+                 "Imperial Valley vs Santa Ana", "Santa Ana College vs. Imperial Valley College",
+                 "Air Force VS Army", "Marion JH Boys Dual-vs-BC & Indee"):
+        assert is_dual(name), name
+    for name in ("Tobin Duals", "PIAA Interscholastic Duals", "Testa Memorial Duals",
+                 "Vsevolod Memorial Open", "Davis Classic"):
+        assert not is_dual(name), name
 
 
 def test_placeholders():
