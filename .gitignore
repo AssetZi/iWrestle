@@ -23,3 +23,7 @@ pipeline/secrets/
 
 # Private keys never belong in the repo; the pipeline keeps its own under pipeline/secrets/.
 *.pem
+
+# Factory workflow: per-task worktrees and PR evidence.
+.worktrees/
+.artifacts/
