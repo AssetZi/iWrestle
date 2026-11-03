@@ -39,10 +39,12 @@ Run `/unslop` over anything a person will read: commit messages, PR title and bo
 
 ## Checks in this repo
 
-- Build: `xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,name=iPhone 17' build`
-- Tests: `xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,name=iPhone 17' test` (target: iWrestleTests)
-- Lint: `swiftlint` (installed, but the repo has no `.swiftlint.yml`; add one before relying on this check)
+- Build: `xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.0' build`
+- Tests: `xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.0' test` (target: iWrestleTests)
+- Lint: `swiftlint` (needs swiftlint on PATH; the repo has no `.swiftlint.yml`, add one before relying on this check)
 - Whitespace: `git diff --check`
 - Bundle ID for simulator evidence: `zacherlInvestmentsLLC.iWrestle`
+
+The destination pins `OS=26.0` because a bare `name=iPhone 17` matches every installed iOS 26 and 27 runtime and xcodebuild silently takes the first. 26.0 is the deployment target, so checks run on the oldest OS the app supports. If that runtime is missing, install it or change both lines together.
 
 Evidence goes under `.artifacts/` (gitignored). Monthly `/complexity-audit` stays separate from this workflow.
