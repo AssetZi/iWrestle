@@ -10,7 +10,7 @@ Pick the parts of this workflow that fit the task.
 ## Workflow
 
 1. **Isolate.** `/new-feature` before any edit. Branch from `origin/main`. Never build on `main`.
-2. **Build.** `/code-structure` when adding a feature that shares mechanics with an existing one or when choosing what goes in a view, model, or service. Plain MV SwiftUI: views, `@Observable` models, one service per backend. GUARDRAILS.md (if present) wins over this file on conflicts.
+2. **Build.** `/code-structure` when adding a feature that shares mechanics with an existing one or when choosing what goes in a view, model, or service. Plain MV SwiftUI: views, `@Observable` models, one service per backend. Services live in `iWrestle/Managers/` and are named `*Manager` (CloudKitManager, StoreKitManager); add to that folder rather than starting a parallel one. GUARDRAILS.md (if present) wins over this file on conflicts.
 3. **Prove.** Run the checks below. `/evidence-driven-testing` for any changed runtime behavior. Record the failure before the fix and the success after.
 4. **Ship.** Open the PR with evidence that fits the change. `/sim-before-after` when a screenshot pair helps. `/review-loop` for code changes, cap 3. Stop at 5/5 with zero unresolved actionable findings, or at the cap, and report the real result. Present the PR URL.
 
@@ -41,7 +41,7 @@ Run `/unslop` over anything a person will read: commit messages, PR title and bo
 
 - Build: `xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.0' build`
 - Tests: `xcodebuild -scheme iWrestle -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.0' test` (target: iWrestleTests)
-- Lint: `swiftlint` (needs swiftlint on PATH; the repo has no `.swiftlint.yml`, add one before relying on this check)
+- Lint: none yet. The repo has no `.swiftlint.yml`, and `swiftlint` with default rules reports hundreds of violations, so do not run it as a check. Add the config first, then add the command here.
 - Whitespace: `git diff --check`
 - Bundle ID for simulator evidence: `zacherlInvestmentsLLC.iWrestle`
 
