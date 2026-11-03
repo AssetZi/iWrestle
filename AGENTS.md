@@ -25,6 +25,7 @@ Run `/unslop` over anything a person will read: commit messages, PR title and bo
 - Worktrees do not isolate the simulator. Confirm the installed bundle is yours before trusting it.
 - If a conflict can't be resolved confidently, stop and report.
 - Do not merge the PR unless told to. Keep the worktree until the PR is merged or closed.
+- The events pipeline is the one task that runs in the primary checkout, not a worktree: its venv, cache and secrets are gitignored there. Its ledger commits go on a `data/ledger-<date>` branch cut from `origin/main` and land by pull request. The `iwrestle-events` skill has the steps.
 
 ## Completing a task that ships
 
