@@ -7,8 +7,16 @@ and enrichment caches. `pull` copies them out of the private repo into
 data/, and `push` copies them back and commits. This repo is public; those
 files hold organizer emails, so they never go in it.
 
+The newest collected file of each source (data/events.<source>.<date>.json)
+is kept too: publishing to production reads it, and a machine that did not
+run this week's collect has none or an old one.
+
 flyer-page1.png and fields.json are rebuilt on every run and not kept.
 geocache.json is tracked in this repo, so it is not kept there too.
+
+begin_run marks a run as started in the private repo, and push clears the
+mark. A mark still there at the next begin_run means a run died after it
+may have created records but before its ledger was kept anywhere.
 
 `push` also keeps a copy of the ledger files under ledger/. They are never
 copied back into data/: main's ledger is the one the pipeline uses. The
@@ -20,7 +28,9 @@ from __future__ import annotations
 import base64
 import json
 import os
+import re
 import shutil
+import socket
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -34,6 +44,8 @@ BRANCH = "main"
 DATA_FILES = ("flo-details.json", "enrich-cache.json")
 ASSET_FILES = ("logo.png", "flyer.pdf", "source-flyer.pdf", "banner.jpg")
 LEDGER_FILES = ("pushed.json", "excluded.json", "renamed.json")
+EVENTS_FILE = re.compile(r"events\.([a-z]+)\.(\d{8})\.json")
+RUNNING = "RUNNING"
 
 # A push may drop at most this share of the files the private repo holds
 # (events past their date do leave), unless allow_shrink is given.
@@ -97,6 +109,12 @@ def _checkout(repo: str, state_dir: Path) -> str | None:
 def _files(root: Path) -> set[Path]:
     """Kept files under a data folder, relative to it."""
     found = {Path(name) for name in DATA_FILES if (root / name).is_file()}
+    newest: dict[str, str] = {}
+    for path in root.glob("events.*.json") if root.is_dir() else []:
+        match = EVENTS_FILE.fullmatch(path.name)
+        if match and path.name > newest.get(match.group(1), ""):
+            newest[match.group(1)] = path.name
+    found |= {Path(name) for name in newest.values()}
     assets = root / "assets"
     if assets.is_dir():
         for folder in assets.iterdir():
@@ -125,12 +143,86 @@ def _copy(relative: set[Path], source: Path, destination: Path) -> int:
 def pull(repo: str = STATE_REPO, state_dir: Path = STATE_DIR, data_dir: Path = DATA_DIR) -> int:
     """Copy the kept files into data/. Returns how many changed.
 
-    Local files the private repo lacks are left alone."""
+    Local files the private repo lacks are left alone, except the ones it
+    had at this machine's last sync and has since deleted: another run
+    dropped them on purpose (a flyer that names a different event), and the
+    next push from here would bring them back."""
+    marker = _marker(state_dir)
+    synced = marker.read_text().strip() if marker.exists() else ""
     head = _checkout(repo, state_dir)
-    copied = _copy(_files(state_dir / "data"), state_dir / "data", data_dir)
+    stored = state_dir / "data"
+    current = _files(stored)
+    if synced and head and synced != head:
+        for path in _tracked(state_dir, synced) - current:
+            # An older collected file only left because a newer one came;
+            # it stays as history.
+            if not EVENTS_FILE.fullmatch(path.name):
+                (data_dir / path).unlink(missing_ok=True)
+    copied = _copy(current, stored, data_dir)
     # Written last: a pull that failed partway does not count as one.
     _marker(state_dir).write_text((head or "") + "\n")
     return copied
+
+
+def _tracked(state_dir: Path, commit: str) -> set[Path]:
+    """Kept data files in an earlier commit of the private repo."""
+    try:
+        names = _git("ls-tree", "-r", "--name-only", commit, "--", "data", cwd=state_dir)
+    except StateError:
+        return set()  # history this clone does not have; nothing to compare
+    return {Path(name).relative_to("data") for name in names.splitlines() if name}
+
+
+def begin_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> None:
+    """Mark a run as started, after pull. Refuses if the last one never
+    reached push."""
+    head = _checkout(repo, state_dir)
+    marker = _marker(state_dir)
+    if head and (not marker.exists() or marker.read_text().strip() != head):
+        raise StateError("run make state-pull first")
+    running = state_dir / RUNNING
+    if running.exists():
+        raise StateError(
+            f"a run that started {running.read_text().strip()} never finished make state-push. "
+            "If it got as far as pushing, CloudKit has records its ledger lost, and this run "
+            "would create them again. Check with make reconcile (records in CloudKit against "
+            "the ledger, and the ones it doesn't know). When that is sorted out, clear the mark "
+            "with .venv/bin/python bin/state.py clear-run, then start again."
+        )
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    running.write_text(f"{stamp} on {socket.gethostname()}\n")
+    _commit_and_push(state_dir, f"Run started {stamp}")
+
+
+def clear_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> bool:
+    """Remove a stale run mark by hand. Returns whether there was one."""
+    _checkout(repo, state_dir)
+    running = state_dir / RUNNING
+    if not running.exists():
+        return False
+    running.unlink()
+    _commit_and_push(state_dir, "Clear the mark of a run that never finished")
+    return True
+
+
+def _commit_and_push(state_dir: Path, message: str) -> int:
+    _git("add", "--all", cwd=state_dir)
+    changed = [line for line in _git("status", "--porcelain", cwd=state_dir).splitlines() if line]
+    if not changed:
+        return 0
+    _git(
+        "-c", "user.name=iWrestle pipeline", "-c", "user.email=pipeline@users.noreply.github.com",
+        "commit", "--quiet", "-m", message, cwd=state_dir,
+    )
+    try:
+        _git("push", "--quiet", "origin", f"HEAD:refs/heads/{BRANCH}", cwd=state_dir)
+    except StateError as error:
+        raise StateError(
+            f"{error}. Another machine pushed first; nothing was kept from this one. "
+            "Run make state-pull, then push again."
+        ) from error
+    _marker(state_dir).write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
+    return len(changed)
 
 
 def push(
@@ -157,9 +249,11 @@ def push(
     stored = state_dir / "data"
     held = _files(stored)
     dropped = held - local
-    if held and len(dropped) > MAX_SHRINK * len(held) and not allow_shrink:
+    # A collected file replaced by a newer one is expected every week.
+    lost = [path for path in dropped if not EVENTS_FILE.fullmatch(path.name)]
+    if held and len(lost) > MAX_SHRINK * len(held) and not allow_shrink:
         raise StateError(
-            f"this push would delete {len(dropped)} of {len(held)} kept files from the "
+            f"this push would delete {len(lost)} of {len(held)} kept files from the "
             "private repo. data/ looks incomplete; if that many really went, push "
             "again with --allow-shrink"
         )
@@ -171,19 +265,10 @@ def push(
     _copy(local, data_dir, stored)
     ledger = {Path(name) for name in LEDGER_FILES if (data_dir / name).is_file()}
     _copy(ledger, data_dir, state_dir / "ledger")
+    (state_dir / RUNNING).unlink(missing_ok=True)
 
-    _git("add", "--all", cwd=state_dir)
-    changed = [line for line in _git("status", "--porcelain", cwd=state_dir).splitlines() if line]
-    if not changed:
-        return 0
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    _git(
-        "-c", "user.name=iWrestle pipeline", "-c", "user.email=pipeline@users.noreply.github.com",
-        "commit", "--quiet", "-m", f"State after the run of {stamp}", cwd=state_dir,
-    )
-    _git("push", "--quiet", "origin", f"HEAD:refs/heads/{BRANCH}", cwd=state_dir)
-    marker.write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
-    return len(changed)
+    return _commit_and_push(state_dir, f"State after the run of {stamp}")
 
 
 def ledger_differences(state_dir: Path = STATE_DIR, data_dir: Path = DATA_DIR) -> list[str]:

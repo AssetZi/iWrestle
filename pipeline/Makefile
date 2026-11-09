@@ -26,7 +26,7 @@ help:
 	@echo "make exclude KEY=\"name or key\" REASON=\"why\"   remove an event for good"
 	@echo "make routine       collect + enrich + approve + push (development) for every source"
 	@echo "make recheck       re-read today's files against the ledger and push, no scraping"
-	@echo "make cloud-start   before a cloud run: state-pull, then stop if main's ledger is behind"
+	@echo "make cloud-start   before a cloud run: state-pull, stop if main's ledger is behind, mark the run started"
 	@echo "make state-pull    copy logos, flyers and caches from the private data repo into data/"
 	@echo "make state-push    copy them back to the private data repo and commit"
 	@echo "make nightly       the routine, logged to data/logs/ (what launchd runs)"
@@ -174,6 +174,7 @@ state-push:
 	@$(PY) bin/state.py push
 
 cloud-start: state-pull ledger-check
+	@$(PY) bin/state.py begin
 
 summary:
 	@$(PY) bin/summary.py $(LOG)

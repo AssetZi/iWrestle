@@ -16,17 +16,18 @@ Decide which one you are in before doing anything.
 
 ## Where things are
 
-- Pipeline: `/Users/brock/Developer/iWrestle/pipeline` (the git repo is one level up). Run every command from the pipeline directory in the primary checkout, never a worktree: `.venv`, the collected files and `secrets/` are gitignored and exist only there.
+- Pipeline: `/Users/brock/Developer/iWrestle/pipeline` (the git repo is one level up). On the Mac, run every command from the pipeline directory in the primary checkout, never a worktree: `.venv`, the collected files and `secrets/` are gitignored and exist only there.
 - Virtualenv: `.venv`; `make` targets use it.
 - Triage script: `../.claude/skills/iwrestle-events/scripts/triage.py`, run as `.venv/bin/python ../.claude/skills/iwrestle-events/scripts/triage.py <report|plan|apply>`. Called `triage.py` below.
 - Secrets: `pipeline/.env`. Never print, edit, or move it. Check a key by presence only.
 - Collected files: `data/events.<source>.<YYYYMMDD>.json`. A second collect on the same day overwrites them. "The newest file" of a source is `ls -t data/events.<source>.*.json | head -1`.
 - Ledger: `data/pushed.json` records what is in CloudKit. One push at a time: two pushes share this file and the second is refused.
-- Cloud runs start from a fresh clone, so the paths above are relative to its `pipeline/` folder. Settings come from environment variables instead of `.env`. The environment's setup script creates `.venv` and writes `secrets/cloudkit-s2s.pem`; if either is missing, stop and report it.
+- Cloud runs start from a fresh clone, so the paths above are relative to its `pipeline/` folder. Whatever branch the session starts on, step 1 treats it as `main` (it is a fresh clone of it), and step 7 still applies: cut `data/ledger-<YYYY-MM-DD>` from `origin/main` and open its pull request. Settings come from environment variables instead of `.env`. The environment's setup script creates `.venv` and writes `secrets/cloudkit-s2s.pem`; if either is missing, stop and report it.
   - Logos, flyers and caches live in the private repo named by `PIPELINE_STATE_REPO`.
   - Begin with `make cloud-start`. It copies that data into `data/`, then stops if main's ledger may be behind CloudKit: a `data/ledger-*` pull request is still open, or the last run's ledger never reached main. If it stops, quote its output and do nothing else.
   - If `make cloud-start` succeeded, run `make state-push` after step 7, even if steps in between failed, and quote its last line. Never run it after a failed `make cloud-start`.
 - After the routine has moved to the cloud, a run on the Mac does the same: `make state-pull` first, and `make state-push` after the ledger commit.
+- Once the routine runs in the cloud, anything that changes the ledger needs a `make state-push` after its ledger commit, on whichever machine ran it. That covers a production publish, `make exclude`, a hand `triage.py apply`, and a `make recheck` outside the routine. Otherwise the next cloud run stops at `make cloud-start`, because main's ledger no longer matches the kept copy.
 
 ## Steps
 
@@ -57,7 +58,7 @@ Do this only in the "with Brock" mode, after he has seen step 6's preview and sa
   `rc=0; for s in pywrestling flowrestling trackwrestling; do f=$(ls -t data/events.$s.*.json | head -1); echo "== $s ($f)"; .venv/bin/python bin/push.py $f --production --replace --yes || rc=1; done > <scratchpad>/promote.log 2>&1; exit $rc`
   (Use `rc`, not `status`: the shell is zsh and `status` is read-only there.)
 - If a source reports `removals wanted, cap is N`, nothing was removed for it. Show Brock the list; rerun that source with `--max-removals <N>` only if he says so.
-- Afterwards rerun the dry-run preview to confirm nothing is left, then `git add data/pushed.json && git commit -m "Record production push"` and push the branch as in step 7. If the routine runs in the cloud, `make state-push` after that, so its copy of the ledger matches.
+- Afterwards rerun the dry-run preview to confirm nothing is left, then `git add data/pushed.json && git commit -m "Record production push"` and push the branch as in step 7.
 - Report created, replaced, moved, removed per source, and anything still pending (an event being retired comes down on the second run that sees it).
 
 ## When the network drops

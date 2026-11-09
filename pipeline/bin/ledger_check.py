@@ -42,16 +42,6 @@ def open_ledger_prs(slug: str) -> list[dict]:
 
 
 def main() -> int:
-    differ = state.ledger_differences()
-    if differ:
-        print(
-            f"{RED}main's ledger differs from the copy the last run kept{RESET} "
-            f"({', '.join(differ)}): that run's ledger never reached main, or a run "
-            "skipped make state-push. Find that run's ledger and land it, or run "
-            "make state-push from the machine whose ledger is current. Nothing was "
-            "collected or pushed."
-        )
-        return 1
     try:
         open_prs = open_ledger_prs(GITHUB_REPO)
     except (requests.RequestException, ValueError) as error:
@@ -64,7 +54,18 @@ def main() -> int:
             print(f"  #{pr['number']} {pr['head']['ref']}: {pr['html_url']}")
         print("Merge it, then run again. Nothing was collected or pushed.")
         return 1
-    print(f"{GREEN}no open ledger pull request{RESET}")
+    differ = state.ledger_differences()
+    if differ:
+        print(
+            f"{RED}main's ledger differs from the copy the last run kept{RESET} "
+            f"({', '.join(differ)}): that run's ledger never reached main, or something changed the ledger "
+            "without a make state-push after it. The last run's ledger is in "
+            "pipeline/.state/ledger/: put those files in a data/ledger-<date> branch and open "
+            "its pull request, or, if main is the current one, run make state-pull and "
+            "make state-push from the machine that changed it. Nothing was collected or pushed."
+        )
+        return 1
+    print(f"{GREEN}main's ledger is current{RESET}")
     return 0
 
 

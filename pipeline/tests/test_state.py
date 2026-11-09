@@ -40,15 +40,14 @@ def test_a_fresh_clone_gets_back_what_the_last_run_kept(tmp_path, remote):
 
     cloud = tmp_path / "cloud"
     cloud.mkdir()
-    assert state.pull(remote, tmp_path / "cloud-state", cloud) == 4
+    assert state.pull(remote, tmp_path / "cloud-state", cloud) == 5
     folder = cloud / "assets" / "pywrestling_cup_2026-12-05"
     assert (folder / "logo.png").read_bytes() == b"logo"
     assert (folder / "flyer.pdf").read_bytes() == b"%PDF flyer"
     assert (cloud / "flo-details.json").read_text() == '{"a": 1}'
-    # Rebuilt every run, or not the pipeline's to keep.
+    # Rebuilt every run.
     assert not (folder / "flyer-page1.png").exists()
     assert not (folder / "fields.json").exists()
-    assert not (cloud / "events.flowrestling.20261109.json").exists()
 
 
 def test_a_second_run_commits_only_what_changed_and_deletions(tmp_path, remote):
@@ -146,7 +145,7 @@ def test_a_push_without_a_pull_first_is_refused(tmp_path, remote):
         state.push(remote, tmp_path / "cloud-state", empty)
     fresh = tmp_path / "fresh"
     fresh.mkdir()
-    assert state.pull(remote, tmp_path / "fresh-state", fresh) == 4
+    assert state.pull(remote, tmp_path / "fresh-state", fresh) == 5
 
 
 def test_a_push_that_would_drop_most_files_is_refused(tmp_path, remote):
@@ -249,3 +248,97 @@ def test_a_ledger_that_never_reached_main_stops_the_cloud_routine(monkeypatch, c
     monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: ["pushed.json"])
     assert ledger_check.main() == 1
     assert "pushed.json" in capsys.readouterr().out
+
+
+def test_the_newest_collected_file_of_each_source_is_kept(tmp_path, remote):
+    """Publishing to production reads the newest collected file per source;
+    a fresh clone, or a Mac that hasn't collected in weeks, needs the
+    cloud run's."""
+    data = tmp_path / "data"
+    _data(data)
+    (data / "events.flowrestling.20261102.json").write_text("old")
+    (data / "events.pywrestling.20261109.json").write_text("py")
+    state.push(remote, tmp_path / "s1", data)
+
+    fresh = tmp_path / "fresh"
+    fresh.mkdir()
+    state.pull(remote, tmp_path / "s2", fresh)
+    assert (fresh / "events.flowrestling.20261109.json").read_text() == "{}"
+    assert (fresh / "events.pywrestling.20261109.json").read_text() == "py"
+    assert not (fresh / "events.flowrestling.20261102.json").exists()
+
+    # A newer collect replaces it in the private repo; the local older
+    # file stays, as history.
+    (data / "events.pywrestling.20261116.json").write_text("newer")
+    state.pull(remote, tmp_path / "s1", data)
+    state.push(remote, tmp_path / "s1", data)
+    state.pull(remote, tmp_path / "s2", fresh)
+    assert (fresh / "events.pywrestling.20261109.json").read_text() == "py"
+    assert (fresh / "events.pywrestling.20261116.json").read_text() == "newer"
+
+
+def test_a_file_another_run_deleted_is_deleted_on_pull_too(tmp_path, remote):
+    """Otherwise the next push from this machine brings it back."""
+    cloud, mac = tmp_path / "cloud", tmp_path / "mac"
+    folder = _data(cloud)
+    state.push(remote, tmp_path / "sc", cloud)
+    mac.mkdir()
+    state.pull(remote, tmp_path / "sm", mac)
+
+    state.pull(remote, tmp_path / "sc", cloud)
+    (folder / "flyer.pdf").unlink()
+    state.push(remote, tmp_path / "sc", cloud, allow_shrink=True)
+
+    state.pull(remote, tmp_path / "sm", mac)
+    assert not (mac / "assets" / folder.name / "flyer.pdf").exists()
+    assert (mac / "assets" / folder.name / "logo.png").exists()
+
+
+def test_a_run_that_never_pushed_its_state_blocks_the_next(tmp_path, remote):
+    """A run that dies after creating records but before state-push takes
+    its ledger with it; the next run would create those records again."""
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s1", data)
+
+    state.begin_run(remote, tmp_path / "s1")
+    other = tmp_path / "other"
+    other.mkdir()
+    state.pull(remote, tmp_path / "s2", other)
+    with pytest.raises(state.StateError, match="never finished"):
+        state.begin_run(remote, tmp_path / "s2")
+
+    # The run that finishes clears it.
+    state.push(remote, tmp_path / "s1", data)
+    state.pull(remote, tmp_path / "s2", other)
+    state.begin_run(remote, tmp_path / "s2")
+
+
+def test_a_rejected_git_push_says_to_pull_again(tmp_path, remote, monkeypatch):
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s1", data)
+    real = state._git
+
+    def git(*args, cwd=None):
+        if args[0] == "push":
+            raise state.StateError("git push failed: rejected")
+        return real(*args, cwd=cwd)
+
+    monkeypatch.setattr(state, "_git", git)
+    (data / "enrich-cache.json").write_text('{"x": 1}')
+    with pytest.raises(state.StateError, match="state-pull"):
+        state.push(remote, tmp_path / "s1", data)
+
+
+def test_an_open_ledger_pr_is_reported_before_the_ledger_comparison(monkeypatch, capsys):
+    """While last week's pull request is open, main also differs from the
+    kept copy; the open pull request is the reason to report."""
+    import ledger_check
+
+    prs = [{"number": 15, "head": {"ref": "data/ledger-2026-11-09"}, "html_url": "u"}]
+    monkeypatch.setattr(ledger_check.requests, "get", lambda *a, **k: _Response(prs))
+    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: ["pushed.json"])
+    assert ledger_check.main() == 1
+    out = capsys.readouterr().out
+    assert "#15" in out and "never reached main" not in out
