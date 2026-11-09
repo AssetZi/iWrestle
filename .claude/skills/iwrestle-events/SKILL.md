@@ -22,7 +22,11 @@ Decide which one you are in before doing anything.
 - Secrets: `pipeline/.env`. Never print, edit, or move it. Check a key by presence only.
 - Collected files: `data/events.<source>.<YYYYMMDD>.json`. A second collect on the same day overwrites them. "The newest file" of a source is `ls -t data/events.<source>.*.json | head -1`.
 - Ledger: `data/pushed.json` records what is in CloudKit. One push at a time: two pushes share this file and the second is refused.
-- Cloud runs: a cloud session starts from a fresh clone, so the paths above are relative to its `pipeline/` folder instead, and `.env` is replaced by environment variables. Logos, flyers and caches live in the private repo named by `PIPELINE_STATE_REPO`. Begin with `make cloud-start`: it stops if a `data/ledger-*` pull request is still open (main's ledger would be behind CloudKit) and otherwise copies that data into `data/`. If it stops, report that and do nothing else. After step 7, run `make state-push` even if earlier steps failed, and quote its last line. A run on the Mac after the routine has moved to the cloud does the same: `make state-pull` first, `make state-push` last.
+- Cloud runs start from a fresh clone, so the paths above are relative to its `pipeline/` folder. Settings come from environment variables instead of `.env`. The environment's setup script creates `.venv` and writes `secrets/cloudkit-s2s.pem`; if either is missing, stop and report it.
+  - Logos, flyers and caches live in the private repo named by `PIPELINE_STATE_REPO`.
+  - Begin with `make cloud-start`. It copies that data into `data/`, then stops if main's ledger may be behind CloudKit: a `data/ledger-*` pull request is still open, or the last run's ledger never reached main. If it stops, quote its output and do nothing else.
+  - If `make cloud-start` succeeded, run `make state-push` after step 7, even if steps in between failed, and quote its last line. Never run it after a failed `make cloud-start`.
+- After the routine has moved to the cloud, a run on the Mac does the same: `make state-pull` first, and `make state-push` after the ledger commit.
 
 ## Steps
 
@@ -53,7 +57,7 @@ Do this only in the "with Brock" mode, after he has seen step 6's preview and sa
   `rc=0; for s in pywrestling flowrestling trackwrestling; do f=$(ls -t data/events.$s.*.json | head -1); echo "== $s ($f)"; .venv/bin/python bin/push.py $f --production --replace --yes || rc=1; done > <scratchpad>/promote.log 2>&1; exit $rc`
   (Use `rc`, not `status`: the shell is zsh and `status` is read-only there.)
 - If a source reports `removals wanted, cap is N`, nothing was removed for it. Show Brock the list; rerun that source with `--max-removals <N>` only if he says so.
-- Afterwards rerun the dry-run preview to confirm nothing is left, then `git add data/pushed.json && git commit -m "Record production push"` and push the branch as in step 7.
+- Afterwards rerun the dry-run preview to confirm nothing is left, then `git add data/pushed.json && git commit -m "Record production push"` and push the branch as in step 7. If the routine runs in the cloud, `make state-push` after that, so its copy of the ledger matches.
 - Report created, replaced, moved, removed per source, and anything still pending (an event being retired comes down on the second run that sees it).
 
 ## When the network drops

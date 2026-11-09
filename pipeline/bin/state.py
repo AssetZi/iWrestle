@@ -20,9 +20,13 @@ from iwpipe.term import GREEN, RED, RESET
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("pull", "push"))
+    parser.add_argument(
+        "--allow-shrink", action="store_true",
+        help="push even if it deletes more than 10%% of the kept files",
+    )
     args = parser.parse_args()
     try:
-        count = state.pull() if args.action == "pull" else state.push()
+        count = state.pull() if args.action == "pull" else state.push(allow_shrink=args.allow_shrink)
     except state.StateError as error:
         print(f"{RED}{error}{RESET}")
         return 1
