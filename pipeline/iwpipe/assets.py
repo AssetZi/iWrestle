@@ -40,7 +40,11 @@ CROP_MIN_FRACTION = 0.05
 CROP_MAX_FRACTION = 0.90
 CROP_PAD_FRACTION = 0.06
 
+# The app's own Geist comes first, so a logo drawn on the cloud routine's
+# Linux machine matches one drawn on this Mac. The macOS fonts stay as
+# fallbacks for a checkout without the app sources.
 FONT_CANDIDATES = [
+    str(Path(__file__).resolve().parents[2] / "iWrestle" / "Resources" / "Fonts" / "Geist-Medium.ttf"),
     "/System/Library/Fonts/Supplemental/Futura.ttc",
     "/System/Library/Fonts/HelveticaNeue.ttc",
     "/System/Library/Fonts/Helvetica.ttc",

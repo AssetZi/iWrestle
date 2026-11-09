@@ -7,7 +7,7 @@ FILE ?= $(shell ls -t data/events.$(SOURCE).*.json 2>/dev/null | head -1)
 # A collected file older than this is stale; promote refuses it unless FORCE=1.
 STALE_DAYS ?= 10
 
-.PHONY: help venv test enrich-eval exclude token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod promote reconcile routine recheck nightly summary clean clean-assets
+.PHONY: help venv test enrich-eval exclude token-check token-check-cktool collect collect-offline enrich enrich-dry review approve push push-dry push-replace push-prod promote reconcile routine recheck nightly summary clean clean-assets state-pull state-push ledger-check cloud-start
 
 help:
 	@echo "make venv          create .venv and install pinned deps"
@@ -26,6 +26,9 @@ help:
 	@echo "make exclude KEY=\"name or key\" REASON=\"why\"   remove an event for good"
 	@echo "make routine       collect + enrich + approve + push (development) for every source"
 	@echo "make recheck       re-read today's files against the ledger and push, no scraping"
+	@echo "make cloud-start   before a cloud run: stop if a ledger PR is open, then state-pull"
+	@echo "make state-pull    copy logos, flyers and caches from the private data repo into data/"
+	@echo "make state-push    copy them back to the private data repo and commit"
 	@echo "make nightly       the routine, logged to data/logs/ (what launchd runs)"
 	@echo "make summary       the short version of the newest routine log"
 	@echo "make clean-assets  delete rendered logos and flyers (the next push re-sends every event)"
@@ -159,6 +162,18 @@ nightly:
 	$(MAKE) --no-print-directory routine >> $$log 2>&1; code=$$?; \
 	echo "finished $$(date '+%Y-%m-%d %H:%M') exit $$code" >> $$log; \
 	exit $$code
+
+# The cloud routine starts from a fresh clone; see iwpipe/state.py.
+ledger-check:
+	@$(PY) bin/ledger_check.py
+
+state-pull:
+	@$(PY) bin/state.py pull
+
+state-push:
+	@$(PY) bin/state.py push
+
+cloud-start: ledger-check state-pull
 
 summary:
 	@$(PY) bin/summary.py $(LOG)

@@ -22,6 +22,7 @@ Decide which one you are in before doing anything.
 - Secrets: `pipeline/.env`. Never print, edit, or move it. Check a key by presence only.
 - Collected files: `data/events.<source>.<YYYYMMDD>.json`. A second collect on the same day overwrites them. "The newest file" of a source is `ls -t data/events.<source>.*.json | head -1`.
 - Ledger: `data/pushed.json` records what is in CloudKit. One push at a time: two pushes share this file and the second is refused.
+- Cloud runs: a cloud session starts from a fresh clone, so the paths above are relative to its `pipeline/` folder instead, and `.env` is replaced by environment variables. Logos, flyers and caches live in the private repo named by `PIPELINE_STATE_REPO`. Begin with `make cloud-start`: it stops if a `data/ledger-*` pull request is still open (main's ledger would be behind CloudKit) and otherwise copies that data into `data/`. If it stops, report that and do nothing else. After step 7, run `make state-push` even if earlier steps failed, and quote its last line. A run on the Mac after the routine has moved to the cloud does the same: `make state-pull` first, `make state-push` last.
 
 ## Steps
 
