@@ -13,6 +13,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "bin"))
 from iwpipe import state  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def writer(monkeypatch):
+    """Tests act as the cloud routine, the private repo's one writer."""
+    monkeypatch.setenv("PIPELINE_STATE_WRITER", "1")
+
+
 @pytest.fixture
 def remote(tmp_path):
     path = tmp_path / "remote.git"
@@ -193,7 +199,7 @@ def test_the_ledger_copy_shows_a_ledger_that_never_reached_main(tmp_path, remote
     (clone / "pushed.json").write_text("{}")
     state.pull(remote, tmp_path / "s2", clone)
     assert (clone / "pushed.json").read_text() == "{}"
-    assert state.ledger_differences(tmp_path / "s2", clone) == ["pushed.json"]
+    assert state.ledger_differences(tmp_path / "s2", clone) == ["a"]
 
     (clone / "pushed.json").write_text('{\n  "development:a": {"recordName": "R1"}\n}')
     assert state.ledger_differences(tmp_path / "s2", clone) == []
@@ -245,9 +251,9 @@ def test_a_ledger_that_never_reached_main_stops_the_cloud_routine(monkeypatch, c
     import ledger_check
 
     monkeypatch.setattr(ledger_check.requests, "get", lambda *a, **k: _Response([]))
-    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: ["pushed.json"])
+    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: ["pywrestling:cup:2026-12-05"])
     assert ledger_check.main() == 1
-    assert "pushed.json" in capsys.readouterr().out
+    assert "pywrestling:cup:2026-12-05" in capsys.readouterr().out
 
 
 def test_the_newest_collected_file_of_each_source_is_kept(tmp_path, remote):
@@ -338,7 +344,101 @@ def test_an_open_ledger_pr_is_reported_before_the_ledger_comparison(monkeypatch,
 
     prs = [{"number": 15, "head": {"ref": "data/ledger-2026-11-09"}, "html_url": "u"}]
     monkeypatch.setattr(ledger_check.requests, "get", lambda *a, **k: _Response(prs))
-    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: ["pushed.json"])
+    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: ["pywrestling:cup:2026-12-05"])
     assert ledger_check.main() == 1
     out = capsys.readouterr().out
     assert "#15" in out and "never reached main" not in out
+
+
+def test_only_the_cloud_routine_writes_the_private_repo(tmp_path, remote, monkeypatch):
+    """Two writers can each overwrite or unguard the other's run. The Mac
+    seeds the empty repo once, then only pulls."""
+    data = tmp_path / "data"
+    _data(data)
+    monkeypatch.delenv("PIPELINE_STATE_WRITER")
+    assert state.push(remote, tmp_path / "mac", data) > 0
+    state.pull(remote, tmp_path / "mac", data)
+    (data / "enrich-cache.json").write_text('{"older": 1}')
+    with pytest.raises(state.StateError, match="only the cloud routine"):
+        state.push(remote, tmp_path / "mac", data)
+    with pytest.raises(state.StateError, match="only the cloud routine"):
+        state.begin_run(remote, tmp_path / "mac")
+
+
+def test_clearing_a_run_mark_does_not_count_as_a_pull(tmp_path, remote):
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s1", data)
+    state.begin_run(remote, tmp_path / "s1")
+
+    stale = tmp_path / "stale"
+    _data(stale)
+    assert state.clear_run(remote, tmp_path / "s2")
+    with pytest.raises(state.StateError, match="state-pull"):
+        state.push(remote, tmp_path / "s2", stale)
+
+
+def test_a_push_clears_only_the_run_mark_it_set(tmp_path, remote):
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s1", data)
+    state.begin_run(remote, tmp_path / "s1")
+
+    other = tmp_path / "other"
+    other.mkdir()
+    state.pull(remote, tmp_path / "s2", other)
+    state.push(remote, tmp_path / "s2", other)
+    with pytest.raises(state.StateError, match="never finished"):
+        state.begin_run(remote, tmp_path / "s3")
+
+
+def test_a_refused_push_does_not_advise_a_pull(tmp_path, remote):
+    """A pull would overwrite the run's new files with the repo's older ones."""
+    a, b = tmp_path / "a", tmp_path / "b"
+    _data(a)
+    state.push(remote, tmp_path / "sa", a)
+    b.mkdir()
+    state.pull(remote, tmp_path / "sb", b)
+    state.push(remote, tmp_path / "sa", a)
+    (a / "enrich-cache.json").write_text('{"new": 1}')
+    state.push(remote, tmp_path / "sa", a)
+    with pytest.raises(state.StateError) as error:
+        state.push(remote, tmp_path / "sb", b)
+    assert "do not run make state-pull" in str(error.value)
+
+
+def test_a_push_that_drops_a_cache_is_refused(tmp_path, remote):
+    data = tmp_path / "data"
+    for n in range(30):
+        folder = data / "assets" / f"e{n}"
+        folder.mkdir(parents=True)
+        (folder / "logo.png").write_bytes(b"logo")
+    (data / "enrich-cache.json").write_text("{}")
+    state.push(remote, tmp_path / "s", data)
+    (data / "enrich-cache.json").unlink()
+    with pytest.raises(state.StateError, match="enrich-cache.json"):
+        state.push(remote, tmp_path / "s", data)
+
+
+def test_the_ledger_check_looks_only_at_what_the_cloud_writes(tmp_path):
+    """The cloud writes development only. Production entries change when
+    Brock publishes from the Mac, and make exclude there takes entries out
+    of development on purpose; neither means a ledger was lost."""
+    import json
+
+    state_dir, data = tmp_path / "s", tmp_path / "data"
+    (state_dir / "ledger").mkdir(parents=True)
+    data.mkdir()
+    copy = {
+        "development:a": {"recordName": "R1"}, "development:b": {"recordName": "R2"},
+        "development:c": {"recordName": "R3"}, "production:a": {"recordName": "P1"},
+    }
+    (state_dir / "ledger" / "pushed.json").write_text(json.dumps(copy))
+    main = {"development:a": {"recordName": "R1"}, "production:a": {"recordName": "P9"}}
+    (data / "pushed.json").write_text(json.dumps(main))
+    (data / "excluded.json").write_text(json.dumps({"b": {"reason": "duplicate"}}))
+    assert state.ledger_differences(state_dir, data) == ["c"]
+
+    main["development:a"]["recordName"] = "R0"
+    (data / "pushed.json").write_text(json.dumps(main))
+    assert state.ledger_differences(state_dir, data) == ["a", "c"]

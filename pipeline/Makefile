@@ -28,7 +28,7 @@ help:
 	@echo "make recheck       re-read today's files against the ledger and push, no scraping"
 	@echo "make cloud-start   before a cloud run: state-pull, stop if main's ledger is behind, mark the run started"
 	@echo "make state-pull    copy logos, flyers and caches from the private data repo into data/"
-	@echo "make state-push    copy them back to the private data repo and commit"
+	@echo "make state-push    the cloud routine only: copy them back to the private data repo and commit"
 	@echo "make nightly       the routine, logged to data/logs/ (what launchd runs)"
 	@echo "make summary       the short version of the newest routine log"
 	@echo "make clean-assets  delete rendered logos and flyers (the next push re-sends every event)"
@@ -171,10 +171,11 @@ state-pull:
 	@$(PY) bin/state.py pull
 
 state-push:
-	@$(PY) bin/state.py push
+	@$(PY) bin/state.py push $(ARGS)
 
-cloud-start: state-pull ledger-check
-	@$(PY) bin/state.py begin
+# One recipe, so the steps run in order even under make -j.
+cloud-start:
+	@$(PY) bin/state.py pull && $(PY) bin/ledger_check.py && $(PY) bin/state.py begin
 
 summary:
 	@$(PY) bin/summary.py $(LOG)

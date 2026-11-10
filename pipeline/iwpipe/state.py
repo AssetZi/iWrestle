@@ -14,13 +14,19 @@ run this week's collect has none or an old one.
 flyer-page1.png and fields.json are rebuilt on every run and not kept.
 geocache.json is tracked in this repo, so it is not kept there too.
 
-begin_run marks a run as started in the private repo, and push clears the
-mark. A mark still there at the next begin_run means a run died after it
-may have created records but before its ledger was kept anywhere.
+Only the cloud routine writes the private repo (PIPELINE_STATE_WRITER=1
+in its environment). The Mac seeds the empty repo once and after that only
+pulls, to publish to production from this week's files. With one writer,
+no machine can overwrite another's newer files or clear its run mark.
 
-`push` also keeps a copy of the ledger files under ledger/. They are never
-copied back into data/: main's ledger is the one the pipeline uses. The
-copy only lets a cloud run see that last run's ledger never reached main
+begin_run marks a run as started in the private repo, and that run's push
+clears the mark. A mark still there at the next begin_run means a run died
+after it may have created development records but before its ledger was
+kept anywhere.
+
+`push` also keeps a copy of pushed.json under ledger/. It is never copied
+back into data/: main's ledger is the one the pipeline uses. The copy only
+lets a cloud run see that the last run's ledger never reached main
 (ledger_differences), before it pushes those events a second time.
 """
 from __future__ import annotations
@@ -43,13 +49,19 @@ BRANCH = "main"
 
 DATA_FILES = ("flo-details.json", "enrich-cache.json")
 ASSET_FILES = ("logo.png", "flyer.pdf", "source-flyer.pdf", "banner.jpg")
-LEDGER_FILES = ("pushed.json", "excluded.json", "renamed.json")
+LEDGER_FILE = "pushed.json"
 EVENTS_FILE = re.compile(r"events\.([a-z]+)\.(\d{8})\.json")
 RUNNING = "RUNNING"
 
-# A push may drop at most this share of the files the private repo holds
-# (events past their date do leave), unless allow_shrink is given.
+# A push may drop at most this share of the kept files (a flyer that names
+# a different event is deleted on purpose), and no cache, unless
+# allow_shrink is given.
 MAX_SHRINK = 0.10
+WRITER_ENV = "PIPELINE_STATE_WRITER"
+DO_NOT_PULL = (
+    "Stop and report this; do not run make state-pull, which would overwrite "
+    "this run's new files with older ones."
+)
 
 
 class StateError(RuntimeError):
@@ -81,6 +93,21 @@ def _git(*args: str, cwd: Path | None = None) -> str:
     if result.returncode != 0:
         raise StateError(f"git {args[0]} failed: {result.stderr.strip()[-300:]}")
     return result.stdout
+
+
+def _require_writer(head: str | None) -> None:
+    """Refuse to write unless this is the cloud routine, or the repo is
+    still empty (the one seeding push from the Mac)."""
+    if head and os.getenv(WRITER_ENV) != "1":
+        raise StateError(
+            "only the cloud routine writes the private repo; this machine only pulls "
+            f"({WRITER_ENV}=1 is set in the cloud environment)"
+        )
+
+
+def _run_id(state_dir: Path) -> Path:
+    """The run mark this clone wrote, if it began the run."""
+    return state_dir / ".git" / "iwrestle-run"
 
 
 def _marker(state_dir: Path) -> Path:
@@ -177,9 +204,7 @@ def begin_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> None:
     """Mark a run as started, after pull. Refuses if the last one never
     reached push."""
     head = _checkout(repo, state_dir)
-    marker = _marker(state_dir)
-    if head and (not marker.exists() or marker.read_text().strip() != head):
-        raise StateError("run make state-pull first")
+    _require_writer(head)
     running = state_dir / RUNNING
     if running.exists():
         raise StateError(
@@ -189,9 +214,14 @@ def begin_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> None:
             "the ledger, and the ones it doesn't know). When that is sorted out, clear the mark "
             "with .venv/bin/python bin/state.py clear-run, then start again."
         )
+    marker = _marker(state_dir)
+    if head and (not marker.exists() or marker.read_text().strip() != head):
+        raise StateError("run make state-pull first")
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    running.write_text(f"{stamp} on {socket.gethostname()}\n")
+    mark = f"{stamp} on {socket.gethostname()}"
+    running.write_text(mark + "\n")
     _commit_and_push(state_dir, f"Run started {stamp}")
+    _run_id(state_dir).write_text(mark + "\n")
 
 
 def clear_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> bool:
@@ -201,11 +231,12 @@ def clear_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> bool:
     if not running.exists():
         return False
     running.unlink()
-    _commit_and_push(state_dir, "Clear the mark of a run that never finished")
+    # Not a sync: this clone has not pulled the files, so it may not push them.
+    _commit_and_push(state_dir, "Clear the mark of a run that never finished", synced=False)
     return True
 
 
-def _commit_and_push(state_dir: Path, message: str) -> int:
+def _commit_and_push(state_dir: Path, message: str, *, synced: bool = True) -> int:
     _git("add", "--all", cwd=state_dir)
     changed = [line for line in _git("status", "--porcelain", cwd=state_dir).splitlines() if line]
     if not changed:
@@ -217,11 +248,9 @@ def _commit_and_push(state_dir: Path, message: str) -> int:
     try:
         _git("push", "--quiet", "origin", f"HEAD:refs/heads/{BRANCH}", cwd=state_dir)
     except StateError as error:
-        raise StateError(
-            f"{error}. Another machine pushed first; nothing was kept from this one. "
-            "Run make state-pull, then push again."
-        ) from error
-    _marker(state_dir).write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
+        raise StateError(f"{error}. Something else wrote the private repo during this run. {DO_NOT_PULL}") from error
+    if synced:
+        _marker(state_dir).write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
     return len(changed)
 
 
@@ -231,31 +260,38 @@ def push(
 ) -> int:
     """Mirror data/'s kept files into the private repo and commit.
 
-    A kept file deleted locally is deleted there too, so a push is refused
-    unless this clone pulled (or pushed) the private repo's current commit,
-    and when it would drop more than MAX_SHRINK of its files. Returns how
-    many files the commit changed (0: nothing to commit)."""
+    Only the cloud routine may push, after pulling the repo's current
+    commit. A kept file deleted locally is deleted there too, so a push is
+    also refused when it would drop more than MAX_SHRINK of the files, a
+    cache, or a source's only collected file. Returns how many files the
+    commit changed (0: nothing to commit)."""
     head = _checkout(repo, state_dir)
+    _require_writer(head)
     marker = _marker(state_dir)
     synced = marker.read_text().strip() if marker.exists() else None
     if head and synced != head:
         raise StateError(
-            "the private repo has changed since this machine's last state pull "
-            "(or it never pulled); run make state-pull first, so a push cannot "
-            "delete files from another machine's run"
+            "the private repo has changed since this run's state pull, or it never "
+            f"pulled, so this push could delete or overwrite newer files. {DO_NOT_PULL}"
         )
 
     local = _files(data_dir)
     stored = state_dir / "data"
     held = _files(stored)
     dropped = held - local
-    # A collected file replaced by a newer one is expected every week.
-    lost = [path for path in dropped if not EVENTS_FILE.fullmatch(path.name)]
-    if held and len(lost) > MAX_SHRINK * len(held) and not allow_shrink:
+    sources = {EVENTS_FILE.fullmatch(p.name).group(1) for p in local if EVENTS_FILE.fullmatch(p.name)}
+    # A collected file replaced by a newer one of its source is expected.
+    lost = sorted(
+        str(path) for path in dropped
+        if not (EVENTS_FILE.fullmatch(path.name) and EVENTS_FILE.fullmatch(path.name).group(1) in sources)
+    )
+    caches = [name for name in lost if name in DATA_FILES or EVENTS_FILE.fullmatch(name)]
+    if not allow_shrink and (caches or (held and len(lost) > MAX_SHRINK * len(held))):
+        what = ", ".join(caches) if caches else f"{len(lost)} of {len(held)} kept files"
         raise StateError(
-            f"this push would delete {len(lost)} of {len(held)} kept files from the "
-            "private repo. data/ looks incomplete; if that many really went, push "
-            "again with --allow-shrink"
+            f"this push would delete {what} from the private repo, so data/ looks "
+            "incomplete. If that is really meant, run "
+            ".venv/bin/python bin/state.py push --allow-shrink"
         )
     for path in dropped:
         (stored / path).unlink()
@@ -263,29 +299,53 @@ def push(
         if folder != stored and not any(folder.iterdir()):
             folder.rmdir()
     _copy(local, data_dir, stored)
-    ledger = {Path(name) for name in LEDGER_FILES if (data_dir / name).is_file()}
-    _copy(ledger, data_dir, state_dir / "ledger")
-    (state_dir / RUNNING).unlink(missing_ok=True)
+    if (data_dir / LEDGER_FILE).is_file():
+        _copy({Path(LEDGER_FILE)}, data_dir, state_dir / "ledger")
+    # Clear the run mark only if this clone set it: a push from anywhere
+    # else must not hide a run that died.
+    running, mine = state_dir / RUNNING, _run_id(state_dir)
+    if running.exists() and mine.exists() and running.read_text() == mine.read_text():
+        running.unlink()
 
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    return _commit_and_push(state_dir, f"State after the run of {stamp}")
+    changed = _commit_and_push(state_dir, f"State after the run of {stamp}")
+    if not running.exists():
+        mine.unlink(missing_ok=True)
+    return changed
 
 
 def ledger_differences(state_dir: Path = STATE_DIR, data_dir: Path = DATA_DIR) -> list[str]:
-    """Ledger files whose copy from the last state push differs from data/.
+    """Development events the last run recorded that main's ledger lacks.
 
-    Run after pull on a fresh clone of main: a difference means the last
-    run's ledger did not reach main (its pull request failed, or a push
-    was never recorded), and this run would push those events again."""
-    differ = []
-    for name in LEDGER_FILES:
-        kept, local = state_dir / "ledger" / name, data_dir / name
-        if not kept.exists():
+    Run after pull on a fresh clone of main. The cloud writes development
+    only, so only those entries are compared. An entry missing from main,
+    or with another record name, means the last run's ledger did not reach
+    main, and this run would push those events again. An event excluded
+    on main since is not counted: make exclude takes it out on purpose.
+    Returns their source keys, sorted."""
+    kept_path = state_dir / "ledger" / LEDGER_FILE
+    if not kept_path.exists():
+        return []
+    prefix = "development:"
+    try:
+        kept = json.loads(kept_path.read_text())
+    except ValueError:
+        return []
+    try:
+        main = json.loads((data_dir / LEDGER_FILE).read_text())
+    except (OSError, ValueError):
+        main = {}
+    try:
+        excluded = json.loads((data_dir / "excluded.json").read_text())
+    except (OSError, ValueError):
+        excluded = {}
+    lost = []
+    for key, entry in kept.items():
+        if not key.startswith(prefix):
             continue
-        try:
-            same = local.exists() and json.loads(kept.read_text()) == json.loads(local.read_text())
-        except ValueError:
-            same = False
-        if not same:
-            differ.append(name)
-    return differ
+        source_key = key[len(prefix):]
+        if source_key in excluded:
+            continue
+        if main.get(key, {}).get("recordName") != entry.get("recordName"):
+            lost.append(source_key)
+    return sorted(lost)

@@ -3,7 +3,7 @@
 
     python bin/state.py pull       # before a run on a fresh clone
     python bin/state.py begin      # mark a cloud run as started (make cloud-start)
-    python bin/state.py push       # after the run, to keep it for next time
+    python bin/state.py push       # after the cloud run, to keep it for next time
     python bin/state.py clear-run  # drop the mark of a run that never pushed
 
 See iwpipe/state.py for what is kept and why.
