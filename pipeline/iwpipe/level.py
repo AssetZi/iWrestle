@@ -14,6 +14,9 @@ COLLEGE_NAME = re.compile(r"\b(college open|collegiate|ncaa|naia|njcaa|universit
 OPEN_FAMILY = re.compile(r"\b(open|invitational|invite|duals?|classic|dual meet)\b", re.I)
 YOUTH_MARKER = re.compile(
     r"\b(youth|kids?|elementary|k-?\d+|novice|bantam|tots?|pee\s*wee|middle school|"
+    # Some grade-level events meet at a college gym ("OAC Grade School
+    # State Duals" at Heidelberg University).
+    r"grade[- ]?school|grammar school|primary school|\d+(?:st|nd|rd|th)[- ]grade|grades? \d+|"
     r"junior high|jr\.? high|high school|hs|jv|varsity|scholastic|interscholastic|takedown|girls?|"
     # State high school associations (NCHSAA, GHSA), youth associations
     # (CVYWA), and Tournament of Champions qualifiers are youth wrestling

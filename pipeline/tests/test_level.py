@@ -78,3 +78,19 @@ def test_school_and_youth_associations_are_youth_even_at_a_college():
     # Still college and adult.
     assert classify_level("Millikin Invite", "Millikin University") == "college"
     assert classify_level("Falcon Open Men- Amateur", "Park City Arena") == "adult"
+
+
+def test_grade_school_events_at_a_college_are_youth():
+    """OAC Grade School State Duals met at Heidelberg University and was
+    skipped as college; Brock let it back in on 2026-11-09."""
+    assert classify_level("OAC Grade School State Duals 2025-26", "Heidelberg University") is None
+    assert classify_level("St. Joe Grammar School Duals", "Saint Joseph's University") is None
+    assert classify_level("Primary School Open", "Rowan College") is None
+    assert classify_level("5th Grade Invitational", "Lycoming College") is None
+    assert classify_level("Grades 3-6 Duals", "Lock Haven University") is None
+    assert classify_level("Gradeschool Open", "Heidelberg University") is None
+    assert classify_level("Grade-School Duals", "Heidelberg University") is None
+    assert classify_level("8th-Grade Invitational", "Lycoming College") is None
+    # A college open at a college stays college.
+    assert classify_level("Heidelberg Open", "Heidelberg University") == "college"
+    assert classify_level("OAC Duals", "Heidelberg University") == "college"
