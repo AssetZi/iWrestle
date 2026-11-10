@@ -239,6 +239,11 @@
     "name": "2nd An Sierra Pacific Girls Invite",
     "reason": "invitational"
   },
+  "flowrestling:48th-annual-dover-youth-wrestling:2026-12-06": {
+    "at": "2026-11-09T15:22:30+00:00",
+    "name": "48th Annual Dover Youth Wrestling",
+    "reason": "same-date duplicate of pywrestling:dover-youth-wrestling-tournament:2026-12-06"
+  },
   "flowrestling:5th-annual-coolidge-girls-invitational:2027-01-09": {
     "at": "2026-09-22T11:19:29+00:00",
     "name": "5th Annual Coolidge Girls Invitational",
@@ -373,6 +378,11 @@
     "at": "2026-10-12T16:46:24+00:00",
     "name": "Ardrey Kell High School @ Mallard Creek High School",
     "reason": "same-date duplicate of flowrestling:ardrey-kell-high-school-mallard-creek-high-school:2027-01-28"
+  },
+  "flowrestling:arkansas-state-tournament:2027-02-12:2QOX86RyoBy3LoZT": {
+    "at": "2026-11-09T15:22:31+00:00",
+    "name": "Arkansas State Tournament",
+    "reason": "same-date duplicate of flowrestling:arkansas-state-tournament:2027-02-12"
   },
   "flowrestling:arlington-brewster:2027-01-14:2sMuDoQMdP70nmZr": {
     "at": "2026-10-12T16:46:18+00:00",
@@ -674,6 +684,11 @@
     "name": "Clarkstown South @ Arlington",
     "reason": "same-date duplicate of flowrestling:clarkstown-south-arlington:2027-01-05"
   },
+  "flowrestling:cliff-keen-independence-invitational:2026-12-04:2p7hrUujHf7zD70Y": {
+    "at": "2026-11-09T15:29:15+00:00",
+    "name": "Cliff Keen Independence Invitational",
+    "reason": "invitational"
+  },
   "flowrestling:coal-cracker-open-2026:2026-12-19": {
     "at": "2026-11-02T21:18:40+00:00",
     "name": "Coal Cracker Open 2026",
@@ -758,6 +773,11 @@
     "at": "2026-10-26T15:44:33+00:00",
     "name": "Delano @ El Diamante",
     "reason": "same-date duplicate of flowrestling:delano-el-diamante:2026-12-02"
+  },
+  "flowrestling:district-5-middle-school-4-a-districts:2026-11-21:2y8L2SsImfYXNBLb": {
+    "at": "2026-11-09T15:29:16+00:00",
+    "name": "District 5 Middle school 4 A districts",
+    "reason": "same-date duplicate of flowrestling:district-5-middle-school-4-a-districts:2026-11-21"
   },
   "flowrestling:douglas-byrd-high-school-e-e-smith-high-school:2027-01-07:2IAYZDB8NDd9eGyN": {
     "at": "2026-10-26T15:44:44+00:00",
@@ -1013,6 +1033,11 @@
     "at": "2026-10-12T16:46:26+00:00",
     "name": "GHSA Division 4 Area 1",
     "reason": "same-date duplicate of flowrestling:ghsa-division-4-area-1:2027-01-29"
+  },
+  "flowrestling:girl-on-fire:2026-11-21": {
+    "at": "2026-11-09T15:29:17+00:00",
+    "name": "Girl on Fire",
+    "reason": "same-date duplicate of flowrestling:girl-on-fire:2026-11-21:2qNxBh94v8h2l0gA"
   },
   "flowrestling:girls-warriors-invitational:2027-01-16": {
     "at": "2026-09-22T11:19:55+00:00",
@@ -1288,6 +1313,11 @@
     "at": "2026-10-26T15:35:56+00:00",
     "name": "Lakeland-Panas @ Ossining",
     "reason": "same-date duplicate of flowrestling:lakeland-panas-ossining:2027-01-12"
+  },
+  "flowrestling:lancer-open:2026-11-21:2avmQ8ryovMaHLL0": {
+    "at": "2026-11-09T15:22:31+00:00",
+    "name": "Lancer Open",
+    "reason": "same-date duplicate of flowrestling:lancer-open:2026-11-21"
   },
   "flowrestling:las-plumas-live-oak:2027-01-28:2tJXcFToHC3kRMMe": {
     "at": "2026-10-26T15:35:59+00:00",
@@ -1764,6 +1794,11 @@
     "name": "Pacific (OR) @ Linfield",
     "reason": "college event"
   },
+  "flowrestling:palmer-twp-holiday-showdown-open-novice:2026-12-27": {
+    "at": "2026-11-09T15:22:29+00:00",
+    "name": "Palmer Twp Holiday Showdown Open/Novice",
+    "reason": "same-date duplicate of pywrestling:palmer-holiday-showdown:2026-12-27"
+  },
   "flowrestling:palmyra-area-hs-central-dauphin-east-hs:2026-12-17:2oooj3UsCh0dn7kt": {
     "at": "2026-10-26T15:35:05+00:00",
     "name": "Palmyra Area Hs @ Central Dauphin East Hs",
@@ -2138,6 +2173,11 @@
     "at": "2026-10-26T15:45:18+00:00",
     "name": "Tulare Western @ Tulare Union",
     "reason": "same-date duplicate of flowrestling:tulare-western-tulare-union:2027-01-26"
+  },
+  "flowrestling:tyrone-youth-winter-classic:2027-01-16": {
+    "at": "2026-11-09T15:22:26+00:00",
+    "name": "Tyrone Youth Winter Classic",
+    "reason": "same-date duplicate of pywrestling:tyrone-golden-eagle-classic:2027-01-16"
   },
   "flowrestling:uhsaa-5a-boys-division-a:2027-01-30:2qvGE3859IWcncBz": {
     "at": "2026-09-22T11:20:23+00:00",
@@ -2634,6 +2674,21 @@
     "name": "Black Hills Nationals Girls Glam Slam",
     "reason": "same-date duplicate of flowrestling:black-hills-nationals-girls-glam-slam:2026-10-17"
   },
+  "trackwrestling:bw-invite:2026-11-21": {
+    "at": "2026-11-09T15:22:26+00:00",
+    "name": "BW Invite",
+    "reason": "invitational"
+  },
+  "trackwrestling:cliff-keen-independence-girls-invite:2026-11-20": {
+    "at": "2026-11-09T15:22:25+00:00",
+    "name": "Cliff Keen Independence Girls Invite",
+    "reason": "invitational"
+  },
+  "trackwrestling:cliff-keen-independence-invitational:2026-12-04": {
+    "at": "2026-11-09T15:22:26+00:00",
+    "name": "Cliff Keen Independence Invitational",
+    "reason": "invitational"
+  },
   "trackwrestling:cvywa-south-valley-asso-duals-27:2027-01-23": {
     "at": "2026-09-22T11:20:56+00:00",
     "name": "CVYWA South Valley Asso Duals 27",
@@ -2684,6 +2739,11 @@
     "name": "Falcon Duals",
     "reason": "same-date duplicate of flowrestling:falcon-woman-s-individual:2027-01-16 (Brock 2026-10-05)"
   },
+  "trackwrestling:girl-on-fire:2026-11-21": {
+    "at": "2026-11-09T15:22:32+00:00",
+    "name": "Girl on Fire",
+    "reason": "same-date duplicate of flowrestling:girl-on-fire:2026-11-21:2qNxBh94v8h2l0gA"
+  },
   "trackwrestling:girls-warriors-invitational:2027-01-16": {
     "at": "2026-09-22T11:20:12+00:00",
     "name": "Girls Warriors Invitational",
@@ -2704,6 +2764,11 @@
     "name": "HMS Triangular: Augusta and Wellington",
     "reason": "same-date duplicate of flowrestling:hms-triangular-augusta-and-wellington:2026-12-01"
   },
+  "trackwrestling:independence-girls-jv-tournament:2026-11-16": {
+    "at": "2026-11-09T15:22:31+00:00",
+    "name": "Independence Girls JV Tournament",
+    "reason": "same-date duplicate of flowrestling:independence-girls-jv-tournament:2026-11-16"
+  },
   "trackwrestling:indigo-rain-memorial-2nd-annual-event:2027-01-09": {
     "at": "2026-09-22T11:20:56+00:00",
     "name": "Indigo Rain Memorial 2nd Annual Event",
@@ -2718,6 +2783,11 @@
     "at": "2026-09-22T11:11:30+00:00",
     "name": "JCU Duals (Women)",
     "reason": "college event"
+  },
+  "trackwrestling:jhg-gulf-coast-clash-presented-by-msa-2026:2026-11-20": {
+    "at": "2026-11-09T15:22:32+00:00",
+    "name": "JHG Gulf Coast Clash presented by MSA 2026",
+    "reason": "same-date duplicate of flowrestling:2026-gulf-coast-clash-presented-by-msa:2026-11-20"
   },
   "trackwrestling:king-queen-of-the-castle:2026-12-22": {
     "at": "2026-10-05T16:04:04+00:00",
