@@ -94,6 +94,8 @@ def test_twins_get_their_own_asset_folders(tmp_path, monkeypatch):
     """Two listings with one name and day used to share a folder, so one
     twin's flyer named the other."""
     monkeypatch.setattr("iwpipe.assets.ASSET_DIR", tmp_path / "assets")
+    # validate() needs a contact email; pin it so the test does not read pipeline/.env.
+    monkeypatch.setattr(collect_cli, "DEFAULT_CONTACT_EMAIL", "me@club.org")
     a = collect_cli.normalize(raw(floId="2S9X"), None, source="flowrestling", today=TODAY, skip_geocode=True)
     b = collect_cli.normalize(raw(floId="2gPX"), None, source="flowrestling", today=TODAY, skip_geocode=True)
     a["location"] = b["location"] = {"latitude": 41.2, "longitude": -79.4}
