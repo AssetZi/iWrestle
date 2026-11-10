@@ -58,6 +58,9 @@ Decide which one you are in before doing anything.
 
 Do this only in the "with Brock" mode, after he has seen step 6's preview and said to publish. Once the routine runs in the cloud, publish only from the Mac's primary checkout, and first bring it up to date: merge the week's ledger pull request, `git checkout main && git pull --ff-only`, then `make state-pull` for this week's collected files and assets.
 
+- Not while a cloud run is going: if `.state/RUNNING` exists after the pull, wait for that run to finish. Two ledger pull requests from the same base would conflict over `pushed.json`.
+- Ledger pull requests are merged, never closed unmerged. A closed one leaves main's ledger behind CloudKit, and the next run would push its events again. If one must be dropped, say so to Brock and run `make reconcile` first.
+
 - `make promote` waits for a typed `y` per source, so it only works in his terminal. To run it for him, push each source in turn with the confirmation pre-answered, one at a time, in the background:
   `rc=0; for s in pywrestling flowrestling trackwrestling; do f=$(ls -t data/events.$s.*.json | head -1); echo "== $s ($f)"; .venv/bin/python bin/push.py $f --production --replace --yes || rc=1; done > <scratchpad>/promote.log 2>&1; exit $rc`
   (Use `rc`, not `status`: the shell is zsh and `status` is read-only there.)

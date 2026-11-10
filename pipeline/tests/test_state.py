@@ -485,7 +485,7 @@ def test_a_run_whose_ledger_never_reached_github_keeps_its_mark(tmp_path, remote
     state.pull(remote, tmp_path / "s2", other)
     assert (other / "enrich-cache.json").read_text() == '{"new": 1}'
     assert (tmp_path / "s2" / "ledger" / "pushed.json").read_text() == '{"development:a": {"recordName": "R1"}}'
-    with pytest.raises(state.StateError, match="ledger/pushed.json"):
+    with pytest.raises(state.StateError, match=r"\(pushed.json\) are saved under ledger/"):
         state.begin_run(remote, tmp_path / "s2")
 
 
@@ -684,3 +684,51 @@ def test_a_pull_keeps_a_collected_file_edited_here(tmp_path, remote):
     assert (mac / "events.flowrestling.20261109.json").read_text() == edited
     assert (mac / "enrich-cache.json").read_text() == '{"new": 1}'
     assert state.kept_local == ["events.flowrestling.20261109.json"]
+
+
+def test_a_retry_after_a_push_github_took_is_not_a_conflict(tmp_path, remote, monkeypatch):
+    """The reply and the check after it were lost; the retry finds the
+    run's own commit on GitHub and carries on."""
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s", data)
+    real = state._git
+
+    def git(*args, cwd=None):
+        out = real(*args, cwd=cwd)
+        if args[0] == "push" or (args[0] == "fetch" and git.pushed):
+            git.pushed = True
+            raise state.StateError(f"git {args[0]} failed: connection reset")
+        return out
+
+    git.pushed = False
+    monkeypatch.setattr(state, "_git", git)
+    (data / "enrich-cache.json").write_text('{"x": 1}')
+    with pytest.raises(state.StateError, match="retry make state-push"):
+        state.push(remote, tmp_path / "s", data)
+    monkeypatch.setattr(state, "_git", real)
+    assert state.push(remote, tmp_path / "s", data) == 0
+
+
+def test_a_stranded_run_saves_every_ledger_file(tmp_path, remote, monkeypatch):
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s", data)
+    state.pull(remote, tmp_path / "s", data)
+    state.begin_run(remote, tmp_path / "s")
+    (data / "excluded.json").write_text('{"pywrestling:x:2026-12-05": {"reason": "duplicate"}}')
+    monkeypatch.setattr(state, "ledger_landed", lambda data_dir: False)
+    with pytest.raises(state.StateError, match="not on GitHub"):
+        state.push(remote, tmp_path / "s", data)
+    saved = tmp_path / "s" / "ledger"
+    assert (saved / "excluded.json").exists()
+    assert not (saved / "pushed.json").exists()
+
+
+def test_ssh_remotes_without_a_user_are_checked_too(monkeypatch):
+    seen = []
+    monkeypatch.setattr(state.github, "token", lambda: "tok")
+    monkeypatch.setattr(state.requests, "get", lambda url, **k: seen.append(url) or _Response({"private": True}))
+    state._require_private("github.com:AssetZi/iwrestle-pipeline-data.git")
+    state._require_private("gh-alias:AssetZi/iwrestle-pipeline-data")
+    assert seen == ["https://api.github.com/repos/AssetZi/iwrestle-pipeline-data"] * 2

@@ -24,12 +24,13 @@ clears the mark only once its pushed.json is on GitHub, on main or a
 data/ledger-* branch (ledger_landed). A mark still there at the next
 begin_run means a run created development records whose ledger never left
 its session, and this run would create them again. When the session got as
-far as pushing its state, its pushed.json is saved at ledger/pushed.json in
-the private repo, to recover from.
+far as pushing its state, its ledger files are saved under ledger/ in the
+private repo, to recover from.
 """
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import os
 import re
@@ -38,8 +39,6 @@ import socket
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
-
-import hashlib
 
 import requests
 
@@ -117,9 +116,12 @@ def _repo_slug(repo: str) -> str | None:
 
     Read from the end of the path, so a proxy URL such as
     http://127.0.0.1:8080/git/owner/name works too."""
-    if repo.startswith("file://") or ("://" not in repo and not re.match(r"^[\w.-]+@[\w.-]+:", repo)):
+    # Only a local path is skipped. Anything else, including an SSH remote
+    # written without a user (github.com:owner/name) or an SSH alias, is
+    # checked: a skipped check could send the caches to a public repo.
+    if repo.startswith(("file://", "/", ".", "~")) or Path(repo).exists():
         return None
-    path = repo.split("://", 1)[-1].split(":", 1)[-1] if "://" not in repo else repo.split("://", 1)[1]
+    path = repo.split("://", 1)[1] if "://" in repo else repo.split(":", 1)[-1]
     parts = [part for part in path.rstrip("/").removesuffix(".git").split("/") if part]
     if len(parts) < 2:
         raise StateError(f"cannot tell which GitHub repo {repo!r} is; nothing was pushed")
@@ -390,19 +392,20 @@ def begin_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> None:
     _require_writer(head)
     running = state_dir / RUNNING
     if running.exists():
-        saved = state_dir / "ledger" / LEDGER_FILE
+        saved = sorted(path.name for path in (state_dir / "ledger").glob("*.json"))
         where = (
-            "Its pushed.json is saved at ledger/pushed.json in the private repo "
-            "(pipeline/.state/ledger/ here): put it on a data/ledger-<date> branch cut from "
-            "origin/main and open its pull request."
-            if saved.exists() else
+            f"Its ledger files ({', '.join(saved)}) are saved under ledger/ in the private "
+            "repo (pipeline/.state/ledger/ here): put them on a data/ledger-<date> branch "
+            "cut from origin/main and open its pull request."
+            if saved else
             "It never saved its state, so its pushed.json is lost: make reconcile lists the "
             "development records the ledger doesn't know."
         )
         raise StateError(
             f"the run that started {running.read_text().strip()} never got its ledger onto "
             "GitHub. If it pushed events to development, this run would create them again. "
-            f"{where} If it stopped before pushing, there is nothing to recover. Then clear "
+            f"{where} If it stopped before pushing anything, or its ledger pull request was "
+            "merged after all, there is nothing to recover. Then clear "
             "the mark with .venv/bin/python bin/state.py clear-run and start again."
         )
     marker = _marker(state_dir)
@@ -457,6 +460,8 @@ def _commit_and_push(
         "-c", "user.name=iWrestle pipeline", "-c", "user.email=pipeline@users.noreply.github.com",
         "commit", "--quiet", "-m", message, cwd=state_dir,
     )
+    pending = _pending(state_dir)
+    pending.write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
     try:
         _git("push", "--quiet", "origin", f"HEAD:refs/heads/{BRANCH}", cwd=state_dir)
     except StateError as error:
@@ -470,7 +475,14 @@ def _commit_and_push(
             raise StateError(f"{error}. Nothing else wrote the repo, so {retry}.") from error
     if synced:
         _marker(state_dir).write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
+    pending.unlink(missing_ok=True)
     return len(changed)
+
+
+def _pending(state_dir: Path) -> Path:
+    """The commit this clone last tried to push (inside .git). If GitHub
+    took it but the reply was lost, the next push finds it there."""
+    return state_dir / ".git" / "iwrestle-pushing"
 
 
 def _push_arrived(state_dir: Path) -> bool:
@@ -501,6 +513,12 @@ def push(
     _require_writer(head)
     marker = _marker(state_dir)
     synced = marker.read_text().strip() if marker.exists() else None
+    pending = _pending(state_dir)
+    if head and synced != head and pending.exists() and pending.read_text().strip() == head:
+        # This clone's own last push, which GitHub took without saying so.
+        marker.write_text(head + "\n")
+        pending.unlink()
+        synced = head
     if head and synced != head:
         raise StateError(
             "the private repo has changed since this run's state pull, or it never "
@@ -534,23 +552,27 @@ def push(
 
     # This run's mark comes off only once its ledger is on GitHub. A push
     # never touches a mark another clone set.
-    running, mine, saved = state_dir / RUNNING, _run_id(state_dir), state_dir / "ledger" / LEDGER_FILE
+    running, mine, saved = state_dir / RUNNING, _run_id(state_dir), state_dir / "ledger"
     stranded = False
     if _active_run(state_dir):
+        shutil.rmtree(saved, ignore_errors=True)
         if ledger_landed(data_dir):
             running.unlink()
-            saved.unlink(missing_ok=True)
         else:
+            # Every ledger file the run has, for recovery: exclusions and
+            # renames would be lost too, not only the pushes.
             stranded = True
-            saved.parent.mkdir(exist_ok=True)
-            shutil.copyfile(data_dir / LEDGER_FILE, saved)
+            saved.mkdir()
+            for name in LEDGER_FILES:
+                if (data_dir / name).exists():
+                    shutil.copyfile(data_dir / name, saved / name)
 
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     changed = _commit_and_push(state_dir, f"State after the run of {stamp}")
     if stranded:
         raise StateError(
-            "this run's files are saved, but its pushed.json is not on GitHub (no "
-            "data/ledger-* branch or main has it), so the run mark stays and the next run "
+            "this run's files are saved, but its ledger is not on GitHub (neither main nor "
+            "a data/ledger-* branch with an open pull request has it), so the run mark stays and the next run "
             "will stop. Commit and push the ledger as in step 7, then run make state-push "
             "again to clear the mark."
         )
