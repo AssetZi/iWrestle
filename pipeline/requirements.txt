@@ -6,3 +6,5 @@ reportlab==4.4.3
 python-dotenv==1.1.0
 pytest==8.4.1
 anthropic==1.4.0
+# Renders flyer pages for logo crops; pinned so the Mac and the cloud use one version.
+pypdfium2==5.13.0

@@ -134,3 +134,14 @@ def test_a_dropped_download_is_skipped_not_raised(monkeypatch):
 
     monkeypatch.setattr(assets, "get", lambda session, url, **kw: Cut())
     assert assets._download(None, "https://example.com/flyer.pdf", 10_000_000) is None
+
+
+def test_monogram_logo_uses_the_bundled_geist():
+    """The cloud routine runs on Linux, where the macOS font paths do not
+    exist and PIL would fall back to its default font."""
+    from pathlib import Path
+
+    from iwpipe import assets
+
+    assert Path(assets.FONT_CANDIDATES[0]).exists()
+    assert assets._load_font(40).getname() == ("Geist", "Medium")

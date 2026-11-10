@@ -9,7 +9,9 @@
 The argument is a source key or a piece of the event's name; a name that
 matches more than one event is listed instead of guessed, and so is a key
 the source has since replaced with longer ones. The event is deleted from
-every environment it was pushed to, and every future collect skips it.
+every environment it was pushed to (production only where its key is set;
+otherwise the next production publish retires it), and every future
+collect skips it.
 --undo lets it back in on the next run.
 """
 from __future__ import annotations
@@ -17,6 +19,7 @@ from __future__ import annotations
 import argparse
 import glob
 import json
+import os
 import re
 import sys
 
@@ -26,7 +29,7 @@ import requests
 
 from iwpipe import cktool, ckws, exclusions, ledger
 from iwpipe.config import DATA_DIR
-from iwpipe.schema import base_key
+from iwpipe.schema import STATUS_SKIP, base_key
 from iwpipe.term import BOLD, DIM, GREEN, RED, RESET, YELLOW
 
 SOURCE_KEY = re.compile(r"^(pywrestling|flowrestling|trackwrestling):[^\s:]+:\d{4}-\d{2}-\d{2}(:\S+)?$")
@@ -85,6 +88,42 @@ def resolve(query: str, events, current=None):
     return hits
 
 
+def mark_in_newest_file(key: str, reason: str) -> None:
+    """Note the exclusion on the event in its source's newest collected file.
+
+    A production publish reads that file and retires an event noted
+    "excluded:". Collect and recheck add the note too, but an exclusion
+    after the run's last recheck would otherwise leave it approved, and the
+    publish would keep it live in production, or create it there."""
+    source = key.split(":", 1)[0]
+    files = glob.glob(str(DATA_DIR / f"events.{source}.*.json"))
+    if not files:
+        return
+    # By modification time, as make promote picks it (`ls -t`).
+    newest = max(files, key=os.path.getmtime)
+    with open(newest) as handle:
+        payload = json.load(handle)
+    changed = False
+    for event in payload.get("events", []):
+        if event.get("sourceKey") != key:
+            continue
+        review = event.setdefault("review", {})
+        notes = review.setdefault("notes", [])
+        note = f"excluded: {reason}"
+        if review.get("status") != STATUS_SKIP or note not in notes:
+            review["status"] = STATUS_SKIP
+            if note not in notes:
+                notes.append(note)
+            changed = True
+    if changed:
+        # Written aside and moved into place, so an interrupted write
+        # cannot truncate this week's file.
+        temporary = newest + ".tmp"
+        with open(temporary, "w") as handle:
+            handle.write(json.dumps(payload, indent=2) + "\n")
+        os.replace(temporary, newest)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("query", nargs="?", help="source key or part of the name")
@@ -125,6 +164,7 @@ def main() -> int:
     key = event["sourceKey"]
     exclusions.add(key, args.reason, event.get("name", ""))
     print(f"{BOLD}excluded{RESET} {key}  ({args.reason})")
+    mark_in_newest_file(key, args.reason)
 
     status = 0
     try:
@@ -134,8 +174,23 @@ def main() -> int:
                 if not entry:
                     continue
                 try:
-                    cktool.require_client(environment).delete_record(entry["recordName"])
-                except (cktool.NoWriteAccess, ckws.CKWSError, requests.RequestException) as error:
+                    client = cktool.require_client(environment)
+                except cktool.NoWriteAccess as error:
+                    if environment == cktool.PRODUCTION:
+                        # The cloud routine has no production key. The
+                        # collected file's "excluded:" note makes the next
+                        # production publish retire the record.
+                        print(
+                            f"  {DIM}production: no key here; the next production publish "
+                            f"retires record {entry['recordName'][:8]}{RESET}"
+                        )
+                        continue
+                    print(f"  {RED}{environment}: delete failed{RESET}: {str(error)[:120]}")
+                    status = 1
+                    continue
+                try:
+                    client.delete_record(entry["recordName"])
+                except (ckws.CKWSError, requests.RequestException) as error:
                     print(f"  {RED}{environment}: delete failed{RESET}: {str(error)[:120]}")
                     status = 1
                     continue

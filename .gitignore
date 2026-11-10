@@ -20,6 +20,8 @@ build/
 
 # CloudKit server-to-server private key
 pipeline/secrets/
+# Clone of the private data repo (make state-pull).
+pipeline/.state/
 
 # Private keys never belong in the repo; the pipeline keeps its own under pipeline/secrets/.
 *.pem

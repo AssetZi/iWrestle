@@ -16,12 +16,22 @@ Decide which one you are in before doing anything.
 
 ## Where things are
 
-- Pipeline: `/Users/brock/Developer/iWrestle/pipeline` (the git repo is one level up). Run every command from the pipeline directory in the primary checkout, never a worktree: `.venv`, the collected files and `secrets/` are gitignored and exist only there.
+- Pipeline: `/Users/brock/Developer/iWrestle/pipeline` (the git repo is one level up). On the Mac, run every command from the pipeline directory in the primary checkout, never a worktree: `.venv`, the collected files and `secrets/` are gitignored and exist only there.
 - Virtualenv: `.venv`; `make` targets use it.
 - Triage script: `../.claude/skills/iwrestle-events/scripts/triage.py`, run as `.venv/bin/python ../.claude/skills/iwrestle-events/scripts/triage.py <report|plan|apply>`. Called `triage.py` below.
 - Secrets: `pipeline/.env`. Never print, edit, or move it. Check a key by presence only.
 - Collected files: `data/events.<source>.<YYYYMMDD>.json`. A second collect on the same day overwrites them. "The newest file" of a source is `ls -t data/events.<source>.*.json | head -1`.
 - Ledger: `data/pushed.json` records what is in CloudKit. One push at a time: two pushes share this file and the second is refused.
+- Cloud runs start from a fresh clone, so the paths above are relative to its `pipeline/` folder. Whatever branch the session starts on, step 1 treats it as `main` (it is a fresh clone of it), and step 7 still applies: cut `data/ledger-<YYYY-MM-DD>` from `origin/main` and open its pull request. Settings come from environment variables instead of `.env`. The environment's setup script creates `.venv` and writes `secrets/cloudkit-s2s.pem`; if either is missing, stop and report it.
+  - Logos, flyers and caches live in the private repo named by `PIPELINE_STATE_REPO`.
+  - Begin with `make cloud-start`. It copies that data into `data/`, then stops if main's ledger may be behind CloudKit: a `data/ledger-*` pull request is still open, or the last run never got its ledger onto GitHub (its run mark is still set). If it stops, quote its output and do nothing else.
+  - If `make cloud-start` failed, quote it and stop. If it says to run it again, do that once.
+  - If `make cloud-start` succeeded, run `make state-push` after step 7, even if steps in between failed, and quote its last line. It clears the run mark only once this run's ledger files are on main or on a `data/ledger-*` branch with an open pull request.
+    - "not on GitHub": finish step 7 (push the ledger branch and open its pull request), then run it again.
+    - "retry": retry once.
+    - "stop": quote it and stop. Do not run `make state-pull`; it would overwrite this run's files.
+  - A cloud session never publishes to production, in either mode: the Mac does that (see "Publishing to production").
+- Once the routine runs in the cloud, it is the only thing that pushes events to development and the only writer of the private repo. On the Mac, `make state-push` is refused, and nobody runs `make routine` or `make recheck` there; `make exclude` there still deletes the event's records, which is expected. The cloud environment has no production key, so cloud exclusions leave production records for the next publish from the Mac to retire. Before anything on the Mac that reads this week's files (publishing, `make review`, `make exclude`): `git checkout main && git pull --ff-only`, after the week's ledger pull request is merged, then `make state-pull`.
 
 ## Steps
 
@@ -40,13 +50,16 @@ Decide which one you are in before doing anything.
 5. **Numbers.** `triage.py report` (add `--all` to list every event needing a decision). From the routine log and each recheck log:
    - `grep -nE "^== |^collected|blocked|gone from|^pushed|^enriched|^tokens|^states|^development:|not created|scrape looks partial|removals wanted|retiring|re-pushed|network unreachable|ANTHROPIC|Traceback" <log>`
    - per source, the count of `  created`, `  replaced`, `  moved`, `  removed` lines: `awk '/^== /{s=$2} /^  (created|replaced|moved|removed)/{c[s" "$1]++} END{for(k in c)print k,c[k]}' <log>`
-6. **Production preview** (read-only). For each source: `.venv/bin/python bin/push.py <newest file> --production --replace --dry-run > <scratchpad>/preview.<source>.log 2>&1`. Quote the last `dry run:` line and any `removals wanted, cap is` line. Then look at what it would remove: `grep -E "^remove " <scratchpad>/preview.<source>.log`. If there are more than about 20 removals, or any is a state, district, or sectional championship or a well-known open, list them for Brock rather than only giving the count. A removal is the one thing here that takes an event away from users.
+6. **Production preview** (read-only). In a cloud run, skip this step: there is no production key, and the report says the preview happens on the Mac before publishing. Otherwise, for each source: `.venv/bin/python bin/push.py <newest file> --production --replace --dry-run > <scratchpad>/preview.<source>.log 2>&1`. Quote the last `dry run:` line and any `removals wanted, cap is` line. Then look at what it would remove: `grep -E "^remove " <scratchpad>/preview.<source>.log`. If there are more than about 20 removals, or any is a state, district, or sectional championship or a well-known open, list them for Brock rather than only giving the count. A removal is the one thing here that takes an event away from users.
 7. **Record the ledger.** If `data/pushed.json`, `data/excluded.json` or `data/renamed.json` changed: on `main`, first `git checkout -b data/ledger-<YYYY-MM-DD> origin/main` (the modified files carry over); on an open `data/ledger-*` branch, stay. Then `git add data/pushed.json data/excluded.json data/renamed.json && git commit -m "Record push"`, ending the message with the Co-Authored-By line the session gives you. Never add other files (`data/geocache.json` is left modified on purpose). Push with `git push -u origin <branch>`. If the branch has no pull request yet, open one: `gh pr create --base main --title "Record events push <YYYY-MM-DD>" --body "<one line per source: what was pushed or removed where>"`. Brock merges it; never merge it or enable auto-merge. Stay on the branch until it is merged; step 1 handles that on the next run.
 8. **Report.** See "Report format".
 
 ## Publishing to production (with Brock only)
 
-Do this only in the "with Brock" mode, after he has seen step 6's preview and said to publish.
+Do this only in the "with Brock" mode, after he has seen step 6's preview and said to publish. Once the routine runs in the cloud, publish only from the Mac's primary checkout, and first bring it up to date: merge the week's ledger pull request, `git checkout main && git pull --ff-only`, then `make state-pull` for this week's collected files and assets.
+
+- Not while a cloud run is going: if `.state/RUNNING` exists after the pull, wait for that run to finish. Two ledger pull requests from the same base would conflict over `pushed.json`.
+- Ledger pull requests are merged, never closed unmerged. A closed one leaves main's ledger behind CloudKit, and the next run would push its events again. If one must be dropped, say so to Brock and run `make reconcile` first.
 
 - `make promote` waits for a typed `y` per source, so it only works in his terminal. To run it for him, push each source in turn with the confirmation pre-answered, one at a time, in the background:
   `rc=0; for s in pywrestling flowrestling trackwrestling; do f=$(ls -t data/events.$s.*.json | head -1); echo "== $s ($f)"; .venv/bin/python bin/push.py $f --production --replace --yes || rc=1; done > <scratchpad>/promote.log 2>&1; exit $rc`
@@ -124,5 +137,6 @@ In unattended mode, close with exactly this block:
 - Rule on what remains: `make review SOURCE=<source> ARGS="--flagged"`, then `make exclude KEY="<part of its name>" REASON="<why>"` for anything that does not belong.
 - Publish to production from a terminal (it asks once per source): `make promote`. If it reports `removals wanted, cap is N`, rerun that source with `.venv/bin/python bin/push.py <file> --production --replace --max-removals <N>` after checking the list.
 - Then record it on the open ledger branch: `git add data/pushed.json && git commit -m "Record production push" && git push`, and merge the pull request.
+- Once the routine runs in the cloud, the Mac has no ledger branch of its own. Before `make review`, `make exclude` or `make promote`: merge the cloud's ledger pull request, `git checkout main && git pull --ff-only`, `make state-pull`. Afterwards, `git checkout -b data/ledger-<YYYY-MM-DD> && git add data/pushed.json data/excluded.json data/renamed.json && git commit -m "Record production push" && git push -u origin HEAD`, open its pull request, and merge it before the next cloud run.
 
 With Brock in the conversation, end instead with what is waiting on him, if anything, and offer to publish.
