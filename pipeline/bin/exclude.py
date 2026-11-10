@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import glob
 import json
+import os
 import re
 import sys
 
@@ -95,11 +96,13 @@ def mark_in_newest_file(key: str, reason: str) -> None:
     after the run's last recheck would otherwise leave it approved, and the
     publish would keep it live in production, or create it there."""
     source = key.split(":", 1)[0]
-    files = sorted(glob.glob(str(DATA_DIR / f"events.{source}.*.json")))
+    files = glob.glob(str(DATA_DIR / f"events.{source}.*.json"))
     if not files:
         return
-    newest = files[-1]
-    payload = json.load(open(newest))
+    # By modification time, as make promote picks it (`ls -t`).
+    newest = max(files, key=os.path.getmtime)
+    with open(newest) as handle:
+        payload = json.load(handle)
     changed = False
     for event in payload.get("events", []):
         if event.get("sourceKey") != key:
@@ -113,8 +116,12 @@ def mark_in_newest_file(key: str, reason: str) -> None:
                 notes.append(note)
             changed = True
     if changed:
-        with open(newest, "w") as handle:
+        # Written aside and moved into place, so an interrupted write
+        # cannot truncate this week's file.
+        temporary = newest + ".tmp"
+        with open(temporary, "w") as handle:
             handle.write(json.dumps(payload, indent=2) + "\n")
+        os.replace(temporary, newest)
 
 
 def main() -> int:

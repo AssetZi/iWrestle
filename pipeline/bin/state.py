@@ -34,6 +34,8 @@ def main() -> int:
     try:
         if args.action == "pull":
             print(f"{GREEN}state pull{RESET}: {state.pull()} files copied into data/")
+            for name in state.kept_local:
+                print(f"  kept data/{name}: changed here since the last pull (review or exclusions)")
         elif args.action == "begin":
             state.begin_run()
             print(f"{GREEN}state begin{RESET}: run marked as started")

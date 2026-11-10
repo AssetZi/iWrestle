@@ -39,8 +39,11 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
+import hashlib
+
 import requests
 
+from . import github
 from .config import DATA_DIR, PIPELINE_ROOT, REPO_ROOT
 
 STATE_REPO = os.getenv("PIPELINE_STATE_REPO", "")
@@ -50,6 +53,8 @@ BRANCH = "main"
 DATA_FILES = ("flo-details.json", "enrich-cache.json")
 ASSET_FILES = ("logo.png", "flyer.pdf", "source-flyer.pdf", "banner.jpg")
 LEDGER_FILE = "pushed.json"
+# What a run's step 7 commits; all of it has to reach GitHub.
+LEDGER_FILES = ("pushed.json", "excluded.json", "renamed.json")
 EVENTS_FILE = re.compile(r"events\.([a-z]+)\.(\d{8})\.json")
 RUNNING = "RUNNING"
 
@@ -107,31 +112,6 @@ def _require_writer(head: str | None) -> None:
         )
 
 
-def _github_token() -> str:
-    """A token for the GitHub API: PIPELINE_STATE_TOKEN in the cloud. On the
-    Mac, where that is unset, the gh login (`gh auth token`, read into
-    memory, never printed)."""
-    for name in ("PIPELINE_STATE_TOKEN", "GITHUB_TOKEN", "GH_TOKEN"):
-        if os.getenv(name):
-            return os.environ[name]
-    if shutil.which("gh"):
-        result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True)
-        if result.returncode == 0:
-            return result.stdout.strip()
-    return ""
-
-
-def github_headers() -> dict[str, str]:
-    """Headers for a GitHub API call, authenticated when a token is found.
-    Anonymous calls share a 60-an-hour limit per IP, which a cloud
-    machine's shared address can use up."""
-    headers = {"Accept": "application/vnd.github+json"}
-    token = _github_token()
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-    return headers
-
-
 def _repo_slug(repo: str) -> str | None:
     """owner/name from a repo URL, None for a local path (the tests).
 
@@ -153,7 +133,7 @@ def _require_private(repo: str) -> None:
     if slug is None:
         return
     try:
-        response = requests.get(f"https://api.github.com/repos/{slug}", headers=github_headers(), timeout=30)
+        response = requests.get(f"https://api.github.com/repos/{slug}", headers=github.headers(), timeout=30)
         response.raise_for_status()
         private = response.json().get("private") is True
     except requests.HTTPError as error:
@@ -182,17 +162,34 @@ def _require_private(repo: str) -> None:
 
 
 def ledger_landed(data_dir: Path) -> bool:
-    """This run's pushed.json is on GitHub (see _ledger_landed)."""
-    return _ledger_landed(data_dir, REPO_ROOT)
+    """This run's ledger files are on GitHub where they will reach main
+    (see _ledger_landed)."""
+    def open_branches() -> set[str]:
+        try:
+            return {pr["head"]["ref"] for pr in github.open_ledger_prs()}
+        except (requests.RequestException, ValueError) as error:
+            raise StateError(
+                f"could not check GitHub for this run's ledger pull request ({str(error)[:120]}); "
+                "nothing was pushed. Retry make state-push."
+            ) from error
+
+    return _ledger_landed(data_dir, REPO_ROOT, open_branches)
 
 
-def _ledger_landed(data_dir: Path, repo_root: Path) -> bool:
-    """pushed.json in data_dir matches the one on origin's main or on one of
-    its data/ledger-* branches. A run that changed nothing matches main."""
-    local = data_dir / LEDGER_FILE
-    if not local.exists():
+def _ledger_landed(data_dir: Path, repo_root: Path, open_branches) -> bool:
+    """The ledger files in data_dir (pushed.json, excluded.json,
+    renamed.json) all match one ref on origin: main, or a data/ledger-*
+    branch with an open pull request (open_branches() lists those). A
+    pushed branch with no open pull request does not count: nothing would
+    merge it, and the next run, finding no open one, would start from
+    main's older ledger. A run that changed nothing matches main."""
+    local = {}
+    for name in LEDGER_FILES:
+        if (data_dir / name).exists():
+            local[name] = json.loads((data_dir / name).read_text())
+    if not local:
         return True
-    path = (data_dir.resolve() / LEDGER_FILE).relative_to(repo_root.resolve()).as_posix()
+    prefix = (data_dir.resolve()).relative_to(repo_root.resolve()).as_posix()
     git = ["git", "-C", str(repo_root)]
     fetch = subprocess.run(
         git + ["fetch", "--quiet", "origin",
@@ -209,22 +206,43 @@ def _ledger_landed(data_dir: Path, repo_root: Path) -> bool:
         git + ["for-each-ref", "--format=%(refname)", "refs/remotes/origin/main", "refs/remotes/origin/data/"],
         capture_output=True, text=True, check=True,
     ).stdout.split()
-    mine = json.loads(local.read_text())
-    for ref in refs:
-        shown = subprocess.run(git + ["show", f"{ref}:{path}"], capture_output=True, text=True)
-        if shown.returncode == 0:
+
+    def matches(ref: str) -> bool:
+        for name, mine in local.items():
+            shown = subprocess.run(git + ["show", f"{ref}:{prefix}/{name}"], capture_output=True, text=True)
             try:
-                if json.loads(shown.stdout) == mine:
-                    return True
+                theirs = json.loads(shown.stdout) if shown.returncode == 0 else None
             except ValueError:
-                continue
+                return False
+            if theirs != mine and not (theirs is None and mine == {}):
+                return False
+        return True
+
+    branches = None
+    for ref in refs:
+        if not matches(ref):
+            continue
+        if ref == "refs/remotes/origin/main":
+            return True
+        if branches is None:
+            branches = open_branches()
+        if ref.removeprefix("refs/remotes/origin/") in branches:
+            return True
     return False
 
 
 def _active_run(state_dir: Path) -> bool:
-    """This clone began a run that has not pushed yet."""
-    running, mine = state_dir / RUNNING, _run_id(state_dir)
-    return running.exists() and mine.exists() and running.read_text() == mine.read_text()
+    """This clone began a run, its mark is on GitHub, and the run has not
+    finished its push."""
+    running, mine, marker = state_dir / RUNNING, _run_id(state_dir), _marker(state_dir)
+    if not (running.exists() and mine.exists() and marker.exists()):
+        return False
+    if running.read_text() != mine.read_text():
+        return False
+    try:
+        return marker.read_text().strip() == _git("rev-parse", "HEAD", cwd=state_dir).strip()
+    except StateError:
+        return False
 
 
 def _run_id(state_dir: Path) -> Path:
@@ -322,10 +340,35 @@ def pull(repo: str = STATE_REPO, state_dir: Path = STATE_DIR, data_dir: Path = D
             # it stays as history.
             if not EVENTS_FILE.fullmatch(path.name):
                 (data_dir / path).unlink(missing_ok=True)
-    copied = _copy(current, stored, data_dir)
+    # A collected file changed here since it was pulled holds this
+    # machine's review or exclusions (make review, make exclude); keep it.
+    record = _pulled(state_dir)
+    seen = json.loads(record.read_text()) if record.exists() else {}
+    kept_local.clear()
+    for path in sorted(current):
+        local = data_dir / path
+        if EVENTS_FILE.fullmatch(path.name) and local.exists() and path.name in seen:
+            if _digest(local) != seen[path.name] and _digest(local) != _digest(stored / path):
+                kept_local.append(path.name)
+    copied = _copy(current - {Path(name) for name in kept_local}, stored, data_dir)
+    record.write_text(json.dumps({
+        path.name: _digest(stored / path) for path in current if EVENTS_FILE.fullmatch(path.name)
+    } | {name: seen[name] for name in kept_local}) + "\n")
     # Written last: a pull that failed partway does not count as one.
     _marker(state_dir).write_text((head or "") + "\n")
     return copied
+
+
+kept_local: list[str] = []  # collected files the last pull left as edited here
+
+
+def _pulled(state_dir: Path) -> Path:
+    """Digests of the collected files as last pulled (inside .git)."""
+    return state_dir / ".git" / "iwrestle-pulled.json"
+
+
+def _digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _tracked(state_dir: Path, commit: str) -> set[Path]:
@@ -368,8 +411,10 @@ def begin_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> None:
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     mark = f"{stamp} on {socket.gethostname()}"
     running.write_text(mark + "\n")
-    _commit_and_push(state_dir, f"Run started {stamp}")
+    # Written first, so a push that reached GitHub without saying so is
+    # still recognized as this run's own mark on the next cloud-start.
     _run_id(state_dir).write_text(mark + "\n")
+    _commit_and_push(state_dir, f"Run started {stamp}", retry="run make cloud-start again")
 
 
 def clear_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR, *, force: bool = False) -> bool:
@@ -401,7 +446,9 @@ def clear_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR, *, force: boo
     return True
 
 
-def _commit_and_push(state_dir: Path, message: str, *, synced: bool = True) -> int:
+def _commit_and_push(
+    state_dir: Path, message: str, *, synced: bool = True, retry: str = "retry make state-push",
+) -> int:
     _git("add", "--all", cwd=state_dir)
     changed = [line for line in _git("status", "--porcelain", cwd=state_dir).splitlines() if line]
     if not changed:
@@ -420,10 +467,7 @@ def _commit_and_push(state_dir: Path, message: str, *, synced: bool = True) -> i
         elif any(word in text for word in ("rejected", "non-fast-forward", "fetch first")):
             raise StateError(f"{error}. Something else wrote the private repo during this run. {DO_NOT_PULL}") from error
         else:
-            raise StateError(
-                f"{error}. Nothing else wrote the repo; data/ and this run's mark are intact, "
-                "so retry make state-push."
-            ) from error
+            raise StateError(f"{error}. Nothing else wrote the repo, so {retry}.") from error
     if synced:
         _marker(state_dir).write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
     return len(changed)

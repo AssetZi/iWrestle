@@ -516,20 +516,40 @@ def test_the_ledger_has_landed_when_github_has_the_same_file(tmp_path):
     ledger_text = '{"development:a": {"recordName": "R1"}}'
     work = _public_repo(tmp_path, ledger_text, "data/ledger-2026-11-16")
     data = work / "pipeline" / "data"
+    branch = lambda: {"data/ledger-2026-11-16"}  # noqa: E731
     data.joinpath("pushed.json").write_text('{\n  "development:a": {"recordName": "R1"}\n}')
-    assert state._ledger_landed(data, work)
+    assert state._ledger_landed(data, work, branch)
 
     data.joinpath("pushed.json").write_text('{"development:a": {"recordName": "R2"}}')
-    assert not state._ledger_landed(data, work)
+    assert not state._ledger_landed(data, work, branch)
 
     # A run that pushed nothing: its ledger is main's.
     data.joinpath("pushed.json").write_text("{}")
-    assert state._ledger_landed(data, work)
+    assert state._ledger_landed(data, work, set)
+
+
+def test_a_ledger_branch_without_an_open_pr_has_not_landed(tmp_path):
+    """Nothing would merge it, and the next run, finding no open pull
+    request, would start from main's older ledger."""
+    ledger_text = '{"development:a": {"recordName": "R1"}}'
+    work = _public_repo(tmp_path, ledger_text, "data/ledger-2026-11-16")
+    data = work / "pipeline" / "data"
+    data.joinpath("pushed.json").write_text(ledger_text)
+    assert not state._ledger_landed(data, work, set)
+
+
+def test_an_exclusion_alone_has_to_land_too(tmp_path):
+    """A run that only excluded an event leaves pushed.json as main's; its
+    excluded.json still has to reach GitHub, or the event comes back."""
+    work = _public_repo(tmp_path, "{}", None)
+    data = work / "pipeline" / "data"
+    data.joinpath("excluded.json").write_text('{"pywrestling:x:2026-12-05": {"reason": "duplicate"}}')
+    assert not state._ledger_landed(data, work, set)
 
 
 def test_the_private_check_covers_proxy_urls_and_skips_only_local_paths(monkeypatch):
     seen = []
-    monkeypatch.setattr(state, "_github_token", lambda: "tok")
+    monkeypatch.setattr(state.github, "token", lambda: "tok")
     monkeypatch.setattr(state.requests, "get", lambda url, **k: seen.append(url) or _Response({"private": True}))
     state._require_private("http://127.0.0.1:8080/git/AssetZi/iwrestle-pipeline-data")
     state._require_private("git@github.com:AssetZi/iwrestle-pipeline-data.git")
@@ -545,7 +565,7 @@ def test_no_access_to_the_private_repo_asks_for_a_token_not_a_retry(monkeypatch)
         def raise_for_status(self):
             raise state.requests.HTTPError("404 Not Found", response=self)
 
-    monkeypatch.setattr(state, "_github_token", lambda: "")
+    monkeypatch.setattr(state.github, "token", lambda: "")
     monkeypatch.setattr(state.requests, "get", lambda *a, **k: NotFound({}))
     with pytest.raises(state.StateError) as error:
         state._require_private("https://github.com/AssetZi/iwrestle-pipeline-data.git")
@@ -556,13 +576,13 @@ def test_the_mac_uses_the_gh_login_when_no_token_is_set(monkeypatch):
     monkeypatch.delenv("PIPELINE_STATE_TOKEN", raising=False)
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     monkeypatch.delenv("GH_TOKEN", raising=False)
-    monkeypatch.setattr(state.shutil, "which", lambda name: "/usr/local/bin/gh")
+    monkeypatch.setattr(state.github.shutil, "which", lambda name: "/usr/local/bin/gh")
 
     class Done:
         returncode, stdout = 0, "gho_x\n"
 
-    monkeypatch.setattr(state.subprocess, "run", lambda *a, **k: Done())
-    assert state._github_token() == "gho_x"
+    monkeypatch.setattr(state.github.subprocess, "run", lambda *a, **k: Done())
+    assert state.github.token() == "gho_x"
 
 
 def test_clearing_a_run_mark_is_the_writers_job(tmp_path, remote, monkeypatch):
@@ -590,3 +610,77 @@ def test_a_push_the_server_took_before_the_connection_dropped_counts(tmp_path, r
     monkeypatch.setattr(state, "_git", git)
     (data / "enrich-cache.json").write_text('{"x": 1}')
     assert state.push(remote, tmp_path / "s", data) > 0
+
+
+
+def test_a_run_start_whose_push_failed_says_to_rerun_cloud_start(tmp_path, remote, monkeypatch):
+    """Not state-push: the skill forbids that after a failed cloud-start."""
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s", data)
+    state.pull(remote, tmp_path / "s", data)
+    real = state._git
+
+    def git(*args, cwd=None):
+        if args[0] == "push":
+            raise state.StateError("git push failed: Could not resolve host")
+        return real(*args, cwd=cwd)
+
+    monkeypatch.setattr(state, "_git", git)
+    with pytest.raises(state.StateError) as error:
+        state.begin_run(remote, tmp_path / "s")
+    assert "make cloud-start" in str(error.value) and "state-push" not in str(error.value)
+
+    # The mark never reached GitHub: a second cloud-start pulls and starts.
+    monkeypatch.setattr(state, "_git", real)
+    state.pull(remote, tmp_path / "s", data)
+    state.begin_run(remote, tmp_path / "s")
+    assert (tmp_path / "s" / "RUNNING").exists()
+
+
+def test_a_run_start_that_reached_github_unconfirmed_is_this_runs_own(tmp_path, remote, monkeypatch):
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s", data)
+    state.pull(remote, tmp_path / "s", data)
+    real = state._git
+
+    def git(*args, cwd=None):
+        out = real(*args, cwd=cwd)
+        # The push arrives, then the reply and the check after it fail.
+        if args[0] == "push" or (args[0] == "fetch" and git.pushed):
+            git.pushed = True
+            raise state.StateError(f"git {args[0]} failed: connection reset")
+        return out
+
+    git.pushed = False
+    monkeypatch.setattr(state, "_git", git)
+    with pytest.raises(state.StateError, match="cloud-start"):
+        state.begin_run(remote, tmp_path / "s")
+    assert git.pushed
+    monkeypatch.setattr(state, "_git", real)
+    state.pull(remote, tmp_path / "s", data)
+    state.begin_run(remote, tmp_path / "s")  # its own mark: no refusal
+    state.push(remote, tmp_path / "s", data)
+    assert not (tmp_path / "s" / "RUNNING").exists()
+
+
+def test_a_pull_keeps_a_collected_file_edited_here(tmp_path, remote):
+    """make exclude and make review edit the newest collected file on the
+    Mac; a later pull must not bring back the cloud's unedited copy."""
+    cloud, mac = tmp_path / "cloud", tmp_path / "mac"
+    _data(cloud)
+    state.push(remote, tmp_path / "sc", cloud)
+    mac.mkdir()
+    state.pull(remote, tmp_path / "sm", mac)
+
+    edited = '{"events": [{"review": {"status": "skip"}}]}'
+    (mac / "events.flowrestling.20261109.json").write_text(edited)
+    state.pull(remote, tmp_path / "sc", cloud)
+    (cloud / "enrich-cache.json").write_text('{"new": 1}')
+    state.push(remote, tmp_path / "sc", cloud)
+
+    state.pull(remote, tmp_path / "sm", mac)
+    assert (mac / "events.flowrestling.20261109.json").read_text() == edited
+    assert (mac / "enrich-cache.json").read_text() == '{"new": 1}'
+    assert state.kept_local == ["events.flowrestling.20261109.json"]

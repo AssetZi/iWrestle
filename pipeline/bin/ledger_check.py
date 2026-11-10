@@ -4,39 +4,24 @@
 The cloud routine clones main. A data/ledger-* pull request that is not
 merged yet holds the last run's pushes, so main's ledger is behind
 CloudKit, and a run from it would push those events a second time. A run
-whose ledger never reached GitHub at all is caught by its run mark instead
-(iwpipe/state.py).
+whose ledger never got into an open pull request is caught by its run
+mark instead (iwpipe/state.py).
 """
 from __future__ import annotations
 
-import os
 import sys
 
 import _bootstrap  # noqa: F401
 
 import requests
 
-from iwpipe import state
+from iwpipe import github
 from iwpipe.term import GREEN, RED, RESET
-
-LEDGER_BRANCH_PREFIX = "data/ledger-"
-# Named here, not read from origin: a cloud clone's origin can be a local
-# proxy URL.
-GITHUB_REPO = os.getenv("GITHUB_REPO", "AssetZi/iWrestle")
-
-
-def open_ledger_prs(slug: str) -> list[dict]:
-    response = requests.get(
-        f"https://api.github.com/repos/{slug}/pulls",
-        params={"state": "open", "per_page": 100}, headers=state.github_headers(), timeout=30,
-    )
-    response.raise_for_status()
-    return [pr for pr in response.json() if pr["head"]["ref"].startswith(LEDGER_BRANCH_PREFIX)]
 
 
 def main() -> int:
     try:
-        open_prs = open_ledger_prs(GITHUB_REPO)
+        open_prs = github.open_ledger_prs()
     except (requests.RequestException, ValueError) as error:
         # Not knowing is not the same as none being open.
         print(f"{RED}could not check for open ledger pull requests{RESET}: {str(error)[:200]}")
