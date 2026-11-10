@@ -15,8 +15,10 @@ from iwpipe import state  # noqa: E402
 
 @pytest.fixture(autouse=True)
 def writer(monkeypatch):
-    """Tests act as the cloud routine, the private repo's one writer."""
+    """Tests act as the cloud routine, the private repo's one writer, whose
+    ledger reached GitHub unless a test says otherwise."""
     monkeypatch.setenv("PIPELINE_STATE_WRITER", "1")
+    monkeypatch.setattr(state, "ledger_landed", lambda data_dir: True)
 
 
 @pytest.fixture
@@ -113,7 +115,6 @@ class _Response:
 def test_an_open_ledger_pr_stops_the_cloud_routine(monkeypatch, capsys):
     import ledger_check
 
-    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: [])
     prs = [
         {"number": 15, "head": {"ref": "data/ledger-2026-11-09"}, "html_url": "https://github.com/AssetZi/iWrestle/pull/15"},
         {"number": 18, "head": {"ref": "feat/cloud"}, "html_url": "u"},
@@ -129,7 +130,6 @@ def test_an_open_ledger_pr_stops_the_cloud_routine(monkeypatch, capsys):
 def test_a_failed_check_counts_as_open(monkeypatch):
     import ledger_check
 
-    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: [])
 
     def down(*a, **k):
         raise ledger_check.requests.ConnectionError("no network")
@@ -185,26 +185,6 @@ def test_a_push_after_someone_else_pushed_is_refused(tmp_path, remote):
         state.push(remote, tmp_path / "sb", b)
 
 
-def test_the_ledger_copy_shows_a_ledger_that_never_reached_main(tmp_path, remote):
-    """In the cloud, pushed.json lives only in the session's clone until its
-    pull request merges. The private repo keeps a copy, so a run whose
-    ledger never landed is caught before it pushes those events again."""
-    data = tmp_path / "data"
-    _data(data)
-    (data / "pushed.json").write_text('{"development:a": {"recordName": "R1"}}')
-    state.push(remote, tmp_path / "s1", data)
-
-    clone = tmp_path / "clone"
-    clone.mkdir()
-    (clone / "pushed.json").write_text("{}")
-    state.pull(remote, tmp_path / "s2", clone)
-    assert (clone / "pushed.json").read_text() == "{}"
-    assert state.ledger_differences(tmp_path / "s2", clone) == ["a"]
-
-    (clone / "pushed.json").write_text('{\n  "development:a": {"recordName": "R1"}\n}')
-    assert state.ledger_differences(tmp_path / "s2", clone) == []
-
-
 def test_leftover_files_from_a_failed_push_are_not_pulled(tmp_path, remote):
     data = tmp_path / "data"
     _data(data)
@@ -242,18 +222,8 @@ def test_the_check_uses_the_configured_repo_and_token(monkeypatch):
         return _Response([])
 
     monkeypatch.setattr(ledger_check.requests, "get", get)
-    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: [])
     assert ledger_check.main() == 0
     assert seen == {"url": "https://api.github.com/repos/AssetZi/iWrestle/pulls", "auth": "Bearer tok"}
-
-
-def test_a_ledger_that_never_reached_main_stops_the_cloud_routine(monkeypatch, capsys):
-    import ledger_check
-
-    monkeypatch.setattr(ledger_check.requests, "get", lambda *a, **k: _Response([]))
-    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: ["pywrestling:cup:2026-12-05"])
-    assert ledger_check.main() == 1
-    assert "pywrestling:cup:2026-12-05" in capsys.readouterr().out
 
 
 def test_the_newest_collected_file_of_each_source_is_kept(tmp_path, remote):
@@ -311,7 +281,7 @@ def test_a_run_that_never_pushed_its_state_blocks_the_next(tmp_path, remote):
     other = tmp_path / "other"
     other.mkdir()
     state.pull(remote, tmp_path / "s2", other)
-    with pytest.raises(state.StateError, match="never finished"):
+    with pytest.raises(state.StateError, match="never got its ledger onto GitHub"):
         state.begin_run(remote, tmp_path / "s2")
 
     # The run that finishes clears it.
@@ -335,19 +305,6 @@ def test_a_rejected_git_push_says_to_pull_again(tmp_path, remote, monkeypatch):
     (data / "enrich-cache.json").write_text('{"x": 1}')
     with pytest.raises(state.StateError, match="state-pull"):
         state.push(remote, tmp_path / "s1", data)
-
-
-def test_an_open_ledger_pr_is_reported_before_the_ledger_comparison(monkeypatch, capsys):
-    """While last week's pull request is open, main also differs from the
-    kept copy; the open pull request is the reason to report."""
-    import ledger_check
-
-    prs = [{"number": 15, "head": {"ref": "data/ledger-2026-11-09"}, "html_url": "u"}]
-    monkeypatch.setattr(ledger_check.requests, "get", lambda *a, **k: _Response(prs))
-    monkeypatch.setattr(ledger_check.state, "ledger_differences", lambda *a: ["pywrestling:cup:2026-12-05"])
-    assert ledger_check.main() == 1
-    out = capsys.readouterr().out
-    assert "#15" in out and "never reached main" not in out
 
 
 def test_only_the_cloud_routine_writes_the_private_repo(tmp_path, remote, monkeypatch):
@@ -388,7 +345,7 @@ def test_a_push_clears_only_the_run_mark_it_set(tmp_path, remote):
     other.mkdir()
     state.pull(remote, tmp_path / "s2", other)
     state.push(remote, tmp_path / "s2", other)
-    with pytest.raises(state.StateError, match="never finished"):
+    with pytest.raises(state.StateError, match="never got its ledger onto GitHub"):
         state.begin_run(remote, tmp_path / "s3")
 
 
@@ -418,30 +375,6 @@ def test_a_push_that_drops_a_cache_is_refused(tmp_path, remote):
     (data / "enrich-cache.json").unlink()
     with pytest.raises(state.StateError, match="enrich-cache.json"):
         state.push(remote, tmp_path / "s", data)
-
-
-def test_the_ledger_check_looks_only_at_what_the_cloud_writes(tmp_path):
-    """The cloud writes development only. Production entries change when
-    Brock publishes from the Mac, and make exclude there takes entries out
-    of development on purpose; neither means a ledger was lost."""
-    import json
-
-    state_dir, data = tmp_path / "s", tmp_path / "data"
-    (state_dir / "ledger").mkdir(parents=True)
-    data.mkdir()
-    copy = {
-        "development:a": {"recordName": "R1"}, "development:b": {"recordName": "R2"},
-        "development:c": {"recordName": "R3"}, "production:a": {"recordName": "P1"},
-    }
-    (state_dir / "ledger" / "pushed.json").write_text(json.dumps(copy))
-    main = {"development:a": {"recordName": "R1"}, "production:a": {"recordName": "P9"}}
-    (data / "pushed.json").write_text(json.dumps(main))
-    (data / "excluded.json").write_text(json.dumps({"b": {"reason": "duplicate"}}))
-    assert state.ledger_differences(state_dir, data) == ["c"]
-
-    main["development:a"]["recordName"] = "R0"
-    (data / "pushed.json").write_text(json.dumps(main))
-    assert state.ledger_differences(state_dir, data) == ["a", "c"]
 
 
 def test_a_failed_push_that_was_not_a_conflict_says_to_retry(tmp_path, remote, monkeypatch):
@@ -532,10 +465,128 @@ def test_a_pulled_collected_file_is_dated_by_its_name(tmp_path, remote):
     assert stamp.date() == dt.date(2026, 11, 9)
 
 
-def test_an_unreadable_kept_ledger_stops_the_run(tmp_path):
-    state_dir, data = tmp_path / "s", tmp_path / "data"
-    (state_dir / "ledger").mkdir(parents=True)
-    data.mkdir()
-    (state_dir / "ledger" / "pushed.json").write_text("{not json")
-    (data / "pushed.json").write_text("{}")
-    assert state.ledger_differences(state_dir, data)
+def test_a_run_whose_ledger_never_reached_github_keeps_its_mark(tmp_path, remote, monkeypatch, capsys):
+    """Its records are in CloudKit but its ledger is only in this session.
+    The data is still kept; the mark stays so the next run stops, and the
+    ledger is saved in the private repo to recover from."""
+    data = tmp_path / "data"
+    _data(data)
+    (data / "pushed.json").write_text('{"development:a": {"recordName": "R1"}}')
+    state.push(remote, tmp_path / "s1", data)
+    state.begin_run(remote, tmp_path / "s1")
+
+    monkeypatch.setattr(state, "ledger_landed", lambda data_dir: False)
+    (data / "enrich-cache.json").write_text('{"new": 1}')
+    with pytest.raises(state.StateError, match="not on GitHub"):
+        state.push(remote, tmp_path / "s1", data)
+
+    other = tmp_path / "other"
+    other.mkdir()
+    state.pull(remote, tmp_path / "s2", other)
+    assert (other / "enrich-cache.json").read_text() == '{"new": 1}'
+    assert (tmp_path / "s2" / "ledger" / "pushed.json").read_text() == '{"development:a": {"recordName": "R1"}}'
+    with pytest.raises(state.StateError, match="ledger/pushed.json"):
+        state.begin_run(remote, tmp_path / "s2")
+
+
+def _public_repo(tmp_path, ledger_text, branch):
+    """A clone of the app repo whose origin has pushed.json on a branch."""
+    import subprocess as sp
+
+    origin = tmp_path / "origin.git"
+    sp.run(["git", "init", "--quiet", "--bare", str(origin)], check=True)
+    work = tmp_path / "work"
+    sp.run(["git", "clone", "--quiet", str(origin), str(work)], check=True, capture_output=True)
+    git = ["git", "-C", str(work), "-c", "user.name=t", "-c", "user.email=t@t"]
+    (work / "pipeline" / "data").mkdir(parents=True)
+    (work / "pipeline" / "data" / "pushed.json").write_text("{}")
+    sp.run(git + ["add", "."], check=True)
+    sp.run(git + ["commit", "--quiet", "-m", "main"], check=True)
+    sp.run(git + ["push", "--quiet", "origin", "HEAD:refs/heads/main"], check=True, capture_output=True)
+    if branch:
+        sp.run(git + ["checkout", "--quiet", "-b", branch], check=True)
+        (work / "pipeline" / "data" / "pushed.json").write_text(ledger_text)
+        sp.run(git + ["commit", "--quiet", "-am", "ledger"], check=True)
+        sp.run(git + ["push", "--quiet", "origin", f"HEAD:refs/heads/{branch}"], check=True, capture_output=True)
+        sp.run(git + ["checkout", "--quiet", "main"], check=True)
+    return work
+
+
+def test_the_ledger_has_landed_when_github_has_the_same_file(tmp_path):
+    ledger_text = '{"development:a": {"recordName": "R1"}}'
+    work = _public_repo(tmp_path, ledger_text, "data/ledger-2026-11-16")
+    data = work / "pipeline" / "data"
+    data.joinpath("pushed.json").write_text('{\n  "development:a": {"recordName": "R1"}\n}')
+    assert state._ledger_landed(data, work)
+
+    data.joinpath("pushed.json").write_text('{"development:a": {"recordName": "R2"}}')
+    assert not state._ledger_landed(data, work)
+
+    # A run that pushed nothing: its ledger is main's.
+    data.joinpath("pushed.json").write_text("{}")
+    assert state._ledger_landed(data, work)
+
+
+def test_the_private_check_covers_proxy_urls_and_skips_only_local_paths(monkeypatch):
+    seen = []
+    monkeypatch.setattr(state, "_github_token", lambda: "tok")
+    monkeypatch.setattr(state.requests, "get", lambda url, **k: seen.append(url) or _Response({"private": True}))
+    state._require_private("http://127.0.0.1:8080/git/AssetZi/iwrestle-pipeline-data")
+    state._require_private("git@github.com:AssetZi/iwrestle-pipeline-data.git")
+    state._require_private("/tmp/remote.git")
+    state._require_private("file:///tmp/remote.git")
+    assert seen == ["https://api.github.com/repos/AssetZi/iwrestle-pipeline-data"] * 2
+
+
+def test_no_access_to_the_private_repo_asks_for_a_token_not_a_retry(monkeypatch):
+    class NotFound(_Response):
+        status_code = 404
+
+        def raise_for_status(self):
+            raise state.requests.HTTPError("404 Not Found", response=self)
+
+    monkeypatch.setattr(state, "_github_token", lambda: "")
+    monkeypatch.setattr(state.requests, "get", lambda *a, **k: NotFound({}))
+    with pytest.raises(state.StateError) as error:
+        state._require_private("https://github.com/AssetZi/iwrestle-pipeline-data.git")
+    assert "token" in str(error.value) and "Retry" not in str(error.value)
+
+
+def test_the_mac_uses_the_gh_login_when_no_token_is_set(monkeypatch):
+    monkeypatch.delenv("PIPELINE_STATE_TOKEN", raising=False)
+    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
+    monkeypatch.delenv("GH_TOKEN", raising=False)
+    monkeypatch.setattr(state.shutil, "which", lambda name: "/usr/local/bin/gh")
+
+    class Done:
+        returncode, stdout = 0, "gho_x\n"
+
+    monkeypatch.setattr(state.subprocess, "run", lambda *a, **k: Done())
+    assert state._github_token() == "gho_x"
+
+
+def test_clearing_a_run_mark_is_the_writers_job(tmp_path, remote, monkeypatch):
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s1", data)
+    state.begin_run(remote, tmp_path / "s1")
+    monkeypatch.delenv("PIPELINE_STATE_WRITER")
+    with pytest.raises(state.StateError, match="only the cloud routine"):
+        state.clear_run(remote, tmp_path / "s2", force=True)
+
+
+def test_a_push_the_server_took_before_the_connection_dropped_counts(tmp_path, remote, monkeypatch):
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s", data)
+    real = state._git
+
+    def git(*args, cwd=None):
+        out = real(*args, cwd=cwd)
+        if args[0] == "push":
+            raise state.StateError("git push failed: error: RPC failed; rejected after send")
+        return out
+
+    monkeypatch.setattr(state, "_git", git)
+    (data / "enrich-cache.json").write_text('{"x": 1}')
+    assert state.push(remote, tmp_path / "s", data) > 0

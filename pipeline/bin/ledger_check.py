@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Exit 1 when main's ledger may be behind CloudKit.
+"""Exit 1 while a ledger pull request is open.
 
-The cloud routine clones main. Its ledger is behind when a data/ledger-*
-pull request is not merged yet, or when the last run's ledger never got
-into one; the copy kept by `make state-push` shows the second. A run from
-a stale ledger would push those events a second time. Run it after
-`make state-pull`.
+The cloud routine clones main. A data/ledger-* pull request that is not
+merged yet holds the last run's pushes, so main's ledger is behind
+CloudKit, and a run from it would push those events a second time. A run
+whose ledger never reached GitHub at all is caught by its run mark instead
+(iwpipe/state.py).
 """
 from __future__ import annotations
 
@@ -26,16 +26,9 @@ GITHUB_REPO = os.getenv("GITHUB_REPO", "AssetZi/iWrestle")
 
 
 def open_ledger_prs(slug: str) -> list[dict]:
-    headers = {"Accept": "application/vnd.github+json"}
-    # Anonymous calls share a 60-an-hour limit per IP, which a cloud
-    # machine's shared address can use up. Any token that can read this
-    # public repo will do.
-    token = os.getenv("PIPELINE_STATE_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
     response = requests.get(
         f"https://api.github.com/repos/{slug}/pulls",
-        params={"state": "open", "per_page": 100}, headers=headers, timeout=30,
+        params={"state": "open", "per_page": 100}, headers=state.github_headers(), timeout=30,
     )
     response.raise_for_status()
     return [pr for pr in response.json() if pr["head"]["ref"].startswith(LEDGER_BRANCH_PREFIX)]
@@ -54,24 +47,7 @@ def main() -> int:
             print(f"  #{pr['number']} {pr['head']['ref']}: {pr['html_url']}")
         print("Merge it, then run again. Nothing was collected or pushed.")
         return 1
-    lost = state.ledger_differences()
-    if lost:
-        print(
-            f"{RED}{len(lost)} development events the last run recorded are not in main's "
-            f"ledger{RESET}, so its ledger never reached main and this run would create them again:"
-        )
-        for key in lost[:10]:
-            print(f"  {key}")
-        print(
-            "That run's pushed.json is in pipeline/.state/ledger/. Copy its development "
-            "entries into main's (keep main's production entries) on a data/ledger-<date> "
-            "branch cut from origin/main and open its pull request; once that is merged, "
-            "run again. Leave out any entry whose record was deleted since (make reconcile "
-            "--delete-key on the Mac): restoring it would keep that event from being pushed "
-            "again. Nothing was collected or pushed."
-        )
-        return 1
-    print(f"{GREEN}main's ledger is current{RESET}")
+    print(f"{GREEN}no open ledger pull request{RESET}")
     return 0
 
 

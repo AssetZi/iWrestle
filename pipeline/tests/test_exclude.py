@@ -74,3 +74,18 @@ def test_an_exclusion_without_the_production_key_leaves_production_to_the_next_p
     assert ledger.get(BARE, "development") is None
     assert ledger.get(BARE, "production")["recordName"] == "PROD1"
     assert "next production publish" in capsys.readouterr().out
+
+
+def test_an_exclusion_marks_the_newest_collected_file(tmp_path, monkeypatch):
+    """A production publish reads that file; without the note it would keep
+    the event live, or create it, if no recheck ran after the exclusion."""
+    cli = _wire(tmp_path, monkeypatch, {"20261005": [BARE], "20261012": [BARE]})
+    newest = tmp_path / "events.trackwrestling.20261012.json"
+    payload = json.loads(newest.read_text())
+    payload["events"][0]["review"] = {"status": "approved", "notes": []}
+    newest.write_text(json.dumps(payload))
+
+    assert _run(cli, monkeypatch, BARE, "--reason", "duplicate") == 0
+    event = json.loads(newest.read_text())["events"][0]
+    assert event["review"]["status"] == "skip"
+    assert "excluded: duplicate" in event["review"]["notes"]

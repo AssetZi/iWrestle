@@ -19,15 +19,13 @@ in its environment). The Mac seeds the empty repo once and after that only
 pulls, to publish to production from this week's files. With one writer,
 no machine can overwrite another's newer files or clear its run mark.
 
-begin_run marks a run as started in the private repo, and that run's push
-clears the mark. A mark still there at the next begin_run means a run died
-after it may have created development records but before its ledger was
-kept anywhere.
-
-`push` also keeps a copy of pushed.json under ledger/. It is never copied
-back into data/: main's ledger is the one the pipeline uses. The copy only
-lets a cloud run see that the last run's ledger never reached main
-(ledger_differences), before it pushes those events a second time.
+begin_run marks a run as started in the private repo. That run's push
+clears the mark only once its pushed.json is on GitHub, on main or a
+data/ledger-* branch (ledger_landed). A mark still there at the next
+begin_run means a run created development records whose ledger never left
+its session, and this run would create them again. When the session got as
+far as pushing its state, its pushed.json is saved at ledger/pushed.json in
+the private repo, to recover from.
 """
 from __future__ import annotations
 
@@ -43,7 +41,7 @@ from pathlib import Path
 
 import requests
 
-from .config import DATA_DIR, PIPELINE_ROOT
+from .config import DATA_DIR, PIPELINE_ROOT, REPO_ROOT
 
 STATE_REPO = os.getenv("PIPELINE_STATE_REPO", "")
 STATE_DIR = PIPELINE_ROOT / ".state"
@@ -109,30 +107,118 @@ def _require_writer(head: str | None) -> None:
         )
 
 
-def _require_private(repo: str) -> None:
-    """Refuse to write to a GitHub repo that is not private: the caches hold
-    organizer emails. A local path (the tests) is not checked."""
-    match = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?/?$", repo)
-    if not match:
-        return
+def _github_token() -> str:
+    """A token for the GitHub API: PIPELINE_STATE_TOKEN in the cloud. On the
+    Mac, where that is unset, the gh login (`gh auth token`, read into
+    memory, never printed)."""
+    for name in ("PIPELINE_STATE_TOKEN", "GITHUB_TOKEN", "GH_TOKEN"):
+        if os.getenv(name):
+            return os.environ[name]
+    if shutil.which("gh"):
+        result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True)
+        if result.returncode == 0:
+            return result.stdout.strip()
+    return ""
+
+
+def github_headers() -> dict[str, str]:
+    """Headers for a GitHub API call, authenticated when a token is found.
+    Anonymous calls share a 60-an-hour limit per IP, which a cloud
+    machine's shared address can use up."""
     headers = {"Accept": "application/vnd.github+json"}
-    token = os.getenv("PIPELINE_STATE_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")
+    token = _github_token()
     if token:
         headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
+def _repo_slug(repo: str) -> str | None:
+    """owner/name from a repo URL, None for a local path (the tests).
+
+    Read from the end of the path, so a proxy URL such as
+    http://127.0.0.1:8080/git/owner/name works too."""
+    if repo.startswith("file://") or ("://" not in repo and not re.match(r"^[\w.-]+@[\w.-]+:", repo)):
+        return None
+    path = repo.split("://", 1)[-1].split(":", 1)[-1] if "://" not in repo else repo.split("://", 1)[1]
+    parts = [part for part in path.rstrip("/").removesuffix(".git").split("/") if part]
+    if len(parts) < 2:
+        raise StateError(f"cannot tell which GitHub repo {repo!r} is; nothing was pushed")
+    return "/".join(parts[-2:])
+
+
+def _require_private(repo: str) -> None:
+    """Refuse to write to a repo that is not private on GitHub: the caches
+    hold organizer emails."""
+    slug = _repo_slug(repo)
+    if slug is None:
+        return
     try:
-        response = requests.get(f"https://api.github.com/repos/{match.group(1)}", headers=headers, timeout=30)
+        response = requests.get(f"https://api.github.com/repos/{slug}", headers=github_headers(), timeout=30)
         response.raise_for_status()
         private = response.json().get("private") is True
+    except requests.HTTPError as error:
+        status = getattr(error.response, "status_code", None)
+        if status in (401, 403, 404):
+            raise StateError(
+                f"GitHub would not show {slug} ({status}), so it could not be confirmed "
+                "private; nothing was pushed. This machine needs a token that can read it: "
+                "PIPELINE_STATE_TOKEN in the cloud environment, or a gh login on the Mac "
+                "(gh auth login)."
+            ) from error
+        raise StateError(
+            f"could not confirm that {slug} is private ({str(error)[:120]}); "
+            "nothing was pushed. Retry make state-push."
+        ) from error
     except (requests.RequestException, ValueError) as error:
         raise StateError(
-            f"could not confirm that {match.group(1)} is private ({str(error)[:120]}); "
+            f"could not confirm that {slug} is private ({str(error)[:120]}); "
             "nothing was pushed. Retry make state-push."
         ) from error
     if not private:
         raise StateError(
-            f"{match.group(1)} is not private, and the caches hold organizer emails; "
+            f"{slug} is not private, and the caches hold organizer emails; "
             "nothing was pushed. Make the repo private, then retry make state-push."
         )
+
+
+def ledger_landed(data_dir: Path) -> bool:
+    """This run's pushed.json is on GitHub (see _ledger_landed)."""
+    return _ledger_landed(data_dir, REPO_ROOT)
+
+
+def _ledger_landed(data_dir: Path, repo_root: Path) -> bool:
+    """pushed.json in data_dir matches the one on origin's main or on one of
+    its data/ledger-* branches. A run that changed nothing matches main."""
+    local = data_dir / LEDGER_FILE
+    if not local.exists():
+        return True
+    path = (data_dir.resolve() / LEDGER_FILE).relative_to(repo_root.resolve()).as_posix()
+    git = ["git", "-C", str(repo_root)]
+    fetch = subprocess.run(
+        git + ["fetch", "--quiet", "origin",
+               "+refs/heads/main:refs/remotes/origin/main",
+               "+refs/heads/data/ledger-*:refs/remotes/origin/data/ledger-*"],
+        capture_output=True, text=True,
+    )
+    if fetch.returncode != 0:
+        raise StateError(
+            f"could not check GitHub for this run's ledger ({fetch.stderr.strip()[-150:]}); "
+            "nothing was pushed. Retry make state-push."
+        )
+    refs = subprocess.run(
+        git + ["for-each-ref", "--format=%(refname)", "refs/remotes/origin/main", "refs/remotes/origin/data/"],
+        capture_output=True, text=True, check=True,
+    ).stdout.split()
+    mine = json.loads(local.read_text())
+    for ref in refs:
+        shown = subprocess.run(git + ["show", f"{ref}:{path}"], capture_output=True, text=True)
+        if shown.returncode == 0:
+            try:
+                if json.loads(shown.stdout) == mine:
+                    return True
+            except ValueError:
+                continue
+    return False
 
 
 def _active_run(state_dir: Path) -> bool:
@@ -256,16 +342,25 @@ def begin_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> None:
     reached push."""
     if _active_run(state_dir):
         return
+    _require_private(repo)
     head = _checkout(repo, state_dir)
     _require_writer(head)
     running = state_dir / RUNNING
     if running.exists():
+        saved = state_dir / "ledger" / LEDGER_FILE
+        where = (
+            "Its pushed.json is saved at ledger/pushed.json in the private repo "
+            "(pipeline/.state/ledger/ here): put it on a data/ledger-<date> branch cut from "
+            "origin/main and open its pull request."
+            if saved.exists() else
+            "It never saved its state, so its pushed.json is lost: make reconcile lists the "
+            "development records the ledger doesn't know."
+        )
         raise StateError(
-            f"a run that started {running.read_text().strip()} never finished make state-push. "
-            "If it got as far as pushing, CloudKit has records its ledger lost, and this run "
-            "would create them again. Check with make reconcile (records in CloudKit against "
-            "the ledger, and the ones it doesn't know). When that is sorted out, clear the mark "
-            "with .venv/bin/python bin/state.py clear-run, then start again."
+            f"the run that started {running.read_text().strip()} never got its ledger onto "
+            "GitHub. If it pushed events to development, this run would create them again. "
+            f"{where} If it stopped before pushing, there is nothing to recover. Then clear "
+            "the mark with .venv/bin/python bin/state.py clear-run and start again."
         )
     marker = _marker(state_dir)
     if head and (not marker.exists() or marker.read_text().strip() != head):
@@ -281,8 +376,11 @@ def clear_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR, *, force: boo
     """Remove a stale run mark by hand. Returns whether there was one.
 
     A mark younger than RUN_MARK_HOURS is left alone unless forced: its run
-    may still be going, and its push would then be refused."""
-    _checkout(repo, state_dir)
+    may still be going, and its push would then be refused. Like any write,
+    it is the cloud routine's (a session with Brock, in the cloud)."""
+    _require_private(repo)
+    head = _checkout(repo, state_dir)
+    _require_writer(head)
     running = state_dir / RUNNING
     if not running.exists():
         return False
@@ -316,15 +414,28 @@ def _commit_and_push(state_dir: Path, message: str, *, synced: bool = True) -> i
         _git("push", "--quiet", "origin", f"HEAD:refs/heads/{BRANCH}", cwd=state_dir)
     except StateError as error:
         text = str(error)
-        if any(word in text for word in ("rejected", "non-fast-forward", "fetch first")):
+        if _push_arrived(state_dir):
+            # The server took it; only the reply was lost.
+            pass
+        elif any(word in text for word in ("rejected", "non-fast-forward", "fetch first")):
             raise StateError(f"{error}. Something else wrote the private repo during this run. {DO_NOT_PULL}") from error
-        raise StateError(
-            f"{error}. Nothing else wrote the repo; data/ and this run's mark are intact, "
-            "so retry make state-push."
-        ) from error
+        else:
+            raise StateError(
+                f"{error}. Nothing else wrote the repo; data/ and this run's mark are intact, "
+                "so retry make state-push."
+            ) from error
     if synced:
         _marker(state_dir).write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
     return len(changed)
+
+
+def _push_arrived(state_dir: Path) -> bool:
+    try:
+        _git("fetch", "--quiet", "origin", cwd=state_dir)
+        remote = _git("rev-parse", f"origin/{BRANCH}", cwd=state_dir).strip()
+        return remote == _git("rev-parse", "HEAD", cwd=state_dir).strip()
+    except StateError:
+        return False
 
 
 def push(
@@ -376,54 +487,29 @@ def push(
         if folder != stored and not any(folder.iterdir()):
             folder.rmdir()
     _copy(local, data_dir, stored)
-    if (data_dir / LEDGER_FILE).is_file():
-        _copy({Path(LEDGER_FILE)}, data_dir, state_dir / "ledger")
-    # Clear the run mark only if this clone set it: a push from anywhere
-    # else must not hide a run that died.
-    running, mine = state_dir / RUNNING, _run_id(state_dir)
-    if running.exists() and mine.exists() and running.read_text() == mine.read_text():
-        running.unlink()
+
+    # This run's mark comes off only once its ledger is on GitHub. A push
+    # never touches a mark another clone set.
+    running, mine, saved = state_dir / RUNNING, _run_id(state_dir), state_dir / "ledger" / LEDGER_FILE
+    stranded = False
+    if _active_run(state_dir):
+        if ledger_landed(data_dir):
+            running.unlink()
+            saved.unlink(missing_ok=True)
+        else:
+            stranded = True
+            saved.parent.mkdir(exist_ok=True)
+            shutil.copyfile(data_dir / LEDGER_FILE, saved)
 
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     changed = _commit_and_push(state_dir, f"State after the run of {stamp}")
+    if stranded:
+        raise StateError(
+            "this run's files are saved, but its pushed.json is not on GitHub (no "
+            "data/ledger-* branch or main has it), so the run mark stays and the next run "
+            "will stop. Commit and push the ledger as in step 7, then run make state-push "
+            "again to clear the mark."
+        )
     if not running.exists():
         mine.unlink(missing_ok=True)
     return changed
-
-
-def ledger_differences(state_dir: Path = STATE_DIR, data_dir: Path = DATA_DIR) -> list[str]:
-    """Development events the last run recorded that main's ledger lacks.
-
-    Run after pull on a fresh clone of main. The cloud writes development
-    only, so only those entries are compared. An entry missing from main,
-    or with another record name, means the last run's ledger did not reach
-    main, and this run would push those events again. An event excluded
-    on main since is not counted: make exclude takes it out on purpose.
-    Returns their source keys, sorted."""
-    kept_path = state_dir / "ledger" / LEDGER_FILE
-    if not kept_path.exists():
-        return []
-    prefix = "development:"
-    try:
-        kept = json.loads(kept_path.read_text())
-    except ValueError:
-        # Not knowing is not the same as nothing lost.
-        return ["(the kept ledger/pushed.json in the private repo is unreadable)"]
-    try:
-        main = json.loads((data_dir / LEDGER_FILE).read_text())
-    except (OSError, ValueError):
-        main = {}
-    try:
-        excluded = json.loads((data_dir / "excluded.json").read_text())
-    except (OSError, ValueError):
-        excluded = {}
-    lost = []
-    for key, entry in kept.items():
-        if not key.startswith(prefix):
-            continue
-        source_key = key[len(prefix):]
-        if source_key in excluded:
-            continue
-        if main.get(key, {}).get("recordName") != entry.get("recordName"):
-            lost.append(source_key)
-    return sorted(lost)

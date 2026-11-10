@@ -28,7 +28,7 @@ import requests
 
 from iwpipe import cktool, ckws, exclusions, ledger
 from iwpipe.config import DATA_DIR
-from iwpipe.schema import base_key
+from iwpipe.schema import STATUS_SKIP, base_key
 from iwpipe.term import BOLD, DIM, GREEN, RED, RESET, YELLOW
 
 SOURCE_KEY = re.compile(r"^(pywrestling|flowrestling|trackwrestling):[^\s:]+:\d{4}-\d{2}-\d{2}(:\S+)?$")
@@ -87,6 +87,36 @@ def resolve(query: str, events, current=None):
     return hits
 
 
+def mark_in_newest_file(key: str, reason: str) -> None:
+    """Note the exclusion on the event in its source's newest collected file.
+
+    A production publish reads that file and retires an event noted
+    "excluded:". Collect and recheck add the note too, but an exclusion
+    after the run's last recheck would otherwise leave it approved, and the
+    publish would keep it live in production, or create it there."""
+    source = key.split(":", 1)[0]
+    files = sorted(glob.glob(str(DATA_DIR / f"events.{source}.*.json")))
+    if not files:
+        return
+    newest = files[-1]
+    payload = json.load(open(newest))
+    changed = False
+    for event in payload.get("events", []):
+        if event.get("sourceKey") != key:
+            continue
+        review = event.setdefault("review", {})
+        notes = review.setdefault("notes", [])
+        note = f"excluded: {reason}"
+        if review.get("status") != STATUS_SKIP or note not in notes:
+            review["status"] = STATUS_SKIP
+            if note not in notes:
+                notes.append(note)
+            changed = True
+    if changed:
+        with open(newest, "w") as handle:
+            handle.write(json.dumps(payload, indent=2) + "\n")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("query", nargs="?", help="source key or part of the name")
@@ -127,6 +157,7 @@ def main() -> int:
     key = event["sourceKey"]
     exclusions.add(key, args.reason, event.get("name", ""))
     print(f"{BOLD}excluded{RESET} {key}  ({args.reason})")
+    mark_in_newest_file(key, args.reason)
 
     status = 0
     try:
