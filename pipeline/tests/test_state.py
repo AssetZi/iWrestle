@@ -373,7 +373,7 @@ def test_clearing_a_run_mark_does_not_count_as_a_pull(tmp_path, remote):
 
     stale = tmp_path / "stale"
     _data(stale)
-    assert state.clear_run(remote, tmp_path / "s2")
+    assert state.clear_run(remote, tmp_path / "s2", force=True)
     with pytest.raises(state.StateError, match="state-pull"):
         state.push(remote, tmp_path / "s2", stale)
 
@@ -442,3 +442,100 @@ def test_the_ledger_check_looks_only_at_what_the_cloud_writes(tmp_path):
     main["development:a"]["recordName"] = "R0"
     (data / "pushed.json").write_text(json.dumps(main))
     assert state.ledger_differences(state_dir, data) == ["a", "c"]
+
+
+def test_a_failed_push_that_was_not_a_conflict_says_to_retry(tmp_path, remote, monkeypatch):
+    """A network error at the last step is not another writer; a retry is
+    safe, and stopping would lose the run's files and block next week."""
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s", data)
+    real = state._git
+
+    def git(*args, cwd=None):
+        if args[0] == "push":
+            raise state.StateError("git push failed: fatal: unable to access: Could not resolve host")
+        return real(*args, cwd=cwd)
+
+    monkeypatch.setattr(state, "_git", git)
+    (data / "enrich-cache.json").write_text('{"x": 1}')
+    with pytest.raises(state.StateError) as error:
+        state.push(remote, tmp_path / "s", data)
+    assert "retry make state-push" in str(error.value)
+    assert "Something else wrote" not in str(error.value)
+
+
+def test_the_private_repo_must_be_private(monkeypatch):
+    """The caches hold organizer emails; a public repo would publish them."""
+    calls = []
+
+    def get(url, **kwargs):
+        calls.append(url)
+        return _Response({"private": visibility["private"]})
+
+    visibility = {"private": False}
+    monkeypatch.setattr(state.requests, "get", get)
+    with pytest.raises(state.StateError, match="not private"):
+        state._require_private("https://github.com/AssetZi/iwrestle-pipeline-data.git")
+    assert calls == ["https://api.github.com/repos/AssetZi/iwrestle-pipeline-data"]
+
+    visibility["private"] = True
+    state._require_private("https://github.com/AssetZi/iwrestle-pipeline-data.git")
+
+    def down(*a, **k):
+        raise state.requests.ConnectionError("no network")
+
+    monkeypatch.setattr(state.requests, "get", down)
+    with pytest.raises(state.StateError, match="private"):
+        state._require_private("https://github.com/AssetZi/iwrestle-pipeline-data.git")
+
+
+def test_a_recent_run_mark_is_not_cleared_without_force(tmp_path, remote):
+    """It may belong to a run still going, whose push would then be refused."""
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s1", data)
+    state.begin_run(remote, tmp_path / "s1")
+    with pytest.raises(state.StateError, match="still be running"):
+        state.clear_run(remote, tmp_path / "s2")
+    assert state.clear_run(remote, tmp_path / "s2", force=True)
+
+
+def test_cloud_start_twice_in_one_session_does_not_undo_the_run(tmp_path, remote):
+    """A second pull would copy the repo's older files over this run's."""
+    data = tmp_path / "data"
+    folder = _data(data)
+    state.push(remote, tmp_path / "s", data)
+    state.pull(remote, tmp_path / "s", data)
+    state.begin_run(remote, tmp_path / "s")
+    (folder / "logo.png").write_bytes(b"drawn this run")
+
+    assert state.pull(remote, tmp_path / "s", data) == 0
+    assert (folder / "logo.png").read_bytes() == b"drawn this run"
+    state.begin_run(remote, tmp_path / "s")
+    state.push(remote, tmp_path / "s", data)
+    state.begin_run(remote, tmp_path / "s")  # the mark was cleared
+
+
+def test_a_pulled_collected_file_is_dated_by_its_name(tmp_path, remote):
+    """make promote refuses a file older than STALE_DAYS by its modification
+    time; a pull must not make an old file look new."""
+    import datetime as dt
+
+    data = tmp_path / "data"
+    _data(data)
+    state.push(remote, tmp_path / "s1", data)
+    fresh = tmp_path / "fresh"
+    fresh.mkdir()
+    state.pull(remote, tmp_path / "s2", fresh)
+    stamp = dt.datetime.fromtimestamp((fresh / "events.flowrestling.20261109.json").stat().st_mtime, dt.timezone.utc)
+    assert stamp.date() == dt.date(2026, 11, 9)
+
+
+def test_an_unreadable_kept_ledger_stops_the_run(tmp_path):
+    state_dir, data = tmp_path / "s", tmp_path / "data"
+    (state_dir / "ledger").mkdir(parents=True)
+    data.mkdir()
+    (state_dir / "ledger" / "pushed.json").write_text("{not json")
+    (data / "pushed.json").write_text("{}")
+    assert state.ledger_differences(state_dir, data)

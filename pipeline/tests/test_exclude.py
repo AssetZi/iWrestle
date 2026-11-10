@@ -51,3 +51,26 @@ def test_a_key_only_an_older_file_has_is_still_excludable(tmp_path, monkeypatch)
     cli = _wire(tmp_path, monkeypatch, {"20261005": [BARE], "20261012": ["trackwrestling:other:2026-12-19"]})
     assert _run(cli, monkeypatch, BARE) == 0
     assert list(exclusions.load()) == [BARE]
+
+
+def test_an_exclusion_without_the_production_key_leaves_production_to_the_next_publish(tmp_path, monkeypatch, capsys):
+    """The cloud routine has no production key, so it never writes
+    production. Its exclusions take the development record down; the next
+    promote from the Mac retires the production one (an "excluded:" note
+    counts at once)."""
+    deleted = []
+
+    class Client:
+        def delete_record(self, name):
+            deleted.append(name)
+
+    cli = _wire(tmp_path, monkeypatch, {"20261012": [BARE]})
+    monkeypatch.setattr(cktool, "rest_client", lambda environment: Client() if environment == "development" else None)
+    ledger.record(BARE, "development", "DEV1", "Delete Delete Delete")
+    ledger.record(BARE, "production", "PROD1", "Delete Delete Delete")
+
+    assert _run(cli, monkeypatch, BARE) == 0
+    assert deleted == ["DEV1"]
+    assert ledger.get(BARE, "development") is None
+    assert ledger.get(BARE, "production")["recordName"] == "PROD1"
+    assert "next production publish" in capsys.readouterr().out

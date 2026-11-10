@@ -66,7 +66,9 @@ def main() -> int:
             "That run's pushed.json is in pipeline/.state/ledger/. Copy its development "
             "entries into main's (keep main's production entries) on a data/ledger-<date> "
             "branch cut from origin/main and open its pull request; once that is merged, "
-            "run again. Nothing was collected or pushed."
+            "run again. Leave out any entry whose record was deleted since (make reconcile "
+            "--delete-key on the Mac): restoring it would keep that event from being pushed "
+            "again. Nothing was collected or pushed."
         )
         return 1
     print(f"{GREEN}main's ledger is current{RESET}")

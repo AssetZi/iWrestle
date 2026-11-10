@@ -26,6 +26,10 @@ def main() -> int:
         "--allow-shrink", action="store_true",
         help=f"push even if it deletes more than {state.MAX_SHRINK:.0%%} of the kept files",
     )
+    parser.add_argument(
+        "--force", action="store_true",
+        help=f"clear-run: clear a mark younger than {state.RUN_MARK_HOURS} hours",
+    )
     args = parser.parse_args()
     try:
         if args.action == "pull":
@@ -37,7 +41,7 @@ def main() -> int:
             count = state.push(allow_shrink=args.allow_shrink)
             print(f"{GREEN}state push{RESET}: {count} files changed in the private repo")
         else:
-            print(f"{GREEN}state clear-run{RESET}: " + ("mark removed" if state.clear_run() else "no mark to remove"))
+            print(f"{GREEN}state clear-run{RESET}: " + ("mark removed" if state.clear_run(force=args.force) else "no mark to remove"))
     except state.StateError as error:
         print(f"{RED}{error}{RESET}")
         return 1

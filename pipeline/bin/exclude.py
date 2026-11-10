@@ -9,7 +9,9 @@
 The argument is a source key or a piece of the event's name; a name that
 matches more than one event is listed instead of guessed, and so is a key
 the source has since replaced with longer ones. The event is deleted from
-every environment it was pushed to, and every future collect skips it.
+every environment it was pushed to (production only where its key is set;
+otherwise the next production publish retires it), and every future
+collect skips it.
 --undo lets it back in on the next run.
 """
 from __future__ import annotations
@@ -134,8 +136,23 @@ def main() -> int:
                 if not entry:
                     continue
                 try:
-                    cktool.require_client(environment).delete_record(entry["recordName"])
-                except (cktool.NoWriteAccess, ckws.CKWSError, requests.RequestException) as error:
+                    client = cktool.require_client(environment)
+                except cktool.NoWriteAccess as error:
+                    if environment == cktool.PRODUCTION:
+                        # The cloud routine has no production key. The
+                        # collected file's "excluded:" note makes the next
+                        # production publish retire the record.
+                        print(
+                            f"  {DIM}production: no key here; the next production publish "
+                            f"retires record {entry['recordName'][:8]}{RESET}"
+                        )
+                        continue
+                    print(f"  {RED}{environment}: delete failed{RESET}: {str(error)[:120]}")
+                    status = 1
+                    continue
+                try:
+                    client.delete_record(entry["recordName"])
+                except (ckws.CKWSError, requests.RequestException) as error:
                     print(f"  {RED}{environment}: delete failed{RESET}: {str(error)[:120]}")
                     status = 1
                     continue

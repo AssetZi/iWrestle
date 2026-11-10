@@ -41,6 +41,8 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
+import requests
+
 from .config import DATA_DIR, PIPELINE_ROOT
 
 STATE_REPO = os.getenv("PIPELINE_STATE_REPO", "")
@@ -58,6 +60,8 @@ RUNNING = "RUNNING"
 # allow_shrink is given.
 MAX_SHRINK = 0.10
 WRITER_ENV = "PIPELINE_STATE_WRITER"
+# A run mark younger than this may belong to a run still going.
+RUN_MARK_HOURS = 6
 DO_NOT_PULL = (
     "Stop and report this; do not run make state-pull, which would overwrite "
     "this run's new files with older ones."
@@ -103,6 +107,38 @@ def _require_writer(head: str | None) -> None:
             "only the cloud routine writes the private repo; this machine only pulls "
             f"({WRITER_ENV}=1 is set in the cloud environment)"
         )
+
+
+def _require_private(repo: str) -> None:
+    """Refuse to write to a GitHub repo that is not private: the caches hold
+    organizer emails. A local path (the tests) is not checked."""
+    match = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?/?$", repo)
+    if not match:
+        return
+    headers = {"Accept": "application/vnd.github+json"}
+    token = os.getenv("PIPELINE_STATE_TOKEN") or os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    try:
+        response = requests.get(f"https://api.github.com/repos/{match.group(1)}", headers=headers, timeout=30)
+        response.raise_for_status()
+        private = response.json().get("private") is True
+    except (requests.RequestException, ValueError) as error:
+        raise StateError(
+            f"could not confirm that {match.group(1)} is private ({str(error)[:120]}); "
+            "nothing was pushed. Retry make state-push."
+        ) from error
+    if not private:
+        raise StateError(
+            f"{match.group(1)} is not private, and the caches hold organizer emails; "
+            "nothing was pushed. Make the repo private, then retry make state-push."
+        )
+
+
+def _active_run(state_dir: Path) -> bool:
+    """This clone began a run that has not pushed yet."""
+    running, mine = state_dir / RUNNING, _run_id(state_dir)
+    return running.exists() and mine.exists() and running.read_text() == mine.read_text()
 
 
 def _run_id(state_dir: Path) -> Path:
@@ -163,8 +199,19 @@ def _copy(relative: set[Path], source: Path, destination: Path) -> int:
             continue
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source / path, target)
+        _date_by_name(target)
         copied += 1
     return copied
+
+
+def _date_by_name(path: Path) -> None:
+    """Give a collected file its collect date as its modification time:
+    make promote's stale check and `ls -t` go by it, and a copy would
+    otherwise look new."""
+    match = EVENTS_FILE.fullmatch(path.name)
+    if match:
+        day = datetime.strptime(match.group(2), "%Y%m%d").replace(hour=12, tzinfo=timezone.utc)
+        os.utime(path, (day.timestamp(), day.timestamp()))
 
 
 def pull(repo: str = STATE_REPO, state_dir: Path = STATE_DIR, data_dir: Path = DATA_DIR) -> int:
@@ -174,6 +221,10 @@ def pull(repo: str = STATE_REPO, state_dir: Path = STATE_DIR, data_dir: Path = D
     had at this machine's last sync and has since deleted: another run
     dropped them on purpose (a flyer that names a different event), and the
     next push from here would bring them back."""
+    if _active_run(state_dir):
+        # cloud-start ran twice in one session: pulling now would copy the
+        # repo's older files over the ones this run made.
+        return 0
     marker = _marker(state_dir)
     synced = marker.read_text().strip() if marker.exists() else ""
     head = _checkout(repo, state_dir)
@@ -203,6 +254,8 @@ def _tracked(state_dir: Path, commit: str) -> set[Path]:
 def begin_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> None:
     """Mark a run as started, after pull. Refuses if the last one never
     reached push."""
+    if _active_run(state_dir):
+        return
     head = _checkout(repo, state_dir)
     _require_writer(head)
     running = state_dir / RUNNING
@@ -224,12 +277,26 @@ def begin_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> None:
     _run_id(state_dir).write_text(mark + "\n")
 
 
-def clear_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR) -> bool:
-    """Remove a stale run mark by hand. Returns whether there was one."""
+def clear_run(repo: str = STATE_REPO, state_dir: Path = STATE_DIR, *, force: bool = False) -> bool:
+    """Remove a stale run mark by hand. Returns whether there was one.
+
+    A mark younger than RUN_MARK_HOURS is left alone unless forced: its run
+    may still be going, and its push would then be refused."""
     _checkout(repo, state_dir)
     running = state_dir / RUNNING
     if not running.exists():
         return False
+    try:
+        started = datetime.strptime(running.read_text()[:20], "%Y-%m-%d %H:%M UTC").replace(tzinfo=timezone.utc)
+    except ValueError:
+        started = None
+    if started and not force:
+        hours = (datetime.now(timezone.utc) - started).total_seconds() / 3600
+        if hours < RUN_MARK_HOURS:
+            raise StateError(
+                f"the run mark is {hours:.1f} hours old, so its run may still be running. "
+                "Wait, or add --force if you know it stopped."
+            )
     running.unlink()
     # Not a sync: this clone has not pulled the files, so it may not push them.
     _commit_and_push(state_dir, "Clear the mark of a run that never finished", synced=False)
@@ -248,7 +315,13 @@ def _commit_and_push(state_dir: Path, message: str, *, synced: bool = True) -> i
     try:
         _git("push", "--quiet", "origin", f"HEAD:refs/heads/{BRANCH}", cwd=state_dir)
     except StateError as error:
-        raise StateError(f"{error}. Something else wrote the private repo during this run. {DO_NOT_PULL}") from error
+        text = str(error)
+        if any(word in text for word in ("rejected", "non-fast-forward", "fetch first")):
+            raise StateError(f"{error}. Something else wrote the private repo during this run. {DO_NOT_PULL}") from error
+        raise StateError(
+            f"{error}. Nothing else wrote the repo; data/ and this run's mark are intact, "
+            "so retry make state-push."
+        ) from error
     if synced:
         _marker(state_dir).write_text(_git("rev-parse", "HEAD", cwd=state_dir).strip() + "\n")
     return len(changed)
@@ -265,7 +338,11 @@ def push(
     also refused when it would drop more than MAX_SHRINK of the files, a
     cache, or a source's only collected file. Returns how many files the
     commit changed (0: nothing to commit)."""
-    head = _checkout(repo, state_dir)
+    _require_private(repo)
+    try:
+        head = _checkout(repo, state_dir)
+    except StateError as error:
+        raise StateError(f"{error}. Nothing was changed; retry make state-push.") from error
     _require_writer(head)
     marker = _marker(state_dir)
     synced = marker.read_text().strip() if marker.exists() else None
@@ -330,7 +407,8 @@ def ledger_differences(state_dir: Path = STATE_DIR, data_dir: Path = DATA_DIR) -
     try:
         kept = json.loads(kept_path.read_text())
     except ValueError:
-        return []
+        # Not knowing is not the same as nothing lost.
+        return ["(the kept ledger/pushed.json in the private repo is unreadable)"]
     try:
         main = json.loads((data_dir / LEDGER_FILE).read_text())
     except (OSError, ValueError):
