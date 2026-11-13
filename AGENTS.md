@@ -6,6 +6,7 @@ Pick the parts of this workflow that fit the task.
 - Code changes use isolation, the architecture rules, the checks, and evidence of the behavior changed. Capture a failure before fixing it.
 - Small tweaks (one or two files, no behavior risk: copy, a constant, a typo, a config value) are edited on the current branch, `main` included, with no worktree or PR. If unsure whether a task is small, ask once before the first edit.
 - Small documentation edits use an isolated branch and a content check. No runtime evidence, no review loop.
+- A change to SQL, an RPC, an edge function, a cron job, or a script is a behavior change. It goes through the workflow, and its evidence is an output pair.
 - Ship when the task calls for a PR. A request for a plan, review, or local experiment does not imply publishing it.
 
 ## Workflow
@@ -26,6 +27,7 @@ Run `/unslop` over anything a person will read: commit messages, PR title and bo
 - Resolve `Package.resolved` conflicts by regenerating, never by hand.
 - Worktrees do not isolate the simulator. Confirm the installed bundle is yours before trusting it.
 - If a conflict can't be resolved confidently, stop and report.
+- Push your own task branch and open the PR without asking. Never push or merge `main` unless told to.
 - Do not merge the PR unless told to. Keep the worktree until the PR is merged or closed, then `/cleanup`.
 - The events pipeline is the one task that runs in the primary checkout, not a worktree: its venv, cache and secrets are gitignored there. Its ledger commits go on a `data/ledger-<date>` branch cut from `origin/main` and land by pull request. The `iwrestle-events` skill has the steps.
 
