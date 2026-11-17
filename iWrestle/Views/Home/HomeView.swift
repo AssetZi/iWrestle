@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import CloudKit
 
 struct HomeView: View {
     @Environment(CloudKitManager.self) var ck
@@ -16,7 +17,9 @@ struct HomeView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var viewState: HomeViewState = .loading
-    @State private var isFetching = false
+    /// The load in flight. A new one cancels it, so the latest location or
+    /// filters always win and a superseded load never shows its result.
+    @State private var loadTask: Task<Void, Never>?
     @State private var showFilter = false
     @State private var filters: EventFilters = .default
     @State private var viewMode: ViewMode = .list
@@ -63,7 +66,7 @@ struct HomeView: View {
                 }
             }
             .task(id: lm.userCoordinates?.latitude) {
-                if case .loading = viewState { await loadEvents() }
+                if case .loading = viewState { await reload().value }
             }
             .onChange(of: lm.isPermissionDenied) { _, denied in
                 if denied == true, case .loading = viewState {
@@ -74,7 +77,7 @@ struct HomeView: View {
                 EventsFilterView(filters: filters, currentCount: loadedCount) { applied in
                     filters = applied
                     viewState = .loading
-                    Task { await loadEvents() }
+                    reload()
                 }
             }
         }
@@ -90,7 +93,7 @@ struct HomeView: View {
             switch viewMode {
             case .list:
                 EventsListView(list: list, userLocation: lm.userLocation)
-                    .refreshable { await loadEvents() }
+                    .refreshable { await reload().value }
                     .transition(.opacity)
             case .map:
                 EventsMapView(events: list.events, userLocation: lm.userLocation, selected: $selectedPin)
@@ -99,7 +102,7 @@ struct HomeView: View {
         case .error(let error):
             ErrorViewiWrestle(error: error, retryTitle: error == .noData ? "Try again" : nil) {
                 viewState = .loading
-                Task { await loadEvents() }
+                reload()
             }
             // Nothing nearby is a dead end, so offer something else to try.
             // Left out at accessibility text sizes, where the message and
@@ -123,11 +126,16 @@ struct HomeView: View {
 
     // MARK: - Loading
 
-    func loadEvents() async {
-        guard !isFetching else { return }
-        isFetching = true
-        defer { isFetching = false }
+    /// Starts a load, cancelling any still in flight.
+    @discardableResult
+    private func reload() -> Task<Void, Never> {
+        loadTask?.cancel()
+        let task = Task { await loadEvents() }
+        loadTask = task
+        return task
+    }
 
+    private func loadEvents() async {
         #if DEBUG
         if MockEvents.isEnabled {
             viewState = .loaded(EventList(MockEvents.nearby, userLocation: lm.userLocation))
@@ -142,27 +150,24 @@ struct HomeView: View {
             return
         }
 
-        // Filters applied while a load is in flight would otherwise be
-        // ignored (the guard above) and the older answer would win.
-        var requested: EventFilters
-        repeat {
-            requested = filters
-            do {
-                let events: [Event]
-                if requested.isDefault {
-                    events = try await fetchWithExpandingRadius(from: userLocation)
-                } else if let predicates = requested.predicates(userLocation: userLocation) {
-                    events = try await ck.fetchEvents(predicates: predicates)
-                } else {
-                    events = []
-                }
-                viewState = events.isEmpty
-                    ? .error(.noData)
-                    : .loaded(EventList(events, userLocation: userLocation))
-            } catch {
-                viewState = .error(.noData)
+        let requested = filters
+        let result: Result<[Event], Error>
+        do {
+            if requested.isDefault {
+                result = .success(try await fetchWithExpandingRadius(from: userLocation))
+            } else if let predicates = requested.predicates(userLocation: userLocation) {
+                result = .success(try await ck.fetchEvents(predicates: predicates))
+            } else {
+                result = .success([])
             }
-        } while filters != requested
+        } catch {
+            result = .failure(error)
+        }
+        // A newer load replaced this one; its answer is the one to show.
+        guard !Task.isCancelled else { return }
+        if let state = HomeViewState.after(result, userLocation: userLocation) {
+            viewState = state
+        }
     }
 
     func fetchWithExpandingRadius(from location: CLLocation) async throws -> [Event] {
@@ -192,4 +197,26 @@ enum HomeViewState {
     case loading
     case loaded(EventList)
     case error(iWrestleError)
+
+    /// What a finished home-feed load shows, or nil to leave the screen as is.
+    /// A cancelled load was replaced by a newer one, so it says nothing about
+    /// whether events exist.
+    static func after(_ result: Result<[Event], Error>, userLocation: CLLocation) -> HomeViewState? {
+        switch result {
+        case .success(let events):
+            return events.isEmpty ? .error(.noData) : .loaded(EventList(events, userLocation: userLocation))
+        case .failure(let error):
+            return error.isCancellation ? nil : .error(.noData)
+        }
+    }
+}
+
+extension Error {
+    /// Swift task, CloudKit and URL loading each report cancellation their own way.
+    var isCancellation: Bool {
+        if self is CancellationError { return true }
+        if let ck = self as? CKError, ck.code == .operationCancelled { return true }
+        if let url = self as? URLError, url.code == .cancelled { return true }
+        return false
+    }
 }
