@@ -15,6 +15,9 @@ struct SettingsView: View {
     @State private var showAddSheet: Bool = false
     @State private var userEvents: [Event] = []
     @State private var loadedUserEvents = false
+    /// Counted at launch without downloading the events; the dashboard
+    /// loads them when it opens and the count follows the list from then on.
+    @State private var userEventCount = 0
 
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -60,8 +63,9 @@ struct SettingsView: View {
             .task { await loadUserEventCount() }
             // Anyone with an event of their own, loaded or just published, is
             // an organizer; the promo favors Matlas for them from next launch.
-            .onChange(of: userEvents.isEmpty) { _, isEmpty in
-                guard !isEmpty else { return }
+            .onChange(of: userEvents.count) { _, count in userEventCount = count }
+            .onChange(of: userEventCount > 0) { _, hasEvents in
+                guard hasEvents else { return }
                 #if DEBUG
                 if MockEvents.isEnabled { return }
                 #endif
@@ -112,7 +116,7 @@ struct SettingsView: View {
                 RowSurface {
                     CardRow(icon: .trophy, label: "Events dashboard") {
                         if loadedUserEvents {
-                            Text(String(format: "%02d", userEvents.count))
+                            Text(String(format: "%02d", userEventCount))
                                 .font(.distance)
                                 .foregroundStyle(Theme.gold)
                         }
@@ -143,7 +147,9 @@ struct SettingsView: View {
 
     // MARK: - Data
 
-    /// Populates the dashboard count once; the dashboard reuses the binding.
+    /// Counts the user's events once. Settings is built at launch, so this
+    /// asks for IDs only: fetching the events here pulled every logo and
+    /// flyer of theirs down alongside the home feed.
     private func loadUserEventCount() async {
         guard !loadedUserEvents else { return }
         #if DEBUG
@@ -153,8 +159,8 @@ struct SettingsView: View {
             return
         }
         #endif
-        if userEvents.isEmpty, let events = try? await ck.fetchUserEvents() {
-            userEvents = events
+        if userEvents.isEmpty, let count = try? await ck.countUserEvents() {
+            userEventCount = count
         }
         loadedUserEvents = true
     }

@@ -18,7 +18,7 @@ struct EventCell: View {
     var body: some View {
         let parts = AddressParts(event.address)
         HStack(spacing: 13) {
-            EventLogoView(url: event.logo, name: event.name, size: 48)
+            EventLogoView(event: event, name: event.name, size: 48)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(event.name)

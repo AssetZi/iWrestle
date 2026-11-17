@@ -14,6 +14,7 @@ struct EventDetailView: View {
     @Environment(\.requestReview) private var requestReview
     @Environment(LocationManager.self) private var lm
     @Environment(CloudKitManager.self) private var ck
+    @Environment(LogoManager.self) private var logos
     @AppStorage("eventDetailViewCount") private var eventDetailViewCount = 0
     @AppStorage("lastReviewRequestDate") private var lastReviewRequestDate = Date.distantPast.timeIntervalSince1970
     let event: Event
@@ -85,7 +86,7 @@ struct EventDetailView: View {
 
     private var header: some View {
         HStack(spacing: 14) {
-            EventLogoView(url: event.logo, name: event.name, size: 64,
+            EventLogoView(event: event, name: event.name, size: 64,
                           radius: Theme.Radius.tile64, font: .monoTile18)
             VStack(alignment: .leading, spacing: 5) {
                 Eyebrow("\(event.typeTitle) · \(event.date.shortDayLabel)", size: 10)
@@ -219,7 +220,7 @@ struct EventDetailView: View {
         isPreparingShare = true
         defer { isPreparingShare = false }
 
-        guard let pdf = EventPDFExporter.makePDF(for: event) else { return }
+        guard let pdf = EventPDFExporter.makePDF(for: event, logoURL: logos.url(for: event)) else { return }
         sharePayload = SharePayload(items: [ShareURLItem(url: pdf, subject: event.name)])
     }
 

@@ -120,7 +120,7 @@ struct MapMiniCard: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            EventLogoView(url: event.logo, name: event.name, size: 44, radius: Theme.Radius.tile44,
+            EventLogoView(event: event, name: event.name, size: 44, radius: Theme.Radius.tile44,
                           font: .monoTile13, fill: Theme.slate900, showsBorder: false)
             VStack(alignment: .leading, spacing: 2) {
                 Text(event.name)

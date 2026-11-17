@@ -35,6 +35,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     override init() {
         super.init()
         manager.delegate = self
+        // Events are searched by the hundreds of miles and shown in whole
+        // miles. The default asks for the best fix GPS can give, which takes
+        // the longest to arrive and holds up the first load.
+        manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -50,6 +54,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let coordinates = locations.first?.coordinate else { return }
         
+        if userLocation == nil { LaunchTiming.mark("first location fix") }
         //updating user cordinates
         userCoordinates = coordinates
         userLocation = locations.first

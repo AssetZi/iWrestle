@@ -121,7 +121,7 @@ struct DashboardRow: View {
             Text(String(format: "%02d", index + 1))
                 .font(.monoIndex)
                 .foregroundStyle(Theme.textTertiary)
-            EventLogoView(url: event.logo, name: event.name, size: 44,
+            EventLogoView(event: event, name: event.name, size: 44,
                           radius: Theme.Radius.tile44, font: .monoTile13)
             VStack(alignment: .leading, spacing: 3) {
                 Text(event.name)

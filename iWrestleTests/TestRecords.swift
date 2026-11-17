@@ -42,14 +42,21 @@ enum TestRecords {
         return record
     }
 
-    /// A record the app must drop: no logo asset.
-    static func eventWithoutLogo() -> CKRecord {
-        let record = event(name: "Broken")
+    /// A list query leaves the logo out; LogoManager fetches it.
+    static func eventWithoutLogo(name: String = "No Logo") -> CKRecord {
+        let record = event(name: name)
         record[Event.Field.logo] = nil
         return record
     }
 
-    private static func tempFile(_ name: String) -> URL {
+    /// A record the app must drop: no name.
+    static func undecodable() -> CKRecord {
+        let record = event(name: "Broken")
+        record[Event.Field.name] = nil
+        return record
+    }
+
+    static func tempFile(_ name: String) -> URL {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + "-" + name)
         try? Data("x".utf8).write(to: url)
         return url

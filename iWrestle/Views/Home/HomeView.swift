@@ -11,6 +11,7 @@ import MapKit
 struct HomeView: View {
     @Environment(CloudKitManager.self) var ck
     @Environment(LocationManager.self) var lm
+    @Environment(LogoManager.self) var logos
     @Binding var path: NavigationPath
     @Environment(\.tabBarInset) private var tabBarInset
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -19,6 +20,9 @@ struct HomeView: View {
     /// A new load cancels the one in flight, so the latest location or
     /// filters always win and a superseded load never shows its result.
     @State private var loads = LatestLoad<HomeLoad>()
+    /// Where the latest load searched from: the live fix, or the last
+    /// session's when this one has none yet.
+    @State private var loadLocation: CLLocation?
     @State private var showFilter = false
     @State private var filters: EventFilters = .default
     @State private var viewMode: ViewMode = .list
@@ -70,12 +74,20 @@ struct HomeView: View {
                 }
             }
             .task(id: lm.userCoordinates?.latitude) {
-                if case .loading = viewState { await reload().value }
+                if let fix = lm.userLocation {
+                    // A load from the last session's location is already
+                    // running or shown. Restarting it for a fix a few miles
+                    // away would throw that work out for the same events.
+                    guard HomeReload.isNeeded(for: fix, loadedFrom: loadLocation) else { return }
+                    await reload().value
+                } else if case .loading = viewState {
+                    await reload().value
+                }
             }
             .onChange(of: lm.isPermissionDenied) { _, denied in
-                if denied == true, case .loading = viewState {
-                    viewState = .error(.locationError)
-                }
+                // Reloads so a search started from the last session's
+                // location does not show after permission was taken away.
+                if denied == true, lm.userLocation == nil { reload() }
             }
             .sheet(isPresented: $showFilter) {
                 EventsFilterView(filters: filters, currentCount: loadedCount) { applied in
@@ -96,11 +108,11 @@ struct HomeView: View {
         case .loaded(let list):
             switch viewMode {
             case .list:
-                EventsListView(list: list, userLocation: lm.userLocation)
+                EventsListView(list: list, userLocation: distanceOrigin)
                     .refreshable { await reload().value }
                     .transition(.opacity)
             case .map:
-                EventsMapView(events: list.events, userLocation: lm.userLocation, selected: $selectedPin)
+                EventsMapView(events: list.events, userLocation: distanceOrigin, selected: $selectedPin)
                     .transition(.opacity)
             }
         case .error(let error):
@@ -122,6 +134,12 @@ struct HomeView: View {
         }
     }
 
+    /// Where distances are measured from: the fix, or until it arrives the
+    /// location the list was loaded for.
+    private var distanceOrigin: CLLocation? {
+        lm.userLocation ?? loadLocation
+    }
+
     /// How many events are on screen, or nil when no list is showing.
     private var loadedCount: Int? {
         if case .loaded(let list) = viewState { return list.events.count }
@@ -135,13 +153,20 @@ struct HomeView: View {
     private func reload() -> Task<Void, Never> {
         loads.start { await loadEvents() } deliver: { load in
             guard let state = load.state else { return }
+            if case .loaded(let list) = state { LaunchTiming.mark("list shown (\(list.events.count) events)") }
             emptyCampaign = load.emptyCampaign
             viewState = state
+            if case .loaded(let list) = state {
+                Task { await logos.load(list.events) }
+            }
         }
     }
 
     /// What a fresh load ends in. A nil state leaves the screen as is (no
     /// location yet and permission not denied).
+    ///
+    /// Searches from the last session's location until this one has a fix,
+    /// so a returning user's query goes out at launch and not after GPS.
     private func loadEvents() async -> HomeLoad {
         #if DEBUG
         if MockEvents.isEnabled {
@@ -149,10 +174,13 @@ struct HomeView: View {
         }
         #endif
 
-        guard let userLocation = lm.userLocation else {
-            return HomeLoad(state: lm.isPermissionDenied == true ? .error(.locationError) : nil)
+        let denied = lm.isPermissionDenied == true
+        guard let userLocation = lm.userLocation ?? (denied ? nil : LocationManager.lastKnownLocation) else {
+            return HomeLoad(state: denied ? .error(.locationError) : nil)
         }
+        loadLocation = userLocation
 
+        LaunchTiming.mark("home load started")
         let requested = filters
         let result: Result<[Event], Error>
         do {
@@ -198,6 +226,18 @@ struct HomeView: View {
             if !events.isEmpty { return events }
         }
         return []
+    }
+}
+
+/// Whether a new location fix calls for loading the feed again.
+nonisolated enum HomeReload {
+    /// About ten miles. The feed searches 250 miles out, so a smaller move
+    /// brings back the same events.
+    static let moveThreshold: CLLocationDistance = 16_000
+
+    static func isNeeded(for fix: CLLocation, loadedFrom: CLLocation?) -> Bool {
+        guard let loadedFrom else { return true }
+        return fix.distance(from: loadedFrom) > moveThreshold
     }
 }
 
