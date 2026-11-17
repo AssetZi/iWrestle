@@ -13,9 +13,10 @@ import UIKit
 enum EventPDFExporter {
     /// Writes the event's share flyer to a temp file and returns its URL.
     /// Nil if the PDF context could not be created.
-    static func makePDF(for event: Event) -> URL? {
-        // `event.logo` is a CKAsset file URL on disk, so this loads synchronously.
-        let logo = UIImage(contentsOfFile: event.logo.path)
+    /// - Parameter logoURL: the logo file on disk, if it has been loaded;
+    ///   without it the page draws its monogram tile.
+    static func makePDF(for event: Event, logoURL: URL?) -> URL? {
+        let logo = logoURL.flatMap { UIImage(contentsOfFile: $0.path) }
         let qr = event.registration.flatMap { QRCode.image(for: $0) }
 
         // Filled in while the page lays out; read back after `draw` to stamp

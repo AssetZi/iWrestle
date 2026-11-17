@@ -50,8 +50,8 @@ final class EventPagerTests: XCTestCase {
     /// loop keeps going instead of returning short with a live cursor.
     func testUndecodableRecordsDoNotFillTheCeiling() async throws {
         let db = FakeDatabase(pages: [
-            [TestRecords.eventWithoutLogo(), TestRecords.eventWithoutLogo(), TestRecords.event(name: "A")],
-            [TestRecords.event(name: "B"), TestRecords.eventWithoutLogo()],
+            [TestRecords.undecodable(), TestRecords.undecodable(), TestRecords.event(name: "A")],
+            [TestRecords.event(name: "B"), TestRecords.undecodable()],
             [TestRecords.event(name: "C")],
         ])
         let events = try await EventPager.collect(ceiling: 3, fetch: db.fetch)
@@ -63,8 +63,8 @@ final class EventPagerTests: XCTestCase {
     /// failing to decode as an event.
     func testDecodeIsPluggable() async throws {
         let db = FakeDatabase(pages: [
-            [TestRecords.eventWithoutLogo(), TestRecords.event(name: "A")],
-            [TestRecords.eventWithoutLogo()],
+            [TestRecords.undecodable(), TestRecords.event(name: "A")],
+            [TestRecords.undecodable()],
         ])
         let ids = try await EventPager.collect(ceiling: 10, decode: { $0.recordID }, fetch: db.fetch)
         XCTAssertEqual(ids.count, 3)

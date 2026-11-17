@@ -12,10 +12,11 @@ import CoreLocation
 /// How many events a screen is willing to load at once.
 ///
 /// The directory is national, so these are about what a phone can render
-/// and download comfortably, not about CloudKit quota. A list event costs
-/// roughly 26 KB, nearly all of it the logo (the flyer, another ~20 KB on
-/// average and up to 5 MB, is left out; see `Event.Field.listKeys`).
-/// Counting costs almost nothing, because it fetches no fields at all.
+/// and download comfortably, not about CloudKit quota. A list event is a
+/// few hundred bytes of text: both assets are left out (see
+/// `Event.Field.listKeys`). The logo, about 9 KB, follows through
+/// `LogoManager`; the flyer, ~20 KB on average and up to 5 MB, only when
+/// the detail screen asks. Counting fetches no fields at all.
 nonisolated enum FetchLimits {
     /// Home: a month within 250 miles. Dense in the Northeast, never near
     /// this on a normal weekend.
@@ -65,14 +66,17 @@ extension CloudKitManager {
     }
     /// The user's own events, with every field, because the editor saves
     /// these records back.
+    ///
+    /// Throws when the user's record can't be read (signed out, iCloud
+    /// briefly unavailable), so "could not ask" is not taken for "has none".
     func fetchUserEvents() async throws -> [Event] {
-        guard let userRef = await getUserReference() else {return []}
+        guard let userRef = await getUserReference() else { throw CKError(.notAuthenticated) }
         let predicates = [NSPredicate(format: "%K == %@", Event.Field.userID, userRef)]
         return try await query(predicates: predicates, ceiling: FetchLimits.filtered,
                                desiredKeys: nil, decode: Event.init(safeRecord:))
     }
 
-    /// Events for a list or map: every field except the flyer.
+    /// Events for a list or map: every field except the logo and flyer.
     func fetchEvents(predicates: [NSPredicate], limit: Int? = nil) async throws -> [Event] {
         try await query(predicates: predicates, ceiling: limit ?? FetchLimits.filtered,
                         desiredKeys: Event.Field.listKeys, decode: Event.init(safeRecord:))
@@ -98,6 +102,9 @@ extension CloudKitManager {
         query.sortDescriptors = [NSSortDescriptor(key: Event.Field.date, ascending: true)]
 
         let database = CKContainer.default().publicCloudDatabase
+        let fields = desiredKeys.map { "\($0.count) fields" } ?? "all fields"
+        LaunchTiming.mark("query sent (\(fields))")
+        defer { LaunchTiming.mark("query finished (\(fields))") }
 
         // The page-following loop lives in EventPager so it can be tested
         // without a container; this closure is the only CloudKit-specific part.
@@ -116,6 +123,26 @@ extension CloudKitManager {
             }
             return EventPage(records: records, cursor: result.queryCursor)
         }
+    }
+
+    /// The logo files for a batch of events, keyed by record. Events whose
+    /// record or logo could not be fetched are left out.
+    func fetchLogos(for ids: [CKRecord.ID]) async throws -> [CKRecord.ID: URL] {
+        let database = CKContainer.default().publicCloudDatabase
+        let results = try await database.records(for: ids, desiredKeys: [Event.Field.logo])
+        var logos: [CKRecord.ID: URL] = [:]
+        for (id, result) in results {
+            if let url = ((try? result.get())?[Event.Field.logo] as? CKAsset)?.fileURL {
+                logos[id] = url
+            }
+        }
+        return logos
+    }
+
+    /// How many events the signed-in user has published. IDs only.
+    func countUserEvents() async throws -> Int {
+        guard let userRef = await getUserReference() else { return 0 }
+        return try await countEvents(predicates: [NSPredicate(format: "%K == %@", Event.Field.userID, userRef)])
     }
 
     /// The flyer for one event. List queries leave it out because it is the

@@ -31,8 +31,20 @@ final class EventDecodingTests: XCTestCase {
         XCTAssertNil(event.flyer)
     }
 
-    func testARecordWithoutALogoIsDropped() {
-        XCTAssertNil(Event(safeRecord: TestRecords.eventWithoutLogo()))
+    /// List queries leave the logo out too, so rows can show before any
+    /// file downloads; LogoManager fetches it afterwards.
+    func testARecordWithoutALogoDecodesWithNilLogo() throws {
+        let event = try XCTUnwrap(Event(safeRecord: TestRecords.eventWithoutLogo()))
+        XCTAssertNil(event.logo)
+    }
+
+    func testARecordWithoutANameIsDropped() {
+        XCTAssertNil(Event(safeRecord: TestRecords.undecodable()))
+    }
+
+    func testARecordWithALogoKeepsIt() throws {
+        let event = try XCTUnwrap(Event(safeRecord: TestRecords.event()))
+        XCTAssertNotNil(event.logo)
     }
 
     /// List queries fetch only `listKeys`. Strip everything else from a
@@ -44,10 +56,14 @@ final class EventDecodingTests: XCTestCase {
         }
         let event = try XCTUnwrap(Event(safeRecord: record))
         XCTAssertNil(event.flyer)
+        XCTAssertNil(event.logo)
         XCTAssertEqual(event.eventContactPhone, "814-555-0100")
     }
 
-    func testListKeysLeaveOutTheFlyer() {
+    /// CloudKit downloads an asset before it returns the record, so either
+    /// one in a list query holds the rows back until the files are down.
+    func testListKeysLeaveOutBothAssets() {
         XCTAssertFalse(Event.Field.listKeys.contains(Event.Field.flyer))
+        XCTAssertFalse(Event.Field.listKeys.contains(Event.Field.logo))
     }
 }

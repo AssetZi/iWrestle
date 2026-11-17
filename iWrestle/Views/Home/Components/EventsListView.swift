@@ -80,7 +80,7 @@ struct HeroEventCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                     VStack(alignment: .trailing, spacing: 6) {
-                        EventLogoView(url: event.logo, name: event.name, size: 44,
+                        EventLogoView(event: event, name: event.name, size: 44,
                                       radius: Theme.Radius.tile44, font: .monoTile13,
                                       borderColor: Theme.slate950.opacity(0.14))
                         if let miles = event.miles(from: userLocation) {

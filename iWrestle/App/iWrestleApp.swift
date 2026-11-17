@@ -13,9 +13,11 @@ struct iWrestleApp: App {
     @State var locationManager: LocationManager = .init()
     @State var nm: NotificationManager
     @State var promo = CrossPromo()
+    @State var logos: LogoManager
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        LaunchTiming.mark("app init")
         AppFonts.registerAll()
         // One CloudKitManager for the whole app; the weekly digest counts
         // events through the same instance the screens use.
@@ -23,6 +25,9 @@ struct iWrestleApp: App {
         _ck = State(initialValue: ck)
         _nm = State(initialValue: NotificationManager { predicates in
             try await ck.countEvents(predicates: predicates)
+        })
+        _logos = State(initialValue: LogoManager { ids in
+            try await ck.fetchLogos(for: ids)
         })
     }
 
@@ -33,6 +38,7 @@ struct iWrestleApp: App {
                 .environment(locationManager)
                 .environment(nm)
                 .environment(promo)
+                .environment(logos)
                 // Slate Sky Gold is dark-first; the app commits to it.
                 .preferredColorScheme(.dark)
         }

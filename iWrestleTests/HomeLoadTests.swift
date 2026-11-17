@@ -75,6 +75,25 @@ final class HomeLoadTests: XCTestCase {
         XCTAssertEqual(shown, ["events"])
     }
 
+    // MARK: - HomeReload
+
+    func testTheFirstFixLoadsWhenNothingHasBeenLoaded() {
+        XCTAssertTrue(HomeReload.isNeeded(for: home, loadedFrom: nil))
+    }
+
+    /// The feed started from the last session's location; a fix across town
+    /// must not throw that load away.
+    func testAFixNearTheLoadedLocationDoesNotReload() {
+        let acrossTown = CLLocation(latitude: 41.25, longitude: -79.4)   // ~3.5 miles
+        XCTAssertFalse(HomeReload.isNeeded(for: acrossTown, loadedFrom: home))
+        XCTAssertFalse(HomeReload.isNeeded(for: home, loadedFrom: home))
+    }
+
+    func testAFixFarFromTheLoadedLocationReloads() {
+        let pittsburgh = CLLocation(latitude: 40.44, longitude: -80.0)   // ~60 miles
+        XCTAssertTrue(HomeReload.isNeeded(for: pittsburgh, loadedFrom: home))
+    }
+
     // MARK: - HomeViewState.after
 
     func testEventsLoad() throws {
