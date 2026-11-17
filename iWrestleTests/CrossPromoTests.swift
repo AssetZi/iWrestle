@@ -2,8 +2,9 @@
 //  CrossPromoTests.swift
 //  iWrestleTests
 //
-//  The cross-promo banner picks one app per launch. These pin the rotation,
-//  the two-week dismissal and the no-repeat tagline rule.
+//  The cross-promo banner picks one app per launch the user sees. These pin
+//  the rotation, background launches, the two-week dismissal and the
+//  no-repeat tagline rule.
 //
 
 import XCTest

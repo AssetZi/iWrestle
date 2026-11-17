@@ -23,7 +23,7 @@ final class CrossPromo {
     /// Nil until `activate()`, when every app is dismissed, or after `dismiss()`.
     private(set) var current: Placement?
     /// App Store artwork for `current`, cached across launches so the tile
-    /// draws on the first frame after the first successful lookup.
+    /// draws as soon as the app is active, once a lookup has succeeded.
     private(set) var iconURL: URL?
 
     static let dismissalPeriod: TimeInterval = 14 * 24 * 60 * 60
