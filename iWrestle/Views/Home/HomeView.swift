@@ -16,7 +16,9 @@ struct HomeView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var viewState: HomeViewState = .loading
-    @State private var isFetching = false
+    /// A new load cancels the one in flight, so the latest location or
+    /// filters always win and a superseded load never shows its result.
+    @State private var loads = LatestLoad<HomeViewState?>()
     @State private var showFilter = false
     @State private var filters: EventFilters = .default
     @State private var viewMode: ViewMode = .list
@@ -63,7 +65,7 @@ struct HomeView: View {
                 }
             }
             .task(id: lm.userCoordinates?.latitude) {
-                if case .loading = viewState { await loadEvents() }
+                if case .loading = viewState { await reload().value }
             }
             .onChange(of: lm.isPermissionDenied) { _, denied in
                 if denied == true, case .loading = viewState {
@@ -74,7 +76,7 @@ struct HomeView: View {
                 EventsFilterView(filters: filters, currentCount: loadedCount) { applied in
                     filters = applied
                     viewState = .loading
-                    Task { await loadEvents() }
+                    reload()
                 }
             }
         }
@@ -90,7 +92,7 @@ struct HomeView: View {
             switch viewMode {
             case .list:
                 EventsListView(list: list, userLocation: lm.userLocation)
-                    .refreshable { await loadEvents() }
+                    .refreshable { await reload().value }
                     .transition(.opacity)
             case .map:
                 EventsMapView(events: list.events, userLocation: lm.userLocation, selected: $selectedPin)
@@ -99,7 +101,7 @@ struct HomeView: View {
         case .error(let error):
             ErrorViewiWrestle(error: error, retryTitle: error == .noData ? "Try again" : nil) {
                 viewState = .loading
-                Task { await loadEvents() }
+                reload()
             }
             // Nothing nearby is a dead end, so offer something else to try.
             // Left out at accessibility text sizes, where the message and
@@ -123,51 +125,48 @@ struct HomeView: View {
 
     // MARK: - Loading
 
-    func loadEvents() async {
-        guard !isFetching else { return }
-        isFetching = true
-        defer { isFetching = false }
+    /// Starts a load, cancelling any still in flight.
+    @discardableResult
+    private func reload() -> Task<Void, Never> {
+        loads.start { await loadEvents() } deliver: { state in
+            if let state { viewState = state }
+        }
+    }
 
+    /// The state a fresh load ends in, or nil to leave the screen as is
+    /// (no location yet and permission not denied).
+    private func loadEvents() async -> HomeViewState? {
         #if DEBUG
         if MockEvents.isEnabled {
-            viewState = .loaded(EventList(MockEvents.nearby, userLocation: lm.userLocation))
-            return
+            return .loaded(EventList(MockEvents.nearby, userLocation: lm.userLocation))
         }
         #endif
 
         guard let userLocation = lm.userLocation else {
-            if lm.isPermissionDenied == true {
-                viewState = .error(.locationError)
-            }
-            return
+            return lm.isPermissionDenied == true ? .error(.locationError) : nil
         }
 
-        // Filters applied while a load is in flight would otherwise be
-        // ignored (the guard above) and the older answer would win.
-        var requested: EventFilters
-        repeat {
-            requested = filters
-            do {
-                let events: [Event]
-                if requested.isDefault {
-                    events = try await fetchWithExpandingRadius(from: userLocation)
-                } else if let predicates = requested.predicates(userLocation: userLocation) {
-                    events = try await ck.fetchEvents(predicates: predicates)
-                } else {
-                    events = []
-                }
-                viewState = events.isEmpty
-                    ? .error(.noData)
-                    : .loaded(EventList(events, userLocation: userLocation))
-            } catch {
-                viewState = .error(.noData)
+        let requested = filters
+        let result: Result<[Event], Error>
+        do {
+            if requested.isDefault {
+                result = .success(try await fetchWithExpandingRadius(from: userLocation))
+            } else if let predicates = requested.predicates(userLocation: userLocation) {
+                result = .success(try await ck.fetchEvents(predicates: predicates))
+            } else {
+                result = .success([])
             }
-        } while filters != requested
+        } catch {
+            result = .failure(error)
+        }
+        return HomeViewState.after(result, userLocation: userLocation)
     }
 
     func fetchWithExpandingRadius(from location: CLLocation) async throws -> [Event] {
         let radii: [Double] = [250, 500, 999]
         for radius in radii {
+            // A newer load replaced this one; don't widen the search for it.
+            try Task.checkCancellation()
             var predicates = [NSPredicate]()
             predicates.append(NSPredicate(
                 format: "distanceToLocation:fromLocation:(location, %@) < %f",
@@ -192,4 +191,16 @@ enum HomeViewState {
     case loading
     case loaded(EventList)
     case error(iWrestleError)
+
+    /// What a finished home-feed load shows. A superseded load's state is
+    /// never delivered (`LatestLoad` drops it), so an error shown here is a
+    /// real one. Keep this free of side effects: it runs for dropped loads.
+    static func after(_ result: Result<[Event], Error>, userLocation: CLLocation) -> HomeViewState {
+        switch result {
+        case .success(let events):
+            return events.isEmpty ? .error(.noData) : .loaded(EventList(events, userLocation: userLocation))
+        case .failure:
+            return .error(.noData)
+        }
+    }
 }
