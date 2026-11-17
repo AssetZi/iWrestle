@@ -10,15 +10,6 @@
 import SwiftUI
 import StoreKit
 
-/// Where a banner sits. The raw value is the App Analytics campaign (`ct=`),
-/// so installs can be compared per placement in App Store Connect.
-enum PromoCampaign: String, CaseIterable {
-    case list = "iWrestle-list"
-    case detail = "iWrestle-detail"
-    case empty = "iWrestle-empty"
-    case settings = "iWrestle-settings"
-}
-
 /// The session's promoted app, or nothing once it is dismissed. Every
 /// placement uses this so they all show and hide the same app together.
 struct PromoSlot: View {
@@ -99,10 +90,15 @@ struct PromotedAppBanner: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Capsule().fill(Theme.gold))
-                    // Pushes the pill below the × hit area (top 34pt), so a
-                    // tap on Get does not dismiss the banner instead.
-                    .padding(.top, 20)
+                    // Pinned to the bottom of the row, under the × hit area
+                    // (top 34pt), so a tap on Get never dismisses instead.
+                    // A taller row only moves it further down.
+                    .frame(maxHeight: .infinity, alignment: .bottom)
             }
+            // At least 54pt of content puts the pill's top about 40pt down.
+            .frame(minHeight: 54)
+            // Sizes the row to its content so the pill's frame can fill it.
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 14)
             .padding(.vertical, 13)
             .background(isPressed ? Theme.slate900 : Theme.slate950)

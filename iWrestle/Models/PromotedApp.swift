@@ -51,3 +51,12 @@ struct PromotedApp: Identifiable, Hashable {
         ]),
     ]
 }
+
+/// Where a banner sits. The raw value is the App Analytics campaign (`ct=`),
+/// so installs can be compared per placement in App Store Connect.
+enum PromoCampaign: String, CaseIterable {
+    case list = "iWrestle-list"
+    case detail = "iWrestle-detail"
+    case empty = "iWrestle-empty"
+    case settings = "iWrestle-settings"
+}
