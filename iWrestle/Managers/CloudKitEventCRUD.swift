@@ -16,7 +16,7 @@ import CoreLocation
 /// roughly 26 KB, nearly all of it the logo (the flyer, another ~20 KB on
 /// average and up to 5 MB, is left out; see `Event.Field.listKeys`).
 /// Counting costs almost nothing, because it fetches no fields at all.
-enum FetchLimits {
+nonisolated enum FetchLimits {
     /// Home: a month within 250 miles. Dense in the Northeast, never near
     /// this on a normal weekend.
     static let home = 150

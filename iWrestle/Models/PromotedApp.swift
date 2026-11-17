@@ -18,7 +18,7 @@ struct PromotedApp: Identifiable, Hashable {
     /// Slots in the rotation. 2 shows the app twice per cycle.
     var weight: Int = 1
 
-    static let catalog: [PromotedApp] = [
+    nonisolated static let catalog: [PromotedApp] = [
         PromotedApp(id: "6810665499", name: "Matlas", taglines: [
             "Matlas. Practice, planned.",
             "Build the drill once. Run it all season.",

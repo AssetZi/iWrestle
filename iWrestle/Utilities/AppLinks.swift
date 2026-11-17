@@ -37,7 +37,7 @@ extension URL {
 
     /// `https://example.com/register` from a link a user typed without a scheme.
     /// Nil for anything empty or unparseable.
-    static func web(_ string: String) -> URL? {
+    nonisolated static func web(_ string: String) -> URL? {
         let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
         if let url = URL(string: trimmed), url.scheme != nil { return url }
