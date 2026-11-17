@@ -6,7 +6,9 @@
 //
 //  DEBUG-only fixtures. Launch with the `-iWrestleMockEvents` argument (Edit
 //  Scheme → Arguments) to fill the home feed and dashboard with local events
-//  instead of querying CloudKit — for previews, screenshots and QA.
+//  instead of querying CloudKit — for previews, screenshots and QA. Add
+//  `-iWrestleMockEventCount N` to use only the first N on the home feed and
+//  in the filter sheet's count.
 //
 
 import Foundation
@@ -27,6 +29,13 @@ import CoreLocation
 enum MockEvents {
     static var isEnabled: Bool {
         ProcessInfo.processInfo.arguments.contains("-iWrestleMockEvents")
+    }
+
+    /// The home feed: `nearby`, cut to the first N events when launched with
+    /// `-iWrestleMockEventCount N` (1 checks the hero-only layout).
+    static var feed: [Event] {
+        let count = UserDefaults.standard.integer(forKey: "iWrestleMockEventCount")
+        return count > 0 ? Array(nearby.prefix(count)) : nearby
     }
 
     /// The five events from the design prototype, dated relative to today.

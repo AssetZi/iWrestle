@@ -39,8 +39,47 @@ final class CrossPromoTests: XCTestCase {
     }
 
     /// A launch the user never sees, such as the Sunday app refresh.
+    /// "3" stands in for Matlas, the app organizers see more often.
     private func backgroundLaunch(_ apps: [PromotedApp]? = nil, now: Date = .now) -> CrossPromo {
-        CrossPromo(apps: apps ?? self.apps, defaults: defaults, now: { now }, fetchIcon: false)
+        CrossPromo(apps: apps ?? self.apps, defaults: defaults, now: { now },
+                   fetchIcon: false, organizerAppID: "3")
+    }
+
+    func testOrganizersSeeTheOrganizerAppEveryOtherTurn() {
+        launch().markOrganizer()
+        let shown = (0..<5).map { _ in launch().current?.app.id }
+        XCTAssertEqual(shown, ["3", "1", "3", "2", "3"])
+    }
+
+    func testBecomingAnOrganizerShowsTheOrganizerAppNextLaunch() {
+        launch().markOrganizer()
+        // The even rotation would show "2" here.
+        let next = launch()
+        XCTAssertEqual(next.current?.app.id, "3")
+        // Marking again must not restart the order on "3".
+        next.markOrganizer()
+        XCTAssertEqual(launch().current?.app.id, "1")
+    }
+
+    /// Settings can load the user's events before the app is active; the
+    /// session still keeps the even rotation's pick.
+    func testMarkingBeforeTheAppIsActiveWaitsForTheNextLaunch() {
+        let promo = backgroundLaunch()
+        promo.markOrganizer()
+        promo.activate()
+        XCTAssertEqual(promo.current?.app.id, "1")
+        XCTAssertEqual(launch().current?.app.id, "3")
+    }
+
+    func testAnOrganizerWhoDismissedTheOrganizerAppGetsTheEvenRotation() {
+        let first = launch()
+        first.markOrganizer()
+        XCTAssertEqual(first.current?.app.id, "1")
+        let second = launch()
+        XCTAssertEqual(second.current?.app.id, "3")
+        second.dismiss()
+        let shown = (0..<3).map { _ in launch().current?.app.id }
+        XCTAssertEqual(shown, ["1", "2", "1"])
     }
 
     func testBackgroundLaunchesDoNotAdvanceTheRotation() {
@@ -137,7 +176,7 @@ final class CrossPromoTests: XCTestCase {
     /// one starts a new row there.
     func testCampaignTokensPerPlacement() {
         XCTAssertEqual(PromoCampaign.allCases.map(\.rawValue),
-                       ["iWrestle-list", "iWrestle-detail", "iWrestle-empty", "iWrestle-settings"])
+                       ["iWrestle-list", "iWrestle-detail", "iWrestle-empty", "iWrestle-filtered", "iWrestle-settings"])
         XCTAssertEqual(AppLinks.appStoreProviderToken, "125547798")
     }
 }
