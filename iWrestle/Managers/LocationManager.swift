@@ -36,8 +36,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         super.init()
         manager.delegate = self
         // Events are searched by the hundreds of miles and shown in whole
-        // miles. The default asks for the best fix GPS can give, which takes
-        // the longest to arrive and holds up the first load.
+        // miles, so there is no use for the best fix GPS can give, which is
+        // what the default asks for.
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
     }
     

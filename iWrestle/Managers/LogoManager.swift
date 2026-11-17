@@ -113,6 +113,8 @@ class LogoManager {
             LaunchTiming.mark("logos: \(stored.count) stored")
         } catch {
             // The tiles keep their monograms; the next load tries again.
+            // A cancelled load ends its requests this way too: not an error.
+            guard !Task.isCancelled else { return }
             Self.log.error("Logo fetch failed: \(error.localizedDescription)")
         }
     }

@@ -15,12 +15,7 @@ struct SettingsView: View {
     @State private var showAddSheet: Bool = false
     @State private var userEvents: [Event] = []
     @State private var loadedUserEvents = false
-    /// Counted at launch without downloading the events; the dashboard
-    /// loads them when it opens and the count follows the list from then on.
-    @State private var userEventCount = 0
-    /// False until the dashboard has fetched the user's events. Until then
-    /// `userEvents` holds only what was published this session.
-    @State private var hasAllUserEvents = false
+    @State private var tally = UserEventTally()
 
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -51,7 +46,7 @@ struct SettingsView: View {
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .dashboard:
-                    UserEventsView(userEvents: $userEvents, hasAllUserEvents: $hasAllUserEvents)
+                    UserEventsView(userEvents: $userEvents, hasAllUserEvents: $tally.hasFullList)
                 case .editEvent(let id):
                     if let index = userEvents.firstIndex(where: { $0.id == id }) {
                         UserEventDetailView(ogEvent: $userEvents[index], event: userEvents[index])
@@ -66,13 +61,10 @@ struct SettingsView: View {
             .task { await loadUserEventCount() }
             // Anyone with an event of their own, loaded or just published, is
             // an organizer; the promo favors Matlas for them from next launch.
-            // Before the dashboard's fetch the list is partial, so an event
-            // published from here adds to the launch count instead of
-            // replacing it.
             .onChange(of: userEvents.count) { old, new in
-                userEventCount = hasAllUserEvents ? new : userEventCount + (new - old)
+                tally.listChanged(from: old, to: new)
             }
-            .onChange(of: userEventCount > 0) { _, hasEvents in
+            .onChange(of: tally.count > 0) { _, hasEvents in
                 guard hasEvents else { return }
                 #if DEBUG
                 if MockEvents.isEnabled { return }
@@ -124,7 +116,7 @@ struct SettingsView: View {
                 RowSurface {
                     CardRow(icon: .trophy, label: "Events dashboard") {
                         if loadedUserEvents {
-                            Text(String(format: "%02d", userEventCount))
+                            Text(String(format: "%02d", tally.count))
                                 .font(.distance)
                                 .foregroundStyle(Theme.gold)
                         }
@@ -163,13 +155,13 @@ struct SettingsView: View {
         #if DEBUG
         if MockEvents.isEnabled, userEvents.isEmpty {
             userEvents = MockEvents.mine
-            hasAllUserEvents = true
+            tally.hasFullList = true
             loadedUserEvents = true
             return
         }
         #endif
         if userEvents.isEmpty, let count = try? await ck.countUserEvents() {
-            userEventCount = count
+            tally.counted(count, publishedSince: userEvents.count)
         }
         loadedUserEvents = true
     }

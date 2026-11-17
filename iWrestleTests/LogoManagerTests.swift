@@ -16,11 +16,14 @@ import CloudKit
 private final class FakeLogoServer {
     private(set) var requests: [[CKRecord.ID]] = []
     var fails = false
+    /// Runs when the first request arrives.
+    var onFirstRequest: (() -> Void)?
 
     nonisolated deinit {}
 
     func fetch(_ ids: [CKRecord.ID]) async throws -> [CKRecord.ID: URL] {
         requests.append(ids)
+        if requests.count == 1 { onFirstRequest?() }
         if fails { throw CKError(.networkUnavailable) }
         var logos: [CKRecord.ID: URL] = [:]
         for id in ids { logos[id] = TestRecords.tempFile("logo.png") }
@@ -132,9 +135,11 @@ final class LogoManagerTests: XCTestCase {
         let events = try listEvents(LogoManager.chunkSize * 8)
 
         let first = Task { await logos.load(events) }
-        first.cancel()
+        server.onFirstRequest = { first.cancel() }
         await first.value
-        XCTAssertLessThan(server.requests.count, 8)
+        // Requests already under way finish; the rest never start.
+        XCTAssertGreaterThan(server.requests.count, 0)
+        XCTAssertLessThanOrEqual(server.requests.count, LogoManager.concurrentRequests + 1)
 
         await logos.load(events)
         XCTAssertTrue(events.allSatisfy { logos.url(for: $0) != nil })
