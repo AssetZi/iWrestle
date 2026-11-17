@@ -7,7 +7,6 @@
 
 import SwiftUI
 import MapKit
-import CloudKit
 
 struct HomeView: View {
     @Environment(CloudKitManager.self) var ck
@@ -17,9 +16,9 @@ struct HomeView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var viewState: HomeViewState = .loading
-    /// The load in flight. A new one cancels it, so the latest location or
+    /// A new load cancels the one in flight, so the latest location or
     /// filters always win and a superseded load never shows its result.
-    @State private var loadTask: Task<Void, Never>?
+    @State private var loads = LatestLoad<HomeViewState?>()
     @State private var showFilter = false
     @State private var filters: EventFilters = .default
     @State private var viewMode: ViewMode = .list
@@ -129,25 +128,22 @@ struct HomeView: View {
     /// Starts a load, cancelling any still in flight.
     @discardableResult
     private func reload() -> Task<Void, Never> {
-        loadTask?.cancel()
-        let task = Task { await loadEvents() }
-        loadTask = task
-        return task
+        loads.start { await loadEvents() } deliver: { state in
+            if let state { viewState = state }
+        }
     }
 
-    private func loadEvents() async {
+    /// The state a fresh load ends in, or nil to leave the screen as is
+    /// (no location yet and permission not denied).
+    private func loadEvents() async -> HomeViewState? {
         #if DEBUG
         if MockEvents.isEnabled {
-            viewState = .loaded(EventList(MockEvents.nearby, userLocation: lm.userLocation))
-            return
+            return .loaded(EventList(MockEvents.nearby, userLocation: lm.userLocation))
         }
         #endif
 
         guard let userLocation = lm.userLocation else {
-            if lm.isPermissionDenied == true {
-                viewState = .error(.locationError)
-            }
-            return
+            return lm.isPermissionDenied == true ? .error(.locationError) : nil
         }
 
         let requested = filters
@@ -163,11 +159,7 @@ struct HomeView: View {
         } catch {
             result = .failure(error)
         }
-        // A newer load replaced this one; its answer is the one to show.
-        guard !Task.isCancelled else { return }
-        if let state = HomeViewState.after(result, userLocation: userLocation) {
-            viewState = state
-        }
+        return HomeViewState.after(result, userLocation: userLocation)
     }
 
     func fetchWithExpandingRadius(from location: CLLocation) async throws -> [Event] {
@@ -198,25 +190,14 @@ enum HomeViewState {
     case loaded(EventList)
     case error(iWrestleError)
 
-    /// What a finished home-feed load shows, or nil to leave the screen as is.
-    /// A cancelled load was replaced by a newer one, so it says nothing about
-    /// whether events exist.
-    static func after(_ result: Result<[Event], Error>, userLocation: CLLocation) -> HomeViewState? {
+    /// What a finished home-feed load shows. Superseded loads never get
+    /// here (`LatestLoad` drops them), so any error is a real one.
+    static func after(_ result: Result<[Event], Error>, userLocation: CLLocation) -> HomeViewState {
         switch result {
         case .success(let events):
             return events.isEmpty ? .error(.noData) : .loaded(EventList(events, userLocation: userLocation))
-        case .failure(let error):
-            return error.isCancellation ? nil : .error(.noData)
+        case .failure:
+            return .error(.noData)
         }
-    }
-}
-
-extension Error {
-    /// Swift task, CloudKit and URL loading each report cancellation their own way.
-    var isCancellation: Bool {
-        if self is CancellationError { return true }
-        if let ck = self as? CKError, ck.code == .operationCancelled { return true }
-        if let url = self as? URLError, url.code == .cancelled { return true }
-        return false
     }
 }
