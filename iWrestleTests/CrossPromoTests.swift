@@ -2,8 +2,9 @@
 //  CrossPromoTests.swift
 //  iWrestleTests
 //
-//  The cross-promo banner picks one app per launch. These pin the rotation,
-//  the two-week dismissal and the no-repeat tagline rule.
+//  The cross-promo banner picks one app per launch the user sees. These pin
+//  the rotation, background launches, the two-week dismissal and the
+//  no-repeat tagline rule.
 //
 
 import XCTest
@@ -30,8 +31,51 @@ final class CrossPromoTests: XCTestCase {
         super.tearDown()
     }
 
+    /// A launch the user sees: the scene becomes active.
     private func launch(_ apps: [PromotedApp]? = nil, now: Date = .now) -> CrossPromo {
-        CrossPromo(apps: apps ?? self.apps, defaults: defaults, now: now, fetchIcon: false)
+        let promo = backgroundLaunch(apps, now: now)
+        promo.activate()
+        return promo
+    }
+
+    /// A launch the user never sees, such as the Sunday app refresh.
+    private func backgroundLaunch(_ apps: [PromotedApp]? = nil, now: Date = .now) -> CrossPromo {
+        CrossPromo(apps: apps ?? self.apps, defaults: defaults, now: { now }, fetchIcon: false)
+    }
+
+    func testBackgroundLaunchesDoNotAdvanceTheRotation() {
+        XCTAssertEqual(launch().current?.app.id, "1")
+        _ = backgroundLaunch()
+        _ = backgroundLaunch()
+        XCTAssertEqual(launch().current?.app.id, "2")
+    }
+
+    /// A process started in the background just before a dismissal expires,
+    /// then opened just after, must judge the dismissal by the time it opens.
+    func testDismissalIsJudgedWhenTheAppOpensNotWhenItLaunched() {
+        var clock = Date(timeIntervalSince1970: 1_000_000)
+        let one = [apps[0]]
+        let first = CrossPromo(apps: one, defaults: defaults, now: { clock }, fetchIcon: false)
+        first.activate()
+        first.dismiss()
+
+        clock.addTimeInterval(CrossPromo.dismissalPeriod - 60)
+        let promo = CrossPromo(apps: one, defaults: defaults, now: { clock }, fetchIcon: false)
+        clock.addTimeInterval(120)
+        promo.activate()
+
+        XCTAssertEqual(promo.current?.app.id, "1")
+    }
+
+    func testNothingIsPickedUntilTheAppIsActive() {
+        XCTAssertNil(backgroundLaunch().current)
+    }
+
+    func testBecomingActiveAgainKeepsTheSessionsPick() {
+        let promo = launch()
+        promo.activate()
+        XCTAssertEqual(promo.current?.app.id, "1")
+        XCTAssertEqual(launch().current?.app.id, "2")
     }
 
     func testRotatesOneAppPerLaunchAndWraps() {

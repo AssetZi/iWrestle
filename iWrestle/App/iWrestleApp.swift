@@ -13,6 +13,7 @@ struct iWrestleApp: App {
     @State var locationManager: LocationManager = .init()
     @State var nm: NotificationManager
     @State var promo = CrossPromo()
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         AppFonts.registerAll()
@@ -34,6 +35,11 @@ struct iWrestleApp: App {
                 .environment(promo)
                 // Slate Sky Gold is dark-first; the app commits to it.
                 .preferredColorScheme(.dark)
+        }
+        // Picks the promoted app only once the user can see the app, so
+        // the background refresh below does not use up a rotation slot.
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            if phase == .active { promo.activate() }
         }
         // Sunday evening: recount so Monday's number is current even if the
         // app has not been opened. Re-arm first so next week is covered too.
