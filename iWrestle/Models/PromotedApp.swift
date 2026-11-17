@@ -53,7 +53,7 @@ struct PromotedApp: Identifiable, Hashable {
 
     /// Matlas, the practice planner. Shown to organizers more often; see
     /// `CrossPromo.markOrganizer()`.
-    static let organizerAppID = "6810665499"
+    nonisolated static let organizerAppID = "6810665499"
 }
 
 /// Where a banner sits. The raw value is the App Analytics campaign (`ct=`),
