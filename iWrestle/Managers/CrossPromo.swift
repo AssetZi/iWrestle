@@ -76,11 +76,12 @@ final class CrossPromo {
         let available = apps.filter { !isDismissed($0) }
         let rotation: [PromotedApp]
         let turn: Int
-        if let organizerRotation = organizerRotation(available) {
+        if let since = defaults.object(forKey: Keys.organizerSince) as? Int, launch >= since,
+           let organizerRotation = organizerRotation(available) {
             // Counted from when they became an organizer, so their first
             // launch after that starts on the organizer app.
             rotation = organizerRotation
-            turn = max(launch - defaults.integer(forKey: Keys.organizerSince), 0)
+            turn = launch - since
         } else {
             rotation = weighted(available)
             turn = launch
@@ -122,12 +123,11 @@ final class CrossPromo {
         apps.flatMap { app in Array(repeating: app, count: max(app.weight, 1)) }
     }
 
-    /// The organizer app before each of the others, or nil when this user is
-    /// not an organizer or has dismissed the organizer app. The organizer
+    /// The organizer app before each of the others, or nil when it has been
+    /// dismissed. The organizer
     /// app's own `weight` is ignored here; every other turn is already more.
     private func organizerRotation(_ available: [PromotedApp]) -> [PromotedApp]? {
-        guard defaults.object(forKey: Keys.organizerSince) != nil,
-              let organizerApp = available.first(where: { $0.id == organizerAppID })
+        guard let organizerApp = available.first(where: { $0.id == organizerAppID })
         else { return nil }
         let others = weighted(available.filter { $0.id != organizerAppID })
         guard !others.isEmpty else { return [organizerApp] }
