@@ -69,8 +69,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
     /// Saved so background work (the weekly digest refresh) has a location
     /// without waiting on CoreLocation, which it cannot do in the background.
-    /// Nonisolated because that background task reads it off the main actor;
-    /// it only touches UserDefaults, which is thread-safe.
+    /// Nonisolated to match `lastKnownLocation`; only UserDefaults is touched.
     nonisolated static func store(lastKnown location: CLLocation) {
         let defaults = UserDefaults.standard
         defaults.set(location.coordinate.latitude, forKey: lastLatitudeKey)
@@ -78,6 +77,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
 
     /// The most recent fix from any earlier session, or nil if none was saved.
+    /// Nonisolated because the background refresh reads it off the main
+    /// actor; UserDefaults is thread-safe.
     nonisolated static var lastKnownLocation: CLLocation? {
         let defaults = UserDefaults.standard
         guard
