@@ -90,7 +90,7 @@ final class HomeLoadTests: XCTestCase {
     }
 
     /// Superseded loads never reach `after`, so even a cancellation-type
-    /// error here is real and must not leave the skeleton spinning.
+    /// error here is real: every error maps to "No events found".
     func testEveryErrorThatArrivesIsEmpty() {
         for error: Error in [CKError(.networkUnavailable), CKError(.operationCancelled),
                              URLError(.cancelled), CancellationError()] {

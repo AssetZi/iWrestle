@@ -165,6 +165,8 @@ struct HomeView: View {
     func fetchWithExpandingRadius(from location: CLLocation) async throws -> [Event] {
         let radii: [Double] = [250, 500, 999]
         for radius in radii {
+            // A newer load replaced this one; don't widen the search for it.
+            try Task.checkCancellation()
             var predicates = [NSPredicate]()
             predicates.append(NSPredicate(
                 format: "distanceToLocation:fromLocation:(location, %@) < %f",
