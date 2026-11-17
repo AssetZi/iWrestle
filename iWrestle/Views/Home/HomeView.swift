@@ -192,8 +192,9 @@ enum HomeViewState {
     case loaded(EventList)
     case error(iWrestleError)
 
-    /// What a finished home-feed load shows. Superseded loads never get
-    /// here (`LatestLoad` drops them), so any error is a real one.
+    /// What a finished home-feed load shows. A superseded load's state is
+    /// never delivered (`LatestLoad` drops it), so an error shown here is a
+    /// real one. Keep this free of side effects: it runs for dropped loads.
     static func after(_ result: Result<[Event], Error>, userLocation: CLLocation) -> HomeViewState {
         switch result {
         case .success(let events):

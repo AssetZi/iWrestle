@@ -89,8 +89,9 @@ final class HomeLoadTests: XCTestCase {
         XCTAssertTrue(isNoData(HomeViewState.after(.success([]), userLocation: home)))
     }
 
-    /// Superseded loads never reach `after`, so even a cancellation-type
-    /// error here is real: every error maps to "No events found".
+    /// A superseded load's state is never delivered, so an error that is
+    /// shown is real: every error, cancellation types included, maps to
+    /// "No events found".
     func testEveryErrorThatArrivesIsEmpty() {
         for error: Error in [CKError(.networkUnavailable), CKError(.operationCancelled),
                              URLError(.cancelled), CancellationError()] {
