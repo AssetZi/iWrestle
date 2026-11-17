@@ -25,6 +25,13 @@ struct EventsListView: View {
                     .entrance()
                 }
 
+                // A single event is all hero and no day groups.
+                if list.groups.isEmpty {
+                    PromoSlot(campaign: .list)
+                        .padding(.top, 6)
+                        .entrance(delay: 0.2)
+                }
+
                 ForEach(Array(list.groups.enumerated()), id: \.element.day) { index, group in
                     VStack(alignment: .leading, spacing: 9) {
                         SectionLabel(group.day.groupLabel)
@@ -38,8 +45,7 @@ struct EventsListView: View {
                     .entrance(delay: Double(min(index, 4)) * 0.04)
 
                     // After the first day's events, so it is seen without
-                    // scrolling to the end of a long list. With only one day
-                    // that is also the end.
+                    // scrolling to the end of a long list.
                     if index == 0 {
                         PromoSlot(campaign: .list)
                             .padding(.top, 6)

@@ -99,8 +99,8 @@ struct PromotedAppBanner: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Capsule().fill(Theme.gold))
-                    // Sits below the × hit area, so a tap on Get never
-                    // dismisses the banner instead.
+                    // Pushes the pill below the × hit area (top 34pt), so a
+                    // tap on Get does not dismiss the banner instead.
                     .padding(.top, 20)
             }
             .padding(.horizontal, 14)
