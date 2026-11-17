@@ -66,8 +66,11 @@ extension CloudKitManager {
     }
     /// The user's own events, with every field, because the editor saves
     /// these records back.
+    ///
+    /// Throws when the user's record can't be read (signed out, iCloud
+    /// briefly unavailable), so "could not ask" is not taken for "has none".
     func fetchUserEvents() async throws -> [Event] {
-        guard let userRef = await getUserReference() else {return []}
+        guard let userRef = await getUserReference() else { throw CKError(.notAuthenticated) }
         let predicates = [NSPredicate(format: "%K == %@", Event.Field.userID, userRef)]
         return try await query(predicates: predicates, ceiling: FetchLimits.filtered,
                                desiredKeys: nil, decode: Event.init(safeRecord:))

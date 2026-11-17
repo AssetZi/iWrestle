@@ -46,7 +46,7 @@ struct SettingsView: View {
             .navigationDestination(for: AppRoute.self) { route in
                 switch route {
                 case .dashboard:
-                    UserEventsView(userEvents: $userEvents, hasAllUserEvents: $tally.hasFullList)
+                    UserEventsView(userEvents: $userEvents, tally: $tally)
                 case .editEvent(let id):
                     if let index = userEvents.firstIndex(where: { $0.id == id }) {
                         UserEventDetailView(ogEvent: $userEvents[index], event: userEvents[index])
@@ -155,7 +155,7 @@ struct SettingsView: View {
         #if DEBUG
         if MockEvents.isEnabled, userEvents.isEmpty {
             userEvents = MockEvents.mine
-            tally.hasFullList = true
+            tally.loaded(listCount: userEvents.count)
             loadedUserEvents = true
             return
         }

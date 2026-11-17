@@ -76,7 +76,7 @@ class LogoManager {
         guard !missing.isEmpty else { return }
 
         // A few requests at a time, started in list order: the rows on
-        // screen go first, and all the logos land about a third sooner than
+        // screen go first, and all the logos land about a quarter sooner than
         // one request after another (measured on a fresh install).
         let chunks = Self.chunks(of: missing, size: Self.chunkSize)
         await withTaskGroup(of: Void.self) { group in

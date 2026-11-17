@@ -174,6 +174,7 @@ struct HomeView: View {
     private func loadEvents() async -> HomeLoad {
         #if DEBUG
         if MockEvents.isEnabled {
+            loadLocation = lm.userLocation
             return HomeLoad(state: .loaded(EventList(MockEvents.feed, userLocation: lm.userLocation)))
         }
         #endif

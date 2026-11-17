@@ -11,8 +11,8 @@ import CloudKit
 struct UserEventsView: View {
     @Environment(CloudKitManager.self) var ck
     @Binding var userEvents: [Event]
-    /// Set once the full list is in `userEvents`; see SettingsView.
-    @Binding var hasAllUserEvents: Bool
+    /// Told when the full list is in `userEvents`; see UserEventTally.
+    @Binding var tally: UserEventTally
     @State private var viewState: ViewState = .loading
     @State private var showAddSheet = false
     @State private var showAdminAdd = false
@@ -85,7 +85,7 @@ struct UserEventsView: View {
         .refreshable {
             if let fetched = try? await ck.fetchUserEvents() {
                 userEvents = fetched
-                hasAllUserEvents = true
+                tally.loaded(listCount: fetched.count)
             }
         }
     }
@@ -99,13 +99,13 @@ struct UserEventsView: View {
     func loadUserEvents() {
         Task {
             do {
-                if !hasAllUserEvents {
+                if !tally.hasFullList {
                     let fetched = try await ck.fetchUserEvents()
                     // An event published a moment ago may not be in query
                     // results yet; keep it.
                     let fetchedIDs = Set(fetched.map(\.id))
                     userEvents = fetched + userEvents.filter { !fetchedIDs.contains($0.id) }
-                    hasAllUserEvents = true
+                    tally.loaded(listCount: userEvents.count)
                 }
                 viewState = userEvents.isEmpty ? .error(.noUserEvents) : .loaded
             } catch {

@@ -15,7 +15,14 @@ nonisolated struct UserEventTally: Equatable {
     private(set) var count = 0
     /// True once the dashboard has fetched every event; from then on the
     /// count is the size of the list.
-    var hasFullList = false
+    private(set) var hasFullList = false
+
+    /// The dashboard fetched the user's events and the list now has
+    /// `listCount` of them.
+    mutating func loaded(listCount: Int) {
+        hasFullList = true
+        count = listCount
+    }
 
     /// The launch count came back. Events published while it was on its
     /// way are added: a query does not see a record saved a moment ago.

@@ -39,23 +39,30 @@ final class UserEventTallyTests: XCTestCase {
         var tally = UserEventTally()
         tally.counted(5, publishedSince: 0)
         tally.listChanged(from: 0, to: 1)
-        tally.hasFullList = true
+        tally.loaded(listCount: 6)
         tally.listChanged(from: 1, to: 6)
         XCTAssertEqual(tally.count, 6)
     }
 
     func testDeletingAfterTheDashboardHasLoadedLowersTheCount() {
         var tally = UserEventTally()
-        tally.hasFullList = true
-        tally.listChanged(from: 0, to: 3)
+        tally.loaded(listCount: 3)
         tally.listChanged(from: 3, to: 2)
         XCTAssertEqual(tally.count, 2)
     }
 
+    /// Events deleted on another device: the launch count said three, the
+    /// dashboard found none, and the list's size never changed from zero.
+    func testAnEmptyDashboardClearsTheLaunchCount() {
+        var tally = UserEventTally()
+        tally.counted(3, publishedSince: 0)
+        tally.loaded(listCount: 0)
+        XCTAssertEqual(tally.count, 0)
+    }
+
     func testALateLaunchCountDoesNotReplaceTheLoadedList() {
         var tally = UserEventTally()
-        tally.hasFullList = true
-        tally.listChanged(from: 0, to: 3)
+        tally.loaded(listCount: 3)
         tally.counted(2, publishedSince: 0)
         XCTAssertEqual(tally.count, 3)
     }
