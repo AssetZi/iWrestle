@@ -30,8 +30,34 @@ final class CrossPromoTests: XCTestCase {
         super.tearDown()
     }
 
+    /// A launch the user sees: the scene becomes active.
     private func launch(_ apps: [PromotedApp]? = nil, now: Date = .now) -> CrossPromo {
-        CrossPromo(apps: apps ?? self.apps, defaults: defaults, now: now, fetchIcon: false)
+        let promo = backgroundLaunch(apps, now: now)
+        promo.activate()
+        return promo
+    }
+
+    /// A launch the user never sees, such as the Sunday app refresh.
+    private func backgroundLaunch(_ apps: [PromotedApp]? = nil, now: Date = .now) -> CrossPromo {
+        CrossPromo(apps: apps ?? self.apps, defaults: defaults, now: { now }, fetchIcon: false)
+    }
+
+    func testBackgroundLaunchesDoNotAdvanceTheRotation() {
+        XCTAssertEqual(launch().current?.app.id, "1")
+        _ = backgroundLaunch()
+        _ = backgroundLaunch()
+        XCTAssertEqual(launch().current?.app.id, "2")
+    }
+
+    func testNothingIsPickedUntilTheAppIsActive() {
+        XCTAssertNil(backgroundLaunch().current)
+    }
+
+    func testBecomingActiveAgainKeepsTheSessionsPick() {
+        let promo = launch()
+        promo.activate()
+        XCTAssertEqual(promo.current?.app.id, "1")
+        XCTAssertEqual(launch().current?.app.id, "2")
     }
 
     func testRotatesOneAppPerLaunchAndWraps() {
