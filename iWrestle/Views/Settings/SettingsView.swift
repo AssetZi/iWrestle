@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(CloudKitManager.self) var ck
+    @Environment(CrossPromo.self) private var promo
     @Binding var path: NavigationPath
     @Environment(\.tabBarInset) private var tabBarInset
     @State private var showAddSheet: Bool = false
@@ -57,6 +58,15 @@ struct SettingsView: View {
                 AddEventScreen(userEvents: $userEvents)
             }
             .task { await loadUserEventCount() }
+            // Anyone with an event of their own, loaded or just published, is
+            // an organizer; the promo favors Matlas for them from next launch.
+            .onChange(of: userEvents.isEmpty) { _, isEmpty in
+                guard !isEmpty else { return }
+                #if DEBUG
+                if MockEvents.isEnabled { return }
+                #endif
+                promo.markOrganizer()
+            }
         }
     }
 

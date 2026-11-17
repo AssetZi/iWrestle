@@ -18,11 +18,15 @@ struct HomeView: View {
     @State private var viewState: HomeViewState = .loading
     /// A new load cancels the one in flight, so the latest location or
     /// filters always win and a superseded load never shows its result.
-    @State private var loads = LatestLoad<HomeViewState?>()
+    @State private var loads = LatestLoad<HomeLoad>()
     @State private var showFilter = false
     @State private var filters: EventFilters = .default
     @State private var viewMode: ViewMode = .list
     @State private var selectedPin: Event.ID?
+    /// Which promo the "No events found" screen shows, set with it: nothing
+    /// nearby and filters that match nothing are tracked apart, and a failed
+    /// fetch shows none, since the App Store card can't load offline.
+    @State private var emptyCampaign: PromoCampaign?
 
     enum ViewMode { case list, map }
 
@@ -107,8 +111,8 @@ struct HomeView: View {
             // Left out at accessibility text sizes, where the message and
             // "Try again" need the whole screen.
             .safeAreaInset(edge: .bottom) {
-                if error == .noData && !dynamicTypeSize.isAccessibilitySize {
-                    PromoSlot(campaign: .empty)
+                if error == .noData, let emptyCampaign, !dynamicTypeSize.isAccessibilitySize {
+                    PromoSlot(campaign: emptyCampaign)
                         .padding(.horizontal, Theme.gutter)
                         .padding(.bottom, 12)
                         .entrance(delay: 0.2)
@@ -128,22 +132,24 @@ struct HomeView: View {
     /// Starts a load, cancelling any still in flight.
     @discardableResult
     private func reload() -> Task<Void, Never> {
-        loads.start { await loadEvents() } deliver: { state in
-            if let state { viewState = state }
+        loads.start { await loadEvents() } deliver: { load in
+            guard let state = load.state else { return }
+            emptyCampaign = load.emptyCampaign
+            viewState = state
         }
     }
 
-    /// The state a fresh load ends in, or nil to leave the screen as is
-    /// (no location yet and permission not denied).
-    private func loadEvents() async -> HomeViewState? {
+    /// What a fresh load ends in. A nil state leaves the screen as is (no
+    /// location yet and permission not denied).
+    private func loadEvents() async -> HomeLoad {
         #if DEBUG
         if MockEvents.isEnabled {
-            return .loaded(EventList(MockEvents.nearby, userLocation: lm.userLocation))
+            return HomeLoad(state: .loaded(EventList(MockEvents.feed, userLocation: lm.userLocation)))
         }
         #endif
 
         guard let userLocation = lm.userLocation else {
-            return lm.isPermissionDenied == true ? .error(.locationError) : nil
+            return HomeLoad(state: lm.isPermissionDenied == true ? .error(.locationError) : nil)
         }
 
         let requested = filters
@@ -159,7 +165,14 @@ struct HomeView: View {
         } catch {
             result = .failure(error)
         }
-        return HomeViewState.after(result, userLocation: userLocation)
+        // Nothing nearby and filters that match nothing are tracked apart;
+        // a failed fetch gets no promo (see `emptyCampaign`).
+        let campaign: PromoCampaign? = switch result {
+        case .success: requested.isDefault ? .empty : .filtered
+        case .failure: nil
+        }
+        return HomeLoad(state: HomeViewState.after(result, userLocation: userLocation),
+                        emptyCampaign: campaign)
     }
 
     func fetchWithExpandingRadius(from location: CLLocation) async throws -> [Event] {
@@ -185,6 +198,13 @@ struct HomeView: View {
         }
         return []
     }
+}
+
+/// One finished home-feed load: the state to show and, for "No events
+/// found", which promo campaign it belongs to.
+struct HomeLoad {
+    var state: HomeViewState?
+    var emptyCampaign: PromoCampaign? = nil
 }
 
 enum HomeViewState {

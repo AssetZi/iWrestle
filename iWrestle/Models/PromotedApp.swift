@@ -50,6 +50,10 @@ struct PromotedApp: Identifiable, Hashable {
             "Draft the room.",
         ]),
     ]
+
+    /// Matlas, the practice planner. Shown to organizers more often; see
+    /// `CrossPromo.markOrganizer()`.
+    static let organizerAppID = "6810665499"
 }
 
 /// Where a banner sits. The raw value is the App Analytics campaign (`ct=`),
@@ -58,5 +62,6 @@ enum PromoCampaign: String, CaseIterable {
     case list = "iWrestle-list"
     case detail = "iWrestle-detail"
     case empty = "iWrestle-empty"
+    case filtered = "iWrestle-filtered"
     case settings = "iWrestle-settings"
 }

@@ -4,7 +4,8 @@
 //
 //  Picks which of Brock's apps the banner shows this launch. One app per
 //  session so every placement (`PromoCampaign`) agrees; the rotation
-//  advances one slot per launch the user sees (`activate()`); a dismissed
+//  advances one slot per launch the user sees (`activate()`), with the
+//  organizer app every other turn for organizers; a dismissed
 //  app sits out for two weeks; the tagline is random but never the one
 //  shown last time for that app.
 //
@@ -34,6 +35,7 @@ final class CrossPromo {
     /// can be opened days later.
     private let now: () -> Date
     private let fetchIcon: Bool
+    private let organizerAppID: String
     private var activated = false
 
     // Nothing to tear down, and an isolated deinit's executor hop crashes
@@ -43,8 +45,10 @@ final class CrossPromo {
     init(apps: [PromotedApp] = PromotedApp.catalog,
          defaults: UserDefaults = .standard,
          now: @escaping () -> Date = { .now },
-         fetchIcon: Bool = true) {
+         fetchIcon: Bool = true,
+         organizerAppID: String = PromotedApp.organizerAppID) {
         self.apps = apps
+        self.organizerAppID = organizerAppID
         self.defaults = defaults
         self.now = now
         self.fetchIcon = fetchIcon
@@ -69,12 +73,21 @@ final class CrossPromo {
         let launch = defaults.integer(forKey: Keys.launchCount)
         defaults.set(launch + 1, forKey: Keys.launchCount)
 
-        let rotation = apps
-            .filter { !isDismissed($0) }
-            .flatMap { app in Array(repeating: app, count: max(app.weight, 1)) }
+        let available = apps.filter { !isDismissed($0) }
+        let rotation: [PromotedApp]
+        let turn: Int
+        if let organizerRotation = organizerRotation(available) {
+            // Counted from when they became an organizer, so their first
+            // launch after that starts on the organizer app.
+            rotation = organizerRotation
+            turn = max(launch - defaults.integer(forKey: Keys.organizerSince), 0)
+        } else {
+            rotation = weighted(available)
+            turn = launch
+        }
         guard !rotation.isEmpty else { return }
 
-        let app = rotation[launch % rotation.count]
+        let app = rotation[turn % rotation.count]
         let tagline = pickTagline(for: app)
         current = Placement(app: app, tagline: tagline)
 
@@ -86,6 +99,14 @@ final class CrossPromo {
         }
     }
 
+    /// Records that this user has posted an event. From their next launch,
+    /// the organizer app takes every other turn, starting with that launch.
+    /// The current session keeps its pick.
+    func markOrganizer() {
+        guard defaults.object(forKey: Keys.organizerSince) == nil else { return }
+        defaults.set(defaults.integer(forKey: Keys.launchCount), forKey: Keys.organizerSince)
+    }
+
     /// Hides the current app for `dismissalPeriod` and clears every placement.
     func dismiss() {
         guard let app = current?.app else { return }
@@ -94,6 +115,21 @@ final class CrossPromo {
     }
 
     // MARK: - Selection
+
+    private func weighted(_ apps: [PromotedApp]) -> [PromotedApp] {
+        apps.flatMap { app in Array(repeating: app, count: max(app.weight, 1)) }
+    }
+
+    /// The organizer app before each of the others, or nil when this user is
+    /// not an organizer or has dismissed the organizer app.
+    private func organizerRotation(_ available: [PromotedApp]) -> [PromotedApp]? {
+        guard defaults.object(forKey: Keys.organizerSince) != nil,
+              let organizerApp = available.first(where: { $0.id == organizerAppID })
+        else { return nil }
+        let others = weighted(available.filter { $0.id != organizerAppID })
+        guard !others.isEmpty else { return [organizerApp] }
+        return others.flatMap { [organizerApp, $0] }
+    }
 
     private func isDismissed(_ app: PromotedApp) -> Bool {
         let stamp = defaults.double(forKey: Keys.dismissed(app.id))
@@ -132,6 +168,7 @@ final class CrossPromo {
     private enum Keys {
         static let prefix = "crossPromo."
         static let launchCount = prefix + "launchCount"
+        static let organizerSince = prefix + "organizerSince"
         static func dismissed(_ id: String) -> String { prefix + "dismissed." + id }
         static func lastTagline(_ id: String) -> String { prefix + "lastTagline." + id }
         static func iconURL(_ id: String) -> String { prefix + "iconURL." + id }
