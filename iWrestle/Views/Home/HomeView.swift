@@ -23,6 +23,9 @@ struct HomeView: View {
     /// Where the latest load searched from: the live fix, or the last
     /// session's when this one has none yet.
     @State private var loadLocation: CLLocation?
+    /// The logo fetch for the list on screen; a new list cancels it so its
+    /// own logos are not queued behind rows that are gone.
+    @State private var logoLoad: Task<Void, Never>?
     @State private var showFilter = false
     @State private var filters: EventFilters = .default
     @State private var viewMode: ViewMode = .list
@@ -157,7 +160,8 @@ struct HomeView: View {
             emptyCampaign = load.emptyCampaign
             viewState = state
             if case .loaded(let list) = state {
-                Task { await logos.load(list.events) }
+                logoLoad?.cancel()
+                logoLoad = Task { await logos.load(list.events) }
             }
         }
     }

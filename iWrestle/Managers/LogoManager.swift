@@ -28,8 +28,6 @@ class LogoManager {
 
     /// Logo files on disk, by cache name.
     private var files: [String: URL] = [:]
-    /// Cache names being fetched, so overlapping loads don't ask twice.
-    private var inFlight: Set<String> = []
 
     @ObservationIgnored private let directory: URL
     @ObservationIgnored private let fetch: Fetch
@@ -55,6 +53,9 @@ class LogoManager {
 
     /// Fetches the logos these events are missing, in list order, a few
     /// chunks at a time. Logos already in the cache are picked up without a request.
+    ///
+    /// Cancel the task to stop: requests under way end and no more start.
+    /// The caller runs one load at a time (HomeView cancels the last list's).
     func load(_ events: [Event]) async {
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
 
@@ -62,7 +63,7 @@ class LogoManager {
         var onDisk: [String: URL] = [:]
         for event in events where event.logo == nil {
             let name = Self.cacheName(for: event.record)
-            guard files[name] == nil, !inFlight.contains(name) else { continue }
+            guard files[name] == nil else { continue }
             let file = directory.appendingPathComponent(name)
             if FileManager.default.fileExists(atPath: file.path) {
                 onDisk[name] = file
@@ -73,9 +74,6 @@ class LogoManager {
         if !onDisk.isEmpty { files.merge(onDisk) { _, new in new } }
         LaunchTiming.mark("logos: \(onDisk.count) from cache, \(missing.count) to fetch")
         guard !missing.isEmpty else { return }
-
-        inFlight.formUnion(missing.map(\.name))
-        defer { inFlight.subtract(missing.map(\.name)) }
 
         // A few requests at a time, started in list order: the rows on
         // screen go first, and all the logos land about a third sooner than

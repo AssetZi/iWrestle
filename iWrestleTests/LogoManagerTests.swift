@@ -124,6 +124,22 @@ final class LogoManagerTests: XCTestCase {
         XCTAssertNotNil(logos.url(for: events[0]))
     }
 
+    /// A new list replaces the old one mid-download: the old load stops and
+    /// the new one still gets every logo, including ones the old had asked for.
+    func testACancelledLoadStopsAndTheNextLoadFetchesWhatIsLeft() async throws {
+        let server = FakeLogoServer()
+        let logos = manager(server)
+        let events = try listEvents(LogoManager.chunkSize * 8)
+
+        let first = Task { await logos.load(events) }
+        first.cancel()
+        await first.value
+        XCTAssertLessThan(server.requests.count, 8)
+
+        await logos.load(events)
+        XCTAssertTrue(events.allSatisfy { logos.url(for: $0) != nil })
+    }
+
     func testTheCacheNameIsSafeAsAFileName() {
         let record = CKRecord(recordType: Event.recordType, recordID: CKRecord.ID(recordName: "flo/2026 open"))
         XCTAssertEqual(LogoManager.cacheName(for: record), "flo%2F2026%20open-0")
