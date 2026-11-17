@@ -2,19 +2,33 @@
 //  PromotedAppBanner.swift
 //  iWrestle
 //
-//  "Also by the maker of iWrestle" row. Same shape as an event cell so it
-//  sits in the list without shouting; the mono eyebrow is the only tell.
-//  Tapping anywhere opens Apple's App Store overlay inside the app.
+//  "From the same maker" row. Same shape as an event cell so it sits in the
+//  list without shouting; the mono eyebrow is the only tell. Tapping anywhere
+//  opens Apple's App Store overlay inside the app.
 //
 
 import SwiftUI
 import StoreKit
 
+/// The session's promoted app, or nothing once it is dismissed. Every
+/// placement uses this so they all show and hide the same app together.
+struct PromoSlot: View {
+    @Environment(CrossPromo.self) private var promo
+    let campaign: PromoCampaign
+
+    var body: some View {
+        if let placement = promo.current {
+            PromotedAppBanner(placement: placement, iconURL: promo.iconURL, campaign: campaign) {
+                withAnimation(Motion.normal) { promo.dismiss() }
+            }
+        }
+    }
+}
+
 struct PromotedAppBanner: View {
     let placement: CrossPromo.Placement
     let iconURL: URL?
-    /// Campaign token for App Analytics, e.g. "iwrestle-list".
-    let campaign: String
+    let campaign: PromoCampaign
     let onDismiss: () -> Void
 
     @State private var showOverlay = false
@@ -31,7 +45,7 @@ struct PromotedAppBanner: View {
         .accessibilityLabel("\(app.name). \(placement.tagline). Get it on the App Store.")
         .appStoreOverlay(isPresented: $showOverlay) {
             let config = SKOverlay.AppConfiguration(appIdentifier: app.id, position: .bottom)
-            config.campaignToken = campaign
+            config.campaignToken = campaign.rawValue
             config.providerToken = AppLinks.appStoreProviderToken
             return config
         }
@@ -76,7 +90,15 @@ struct PromotedAppBanner: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Capsule().fill(Theme.gold))
+                    // Pinned to the bottom of the row, under the × hit area
+                    // (top 34pt), so a tap on Get never dismisses instead.
+                    // A taller row only moves it further down.
+                    .frame(maxHeight: .infinity, alignment: .bottom)
             }
+            // At least 54pt of content puts the pill's top about 40pt down.
+            .frame(minHeight: 54)
+            // Sizes the row to its content so the pill's frame can fill it.
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 14)
             .padding(.vertical, 13)
             .background(isPressed ? Theme.slate900 : Theme.slate950)
@@ -102,12 +124,12 @@ struct PromotedAppBanner: View {
         PromotedAppBanner(
             placement: .init(app: PromotedApp.catalog[0], tagline: PromotedApp.catalog[0].taglines[1]),
             iconURL: nil,
-            campaign: "preview"
+            campaign: .list
         ) {}
         PromotedAppBanner(
-            placement: .init(app: PromotedApp.catalog[3], tagline: PromotedApp.catalog[3].taglines[0]),
+            placement: .init(app: PromotedApp.catalog[2], tagline: PromotedApp.catalog[2].taglines[0]),
             iconURL: nil,
-            campaign: "preview"
+            campaign: .list
         ) {}
     }
     .padding(Theme.gutter)

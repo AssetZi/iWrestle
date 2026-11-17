@@ -3,7 +3,7 @@
 //  iWrestle
 //
 //  Picks which of Brock's apps the banner shows this launch. One app per
-//  session so the events list and Settings agree; the rotation advances one
+//  session so every placement (`PromoCampaign`) agrees; the rotation advances one
 //  slot per launch; a dismissed app sits out for two weeks; the tagline is
 //  random but never the one shown last time for that app.
 //
@@ -69,7 +69,7 @@ final class CrossPromo {
         }
     }
 
-    /// Hides the current app for `dismissalPeriod` and clears both placements.
+    /// Hides the current app for `dismissalPeriod` and clears every placement.
     func dismiss() {
         guard let app = current?.app else { return }
         defaults.set(now.timeIntervalSince1970, forKey: Keys.dismissed(app.id))

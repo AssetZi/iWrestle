@@ -13,6 +13,7 @@ struct HomeView: View {
     @Environment(LocationManager.self) var lm
     @Binding var path: NavigationPath
     @Environment(\.tabBarInset) private var tabBarInset
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var viewState: HomeViewState = .loading
     @State private var isFetching = false
@@ -99,6 +100,17 @@ struct HomeView: View {
             ErrorViewiWrestle(error: error, retryTitle: error == .noData ? "Try again" : nil) {
                 viewState = .loading
                 Task { await loadEvents() }
+            }
+            // Nothing nearby is a dead end, so offer something else to try.
+            // Left out at accessibility text sizes, where the message and
+            // "Try again" need the whole screen.
+            .safeAreaInset(edge: .bottom) {
+                if error == .noData && !dynamicTypeSize.isAccessibilitySize {
+                    PromoSlot(campaign: .empty)
+                        .padding(.horizontal, Theme.gutter)
+                        .padding(.bottom, 12)
+                        .entrance(delay: 0.2)
+                }
             }
         }
     }

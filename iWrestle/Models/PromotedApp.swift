@@ -2,8 +2,9 @@
 //  PromotedApp.swift
 //  iWrestle
 //
-//  Brock's other apps, cross-promoted in the "Also by the maker of iWrestle"
-//  row. No ad network: just a name, an App Store ID and taglines.
+//  Brock's other apps, cross-promoted in the "From the same maker" row.
+//  No ad network: just a name, an App Store ID and taglines. Taps are
+//  attributed through `PromoCampaign` and `AppLinks.appStoreProviderToken`.
 //
 
 import Foundation
@@ -16,8 +17,6 @@ struct PromotedApp: Identifiable, Hashable {
     let taglines: [String]
     /// Slots in the rotation. 2 shows the app twice per cycle.
     var weight: Int = 1
-
-    var appStoreURL: URL { URL(string: "https://apps.apple.com/us/app/id\(id)")! }
 
     static let catalog: [PromotedApp] = [
         PromotedApp(id: "6810665499", name: "Matlas", taglines: [
@@ -32,14 +31,6 @@ struct PromotedApp: Identifiable, Hashable {
             "Tomorrow's practice takes two taps tonight.",
             "Coach, even when you're not there.",
             "Your practice runs on their phone. Film included.",
-        ]),
-        PromotedApp(id: "6759719992", name: "PinPoint Recruiting", taglines: [
-            "Every recruit. Every coach. One board.",
-            "Your recruiting board, in your pocket.",
-            "Stop recruiting from a spreadsheet.",
-            "Know where every scholarship dollar is going.",
-            "Built by a wrestling coach, for wrestling coaches.",
-            "The whole staff on the same page. Literally.",
         ]),
         PromotedApp(id: "6740700573", name: "Weight Wingman", taglines: [
             "Cutting weight doesn't have to suck.",
@@ -59,4 +50,13 @@ struct PromotedApp: Identifiable, Hashable {
             "Draft the room.",
         ]),
     ]
+}
+
+/// Where a banner sits. The raw value is the App Analytics campaign (`ct=`),
+/// so installs can be compared per placement in App Store Connect.
+enum PromoCampaign: String, CaseIterable {
+    case list = "iWrestle-list"
+    case detail = "iWrestle-detail"
+    case empty = "iWrestle-empty"
+    case settings = "iWrestle-settings"
 }

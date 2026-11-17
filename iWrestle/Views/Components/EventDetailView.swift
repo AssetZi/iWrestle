@@ -59,6 +59,10 @@ struct EventDetailView: View {
                     flyerCard
                     whenAndWhere
                     contact
+                    // Below everything about the event, so it never competes
+                    // with Register or Maps.
+                    PromoSlot(campaign: .detail)
+                        .padding(.top, 8)
                 }
                 .padding(.horizontal, Theme.gutter)
                 .padding(.top, 8)
