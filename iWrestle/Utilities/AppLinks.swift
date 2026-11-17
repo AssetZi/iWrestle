@@ -12,8 +12,8 @@ enum AppLinks {
     /// it is also stamped as a clickable link annotation.
     static let appStore = URL(string: "https://apps.apple.com/us/app/iwrestle-youth-wrestling-hub/id6756827197")!
 
-    /// App Store Connect provider ID. Once set, taps on the cross-promo banner
-    /// show up under their campaign token in App Analytics.
+    /// App Store Connect provider ID (`pt=` in a campaign link). Sent with every
+    /// cross-promo tap so installs show up per `PromoCampaign` in App Analytics.
     static let appStoreProviderToken: String? = "125547798"
 }
 

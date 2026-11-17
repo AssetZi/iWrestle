@@ -82,4 +82,18 @@ final class CrossPromoTests: XCTestCase {
         XCTAssertEqual(launch(two).current?.tagline, "only")
         XCTAssertEqual(launch(two).current?.tagline, "only")
     }
+
+    /// Matlas, Weight Wingman and Fantasy Wrestling, matching the campaign
+    /// links in App Store Connect. PinPoint Recruiting is not promoted.
+    func testCatalogPromotesTheThreeTrackedApps() {
+        XCTAssertEqual(PromotedApp.catalog.map(\.id), ["6810665499", "6740700573", "6504050060"])
+    }
+
+    /// These are the `ct=` values App Analytics groups installs by; renaming
+    /// one starts a new row there.
+    func testCampaignTokensPerPlacement() {
+        XCTAssertEqual(PromoCampaign.allCases.map(\.rawValue),
+                       ["iWrestle-list", "iWrestle-detail", "iWrestle-empty", "iWrestle-settings"])
+        XCTAssertEqual(AppLinks.appStoreProviderToken, "125547798")
+    }
 }

@@ -9,7 +9,6 @@ import SwiftUI
 import MapKit
 
 struct EventsListView: View {
-    @Environment(CrossPromo.self) private var promo
     /// Sorted and grouped by HomeView when the events load, so a redraw
     /// here (a promo icon arriving, say) does not re-sort the list.
     let list: EventList
@@ -37,15 +36,15 @@ struct EventsListView: View {
                         }
                     }
                     .entrance(delay: Double(min(index, 4)) * 0.04)
-                }
 
-                // After everything they came for, never before it.
-                if let placement = promo.current {
-                    PromotedAppBanner(placement: placement, iconURL: promo.iconURL, campaign: "iwrestle-list") {
-                        withAnimation(Motion.normal) { promo.dismiss() }
+                    // After the first day's events, so it is seen without
+                    // scrolling to the end of a long list. With only one day
+                    // that is also the end.
+                    if index == 0 {
+                        PromoSlot(campaign: .list)
+                            .padding(.top, 6)
+                            .entrance(delay: 0.2)
                     }
-                    .padding(.top, 6)
-                    .entrance(delay: 0.2)
                 }
             }
             .padding(.horizontal, Theme.gutter)

@@ -100,6 +100,14 @@ struct HomeView: View {
                 viewState = .loading
                 Task { await loadEvents() }
             }
+            // Nothing nearby is a dead end, so offer something else to try.
+            .safeAreaInset(edge: .bottom) {
+                if error == .noData {
+                    PromoSlot(campaign: .empty)
+                        .padding(.horizontal, Theme.gutter)
+                        .padding(.bottom, 12)
+                }
+            }
         }
     }
 
