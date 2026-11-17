@@ -52,11 +52,22 @@ final class CrossPromoTests: XCTestCase {
     }
 
     func testBecomingAnOrganizerShowsTheOrganizerAppNextLaunch() {
+        launch().markOrganizer()
+        // The even rotation would show "2" here.
+        let next = launch()
+        XCTAssertEqual(next.current?.app.id, "3")
+        // Marking again must not restart the order on "3".
+        next.markOrganizer()
         XCTAssertEqual(launch().current?.app.id, "1")
-        let promo = launch()
-        XCTAssertEqual(promo.current?.app.id, "2")
+    }
+
+    /// Settings can load the user's events before the app is active; the
+    /// session still keeps the even rotation's pick.
+    func testMarkingBeforeTheAppIsActiveWaitsForTheNextLaunch() {
+        let promo = backgroundLaunch()
         promo.markOrganizer()
-        promo.markOrganizer()
+        promo.activate()
+        XCTAssertEqual(promo.current?.app.id, "1")
         XCTAssertEqual(launch().current?.app.id, "3")
     }
 

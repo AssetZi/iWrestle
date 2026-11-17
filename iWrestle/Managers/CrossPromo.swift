@@ -104,7 +104,9 @@ final class CrossPromo {
     /// The current session keeps its pick.
     func markOrganizer() {
         guard defaults.object(forKey: Keys.organizerSince) == nil else { return }
-        defaults.set(defaults.integer(forKey: Keys.launchCount), forKey: Keys.organizerSince)
+        // Before `activate()` this launch hasn't been counted yet; skip it.
+        let nextLaunch = defaults.integer(forKey: Keys.launchCount) + (activated ? 0 : 1)
+        defaults.set(nextLaunch, forKey: Keys.organizerSince)
     }
 
     /// Hides the current app for `dismissalPeriod` and clears every placement.
