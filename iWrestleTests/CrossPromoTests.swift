@@ -49,6 +49,23 @@ final class CrossPromoTests: XCTestCase {
         XCTAssertEqual(launch().current?.app.id, "2")
     }
 
+    /// A process started in the background just before a dismissal expires,
+    /// then opened just after, must judge the dismissal by the time it opens.
+    func testDismissalIsJudgedWhenTheAppOpensNotWhenItLaunched() {
+        var clock = Date(timeIntervalSince1970: 1_000_000)
+        let one = [apps[0]]
+        let first = CrossPromo(apps: one, defaults: defaults, now: { clock }, fetchIcon: false)
+        first.activate()
+        first.dismiss()
+
+        clock.addTimeInterval(CrossPromo.dismissalPeriod - 60)
+        let promo = CrossPromo(apps: one, defaults: defaults, now: { clock }, fetchIcon: false)
+        clock.addTimeInterval(120)
+        promo.activate()
+
+        XCTAssertEqual(promo.current?.app.id, "1")
+    }
+
     func testNothingIsPickedUntilTheAppIsActive() {
         XCTAssertNil(backgroundLaunch().current)
     }

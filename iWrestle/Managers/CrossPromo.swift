@@ -3,9 +3,10 @@
 //  iWrestle
 //
 //  Picks which of Brock's apps the banner shows this launch. One app per
-//  session so every placement (`PromoCampaign`) agrees; the rotation advances one
-//  slot per launch the user sees (`activate()`); a dismissed app sits out for two weeks; the tagline is
-//  random but never the one shown last time for that app.
+//  session so every placement (`PromoCampaign`) agrees; the rotation
+//  advances one slot per launch the user sees (`activate()`); a dismissed
+//  app sits out for two weeks; the tagline is random but never the one
+//  shown last time for that app.
 //
 
 import Foundation
