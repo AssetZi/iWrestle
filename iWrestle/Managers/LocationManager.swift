@@ -64,19 +64,22 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Last known location
 
-    private static let lastLatitudeKey = "lastKnownLocation.latitude"
-    private static let lastLongitudeKey = "lastKnownLocation.longitude"
+    nonisolated private static let lastLatitudeKey = "lastKnownLocation.latitude"
+    nonisolated private static let lastLongitudeKey = "lastKnownLocation.longitude"
 
     /// Saved so background work (the weekly digest refresh) has a location
     /// without waiting on CoreLocation, which it cannot do in the background.
-    static func store(lastKnown location: CLLocation) {
+    /// Nonisolated to match `lastKnownLocation`; only UserDefaults is touched.
+    nonisolated static func store(lastKnown location: CLLocation) {
         let defaults = UserDefaults.standard
         defaults.set(location.coordinate.latitude, forKey: lastLatitudeKey)
         defaults.set(location.coordinate.longitude, forKey: lastLongitudeKey)
     }
 
     /// The most recent fix from any earlier session, or nil if none was saved.
-    static var lastKnownLocation: CLLocation? {
+    /// Nonisolated because the background refresh reads it off the main
+    /// actor; UserDefaults is thread-safe.
+    nonisolated static var lastKnownLocation: CLLocation? {
         let defaults = UserDefaults.standard
         guard
             let latitude = defaults.object(forKey: lastLatitudeKey) as? Double,
