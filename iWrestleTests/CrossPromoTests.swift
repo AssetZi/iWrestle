@@ -68,7 +68,7 @@ final class CrossPromoTests: XCTestCase {
         XCTAssertEqual(second.current?.app.id, "3")
         second.dismiss()
         let shown = (0..<3).map { _ in launch().current?.app.id }
-        XCTAssertEqual(Set(shown.compactMap { $0 }), ["1", "2"])
+        XCTAssertEqual(shown, ["1", "2", "1"])
     }
 
     func testBackgroundLaunchesDoNotAdvanceTheRotation() {

@@ -24,8 +24,9 @@ struct HomeView: View {
     @State private var viewMode: ViewMode = .list
     @State private var selectedPin: Event.ID?
     /// Which promo the "No events found" screen shows, set with it: nothing
-    /// nearby and filters that match nothing are tracked apart, and a failed
-    /// fetch shows none, since the App Store card can't load offline.
+    /// nearby and filters that match nothing are tracked apart. A failed
+    /// fetch shows none: it is usually no network, where the App Store card
+    /// a tap opens can't load, and those taps would muddy both campaigns.
     @State private var emptyCampaign: PromoCampaign?
 
     enum ViewMode { case list, map }

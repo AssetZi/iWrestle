@@ -121,7 +121,8 @@ final class CrossPromo {
     }
 
     /// The organizer app before each of the others, or nil when this user is
-    /// not an organizer or has dismissed the organizer app.
+    /// not an organizer or has dismissed the organizer app. The organizer
+    /// app's own `weight` is ignored here; every other turn is already more.
     private func organizerRotation(_ available: [PromotedApp]) -> [PromotedApp]? {
         guard defaults.object(forKey: Keys.organizerSince) != nil,
               let organizerApp = available.first(where: { $0.id == organizerAppID })

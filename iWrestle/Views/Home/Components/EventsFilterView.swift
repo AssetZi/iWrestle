@@ -158,7 +158,7 @@ struct EventsFilterView: View {
             #if DEBUG
             if MockEvents.isEnabled {
                 let local = NSCompoundPredicate(andPredicateWithSubpredicates: predicates.filter { !$0.predicateFormat.contains("distanceToLocation") })
-                counts[snapshot] = MockEvents.nearby.filter { local.evaluate(with: MockEvents.predicateObject($0)) }.count
+                counts[snapshot] = MockEvents.feed.filter { local.evaluate(with: MockEvents.predicateObject($0)) }.count
                 status = .idle
                 return
             }
