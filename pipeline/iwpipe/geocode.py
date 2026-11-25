@@ -26,7 +26,8 @@ HEADERS = {
 }
 
 # Set when Nominatim refuses a request or answers with something other than
-# results. The rest of the run reads the cache and asks nothing more.
+# results. The rest of this process (one source's collect) reads the cache
+# and asks nothing more.
 _unavailable = False
 
 
@@ -61,20 +62,25 @@ def _query(session: requests.Session, text: str) -> dict[str, Any] | None:
         params["email"] = NOMINATIM_EMAIL
     try:
         response = get(session, ENDPOINT, params=params, headers=HEADERS)
+    except requests.HTTPError as error:
+        status = getattr(error.response, "status_code", None)
+        raise Unavailable(f"HTTP {status}" if status else "request refused") from error
+    except (requests.RequestException, RuntimeError) as error:
+        raise Unavailable("no answer after retries") from error
+    try:
         results = response.json()
-    except (requests.RequestException, RuntimeError, ValueError) as error:
-        raise Unavailable(str(error).splitlines()[0][:120]) from error
-    if not isinstance(results, list):
-        raise Unavailable("reply was not a list of results")
-    if not results:
-        return None
-    hit = results[0]
-    return {
-        "latitude": float(hit["lat"]),
-        "longitude": float(hit["lon"]),
-        "confidence": "city" if hit.get("type") in CITY_LEVEL_TYPES else "precise",
-        "matched": hit.get("display_name", ""),
-    }
+        if not results:
+            return None
+        hit = results[0]
+        return {
+            "latitude": float(hit["lat"]),
+            "longitude": float(hit["lon"]),
+            "confidence": "city" if hit.get("type") in CITY_LEVEL_TYPES else "precise",
+            "matched": hit.get("display_name", ""),
+        }
+    except (ValueError, KeyError, TypeError, AttributeError) as error:
+        # A block page, an error object, or a result without coordinates.
+        raise Unavailable("reply was not geocoding results") from error
 
 
 def candidates(address: str) -> list[str]:

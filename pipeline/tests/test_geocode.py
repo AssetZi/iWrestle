@@ -1,7 +1,15 @@
+import sys
+from pathlib import Path
+
 import pytest
 import requests
 
-from iwpipe import geocode
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "bin"))
+
+import summary as summary_cli  # noqa: E402
+
+from iwpipe import geocode  # noqa: E402
+from iwpipe.http import make_session  # noqa: E402
 
 HIT = [{"lat": "41.2148", "lon": "-79.3853", "type": "building", "display_name": "Tippin Gym"}]
 
@@ -20,7 +28,7 @@ class FakeResponse:
 def calls(monkeypatch, tmp_path):
     """Route geocode's requests to a queue of canned answers; record each call."""
     monkeypatch.setattr(geocode, "GEOCACHE_PATH", tmp_path / "geocache.json")
-    monkeypatch.setattr(geocode, "_unavailable", False)
+    monkeypatch.setattr(geocode, "_unavailable", False, raising=False)
 
     class Calls(list):
         """Each request's keyword arguments; `answers` is what comes back, in order."""
@@ -50,11 +58,53 @@ def test_the_geocoder_is_asked_under_the_pipelines_own_name(calls):
     assert headers["Accept"] == "application/json"
 
 
+def test_the_browser_headers_do_not_ride_along_on_the_wire():
+    """What the shared session actually sends once geocode's headers are merged in."""
+    session = make_session()
+    sent = session.prepare_request(
+        requests.Request("GET", geocode.ENDPOINT, headers=geocode.HEADERS)
+    ).headers
+    assert sent["User-Agent"].startswith("iWrestle-events-pipeline/")
+    assert sent["Accept"] == "application/json"
+    assert "Upgrade-Insecure-Requests" not in sent
+
+
 def test_a_reply_that_is_not_json_leaves_the_event_unlocated(calls, capsys):
     """The 2026-11-23 run: a block page came back and collect died on it."""
     calls.answers.append(FakeResponse(None, text="\n<html>Access blocked</html>"))
     assert geocode.lookup(None, "Tippin Gym, Clarion, PA") is None
     assert "geocoder unavailable" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("reply", [
+    {"error": "Access blocked"},          # an error object instead of results
+    [{"display_name": "no coordinates"}],  # a result without lat/lon
+    ["not a result"],
+])
+def test_a_reply_that_is_not_results_leaves_the_event_unlocated(calls, reply):
+    calls.answers.append(FakeResponse(reply))
+    assert geocode.lookup(None, "Tippin Gym, Clarion, PA") is None
+    assert geocode._load_cache() == {}
+
+
+def test_retries_running_out_leaves_the_event_unlocated(calls):
+    calls.answers.append(RuntimeError("GET https://nominatim.example failed after retries: None"))
+    assert geocode.lookup(None, "Tippin Gym, Clarion, PA") is None
+    assert geocode._load_cache() == {}
+
+
+@pytest.mark.parametrize("answer", [
+    FakeResponse(None, text="\n<html>Access blocked</html>"),
+    FakeResponse({"error": "Access blocked"}),
+    requests.HTTPError("403 Client Error: Forbidden"),
+])
+def test_the_routine_summary_reports_the_outage(calls, capsys, answer):
+    """Collect no longer stops, so this line is the only sign of a blocked geocoder."""
+    calls.answers.append(answer)
+    geocode.lookup(None, "Tippin Gym, Clarion, PA")
+    line = capsys.readouterr().out.strip()
+    _, trouble = summary_cli.summarize("== pywrestling\n" + line + "\n")
+    assert trouble == [f"pywrestling: {line}"] or trouble == [line], trouble
 
 
 def test_a_refusal_is_not_cached_as_a_miss(calls):
