@@ -17,6 +17,22 @@ from .http import get
 
 ENDPOINT = "https://nominatim.openstreetmap.org/search"
 
+# Nominatim's usage policy refuses clients that pose as a browser, so these
+# replace the shared session's browser-shaped headers for this one host.
+HEADERS = {
+    "User-Agent": "iWrestle-events-pipeline/1.0 (wrestling event directory)",
+    "Accept": "application/json",
+    "Upgrade-Insecure-Requests": None,
+}
+
+# Set when Nominatim refuses a request or answers with something other than
+# results. The rest of the run reads the cache and asks nothing more.
+_unavailable = False
+
+
+class Unavailable(Exception):
+    """Nominatim gave no usable answer; says nothing about the address."""
+
 # Coordinate precision that still resolves a city; enough for a mile filter.
 CITY_LEVEL_TYPES = {"city", "town", "village", "municipality", "administrative"}
 
@@ -43,8 +59,13 @@ def _query(session: requests.Session, text: str) -> dict[str, Any] | None:
     params = {"q": text, "format": "jsonv2", "limit": 1, "countrycodes": "us"}
     if NOMINATIM_EMAIL:
         params["email"] = NOMINATIM_EMAIL
-    response = get(session, ENDPOINT, params=params)
-    results = response.json()
+    try:
+        response = get(session, ENDPOINT, params=params, headers=HEADERS)
+        results = response.json()
+    except (requests.RequestException, RuntimeError, ValueError) as error:
+        raise Unavailable(str(error).splitlines()[0][:120]) from error
+    if not isinstance(results, list):
+        raise Unavailable("reply was not a list of results")
     if not results:
         return None
     hit = results[0]
@@ -74,7 +95,13 @@ def candidates(address: str) -> list[str]:
 def lookup(
     session: requests.Session, address: str, *, use_cache: bool = True
 ) -> dict[str, Any] | None:
-    """Geocode an address, returning None when every fallback misses."""
+    """Geocode an address, returning None when every fallback misses.
+
+    A miss is cached. A refusal is not: the address stays unlocated for this
+    run and is asked again on the next one.
+    """
+    global _unavailable
+
     if not address.strip():
         return None
 
@@ -83,11 +110,22 @@ def lookup(
     if use_cache and key in cache:
         return cache[key]
 
+    if _unavailable:
+        return None
+
     result = None
-    for query in candidates(address):
-        result = _query(session, query)
-        if result:
-            break
+    try:
+        for query in candidates(address):
+            result = _query(session, query)
+            if result:
+                break
+    except Unavailable as error:
+        _unavailable = True
+        print(
+            f"geocoder unavailable ({error}): addresses not already cached "
+            "stay unlocated this run"
+        )
+        return None
 
     cache[key] = result
     _save_cache(cache)
