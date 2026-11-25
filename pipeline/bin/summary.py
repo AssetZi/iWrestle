@@ -31,6 +31,7 @@ KEEP = re.compile(
 TROUBLE = re.compile(
     r"scrape looks partial|removals wanted, cap is|would be re-pushed|blocked \(HTTP|ANTHROPIC_API_KEY"
     r"|is held by another run|not a terminal|nothing collected|Error\b|^make: \*\*\*|did not answer"
+    r"|geocoder unavailable"
 )
 ACTION = re.compile(r"^  (created|replaced|moved|removed) ")
 

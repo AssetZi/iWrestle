@@ -17,6 +17,23 @@ from .http import get
 
 ENDPOINT = "https://nominatim.openstreetmap.org/search"
 
+# Nominatim's usage policy refuses clients that pose as a browser, so these
+# replace the shared session's browser-shaped headers for this one host.
+HEADERS = {
+    "User-Agent": "iWrestle-events-pipeline/1.0 (wrestling event directory)",
+    "Accept": "application/json",
+    "Upgrade-Insecure-Requests": None,
+}
+
+# Set when Nominatim refuses a request or answers with something other than
+# results. The rest of this process (one source's collect) reads the cache
+# and asks nothing more.
+_unavailable = False
+
+
+class Unavailable(Exception):
+    """Nominatim gave no usable answer; says nothing about the address."""
+
 # Coordinate precision that still resolves a city; enough for a mile filter.
 CITY_LEVEL_TYPES = {"city", "town", "village", "municipality", "administrative"}
 
@@ -43,17 +60,27 @@ def _query(session: requests.Session, text: str) -> dict[str, Any] | None:
     params = {"q": text, "format": "jsonv2", "limit": 1, "countrycodes": "us"}
     if NOMINATIM_EMAIL:
         params["email"] = NOMINATIM_EMAIL
-    response = get(session, ENDPOINT, params=params)
-    results = response.json()
-    if not results:
-        return None
-    hit = results[0]
-    return {
-        "latitude": float(hit["lat"]),
-        "longitude": float(hit["lon"]),
-        "confidence": "city" if hit.get("type") in CITY_LEVEL_TYPES else "precise",
-        "matched": hit.get("display_name", ""),
-    }
+    try:
+        response = get(session, ENDPOINT, params=params, headers=HEADERS)
+    except requests.HTTPError as error:
+        status = getattr(error.response, "status_code", None)
+        raise Unavailable(f"HTTP {status}" if status else "request refused") from error
+    except (requests.RequestException, RuntimeError) as error:
+        raise Unavailable("no answer after retries") from error
+    try:
+        results = response.json()
+        if not results:
+            return None
+        hit = results[0]
+        return {
+            "latitude": float(hit["lat"]),
+            "longitude": float(hit["lon"]),
+            "confidence": "city" if hit.get("type") in CITY_LEVEL_TYPES else "precise",
+            "matched": hit.get("display_name", ""),
+        }
+    except (ValueError, KeyError, TypeError, AttributeError) as error:
+        # A block page, an error object, or a result without coordinates.
+        raise Unavailable("reply was not geocoding results") from error
 
 
 def candidates(address: str) -> list[str]:
@@ -74,7 +101,13 @@ def candidates(address: str) -> list[str]:
 def lookup(
     session: requests.Session, address: str, *, use_cache: bool = True
 ) -> dict[str, Any] | None:
-    """Geocode an address, returning None when every fallback misses."""
+    """Geocode an address, returning None when every fallback misses.
+
+    A miss is cached. A refusal is not: the address stays unlocated for this
+    run and is asked again on the next one.
+    """
+    global _unavailable
+
     if not address.strip():
         return None
 
@@ -83,11 +116,22 @@ def lookup(
     if use_cache and key in cache:
         return cache[key]
 
+    if _unavailable:
+        return None
+
     result = None
-    for query in candidates(address):
-        result = _query(session, query)
-        if result:
-            break
+    try:
+        for query in candidates(address):
+            result = _query(session, query)
+            if result:
+                break
+    except Unavailable as error:
+        _unavailable = True
+        print(
+            f"geocoder unavailable ({error}): addresses not already cached "
+            "stay unlocated this run"
+        )
+        return None
 
     cache[key] = result
     _save_cache(cache)
